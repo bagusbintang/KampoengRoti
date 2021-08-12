@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:kampoeng_roti/models/category_model.dart';
+import 'package:kampoeng_roti/models/product_model.dart';
+import 'package:kampoeng_roti/providers/category_provider.dart';
+import 'package:kampoeng_roti/providers/product_provider.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/components/new_product.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/components/product_category.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/components/main_app_bar.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/cart_counter.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
-import 'package:kampoeng_roti/ui/widgets/default_button.dart';
+import 'package:provider/provider.dart';
 
 // created by - Bagus *2021-04-07*
 class ProductPages extends StatefulWidget {
@@ -14,28 +18,21 @@ class ProductPages extends StatefulWidget {
 }
 
 class _ProductPagesState extends State<ProductPages> {
-  final List dummyGrid = List.generate(10, (index) => '$index');
-  List<Map<String, String>> categoryList = [
-    {
-      "image": "assets/images/banner_promo.png",
-      "cat_name": "Roti",
-    },
-    {
-      "image": "assets/images/banner_promo.png",
-      "cat_name": "Roti Jumbo",
-    },
-    {
-      "image": "assets/images/banner_promo.png",
-      "cat_name": "Brownies",
-    },
-    {
-      "image": "assets/images/banner_promo.png",
-      "cat_name": "Pastry",
-    },
-  ];
+  // final List dummyGrid = List.generate(10, (index) => '$index');
+  ProductProvider productProvider;
+  CategoryProvider categoryProvider;
+  List<CategoryModel> categoryList = [];
+  List<ProductModel> productList = [];
+
   @override
   Widget build(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
+    categoryProvider = Provider.of<CategoryProvider>(context);
+    productProvider = Provider.of<ProductProvider>(context);
+    categoryProvider.getCategories();
+    productProvider.getProducts();
+    categoryList = categoryProvider.gatcategories;
+    productList = productProvider.products;
     return Scaffold(
       backgroundColor: Colors.transparent,
       // backgroundColor: softOrangeColor,
@@ -84,8 +81,8 @@ class _ProductPagesState extends State<ProductPages> {
                           scrollDirection: Axis.horizontal,
                           itemCount: categoryList.length,
                           itemBuilder: (context, index) => ListKategori(
-                            image: categoryList[index]["image"],
-                            kategori: categoryList[index]["cat_name"],
+                            image: categoryList[index].imageUrl,
+                            kategori: categoryList[index].title,
                             index: index,
                           ),
                         ),
@@ -108,7 +105,7 @@ class _ProductPagesState extends State<ProductPages> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "ROTI TAWAR",
+                          categoryList[0].title.toUpperCase(),
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black,
@@ -132,79 +129,10 @@ class _ProductPagesState extends State<ProductPages> {
                       scrollDirection: Axis.vertical,
                       physics: NeverScrollableScrollPhysics(),
                       // childAspectRatio: .6,
-                      children: dummyGrid
+                      children: productProvider.products
                           .map(
-                            (p) => GestureDetector(
-                              onTap: () {
-                                showDialogWithFields();
-                              },
-                              child: Container(
-                                height: 150,
-                                width: 150,
-                                // margin: EdgeInsets.symmetric(
-                                //     vertical: 5.0, horizontal: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10),
-                                    topRight: Radius.circular(10),
-                                    bottomLeft: Radius.circular(10),
-                                    bottomRight: Radius.circular(10),
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 3,
-                                      offset: Offset(
-                                          0, 2), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: <Widget>[
-                                    Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.vertical(
-                                              top: Radius.circular(10.0)),
-                                          child: Image.asset(
-                                            "assets/images/banner_promo.png",
-                                            fit: BoxFit.fill,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Image.asset(
-                                            "assets/images/vec_love.png",
-                                            height: 25,
-                                            width: 25,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      "Roti Baper Coklat",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      "Rp. 2.000",
-                                      style: TextStyle(
-                                        color: choclateColor,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    )
-                                  ],
-                                ),
-                              ),
+                            (product) => ProductCard(
+                              product: product,
                             ),
                           )
                           .toList(),
@@ -333,6 +261,95 @@ class _ProductPagesState extends State<ProductPages> {
           ),
         );
       },
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  const ProductCard({
+    Key key,
+    this.product,
+    this.press,
+  }) : super(key: key);
+  final ProductModel product;
+  final Function press;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        press;
+      },
+      child: Container(
+        height: 150,
+        width: 150,
+        // margin: EdgeInsets.symmetric(
+        //     vertical: 5.0, horizontal: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+            bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 0,
+              offset: Offset(0, 1), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(
+          children: <Widget>[
+            Stack(
+              children: [
+                SizedBox(
+                  height: 100,
+                  width: double.infinity,
+                  child: ClipRRect(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(10.0)),
+                    child: Image.network(
+                      product.imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    "assets/images/vec_love.png",
+                    height: 25,
+                    width: 25,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              product.title,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            Spacer(),
+            Text(
+              "Rp. ${product.price}",
+              style: TextStyle(
+                color: choclateColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
+      ),
     );
   }
 }

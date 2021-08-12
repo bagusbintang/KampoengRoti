@@ -18,8 +18,8 @@ class ListKategori extends StatelessWidget {
       onTap: () {},
       child: Container(
         // padding: EdgeInsets.all(5),
-        height: 150,
-        width: 150,
+        height: 100,
+        width: 100,
         child: Column(
           children: [
             Card(
@@ -27,9 +27,9 @@ class ListKategori extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   side: BorderSide(width: 3, color: choclateColor)),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.asset(
-                  "assets/images/banner_promo.png",
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  image,
                   fit: BoxFit.fill,
                 ),
               ),

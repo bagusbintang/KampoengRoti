@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kampoeng_roti/providers/product_provider.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_pages.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/home_pages.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/order_pages.dart';
@@ -6,6 +7,7 @@ import 'package:kampoeng_roti/ui/pages/outlet_pages/outlet_pages.dart';
 import 'package:kampoeng_roti/ui/pages/product_pages/product_pages.dart';
 
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 class MainPages extends StatefulWidget {
   @override

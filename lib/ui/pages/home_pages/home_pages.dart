@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:kampoeng_roti/models/category_model.dart';
+import 'package:kampoeng_roti/models/product_model.dart';
+import 'package:kampoeng_roti/providers/category_provider.dart';
+import 'package:kampoeng_roti/providers/product_provider.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/components/main_app_bar.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:provider/provider.dart';
 import 'dart:math' as math;
 
 import 'components/new_product.dart';
@@ -20,27 +25,34 @@ class _HomePagesState extends State<HomePages> {
     {"image": "assets/images/kategori1.png"},
     {"image": "assets/images/kategori2.png"},
   ];
-  List<Map<String, String>> categoryList = [
-    {
-      "image": "assets/images/banner_promo.png",
-      "cat_name": "Roti",
-    },
-    {
-      "image": "assets/images/banner_promo.png",
-      "cat_name": "Roti Jumbo",
-    },
-    {
-      "image": "assets/images/banner_promo.png",
-      "cat_name": "Brownies",
-    },
-    {
-      "image": "assets/images/banner_promo.png",
-      "cat_name": "Pastry",
-    },
-  ];
   final List dummyGrid = List.generate(10, (index) => '$index');
+  var dataSource;
+  ProductProvider productProvider;
+  CategoryProvider categoryProvider;
+  List<CategoryModel> categoryList = [];
+  List<ProductModel> newProductList = [];
+  // @override
+  // void initState() {
+  //   getInit();
+
+  //   super.initState();
+  // }
+
+  // getInit() async {
+  //   productProvider = Provider.of<ProductProvider>(context);
+  //   categoryProvider = Provider.of<CategoryProvider>(context);
+  //   dataSource = await Future.wait([
+  //     categoryProvider.getCategories(),
+  //   ]);
+  //   categoryList = dataSource[0] as List<CategoryModel>;
+  // }
+
   @override
   Widget build(BuildContext context) {
+    productProvider = Provider.of<ProductProvider>(context);
+    categoryProvider = Provider.of<CategoryProvider>(context);
+    categoryProvider.getCategories();
+    categoryList = categoryProvider.gatcategories;
     return Scaffold(
       backgroundColor: Colors.transparent,
       // backgroundColor: softOrangeColor,
@@ -172,13 +184,13 @@ class _HomePagesState extends State<HomePages> {
                         Container(
                           margin: EdgeInsets.symmetric(
                               vertical: 5.0, horizontal: 10),
-                          height: 150.0,
+                          height: 150,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: categoryList.length,
                             itemBuilder: (context, index) => ListKategori(
-                              image: categoryList[index]["image"],
-                              kategori: categoryList[index]["cat_name"],
+                              image: categoryList[index].imageUrl,
+                              kategori: categoryList[index].title,
                               index: index,
                             ),
                           ),
