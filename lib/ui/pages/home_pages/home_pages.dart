@@ -26,33 +26,14 @@ class _HomePagesState extends State<HomePages> {
     {"image": "assets/images/kategori2.png"},
   ];
   final List dummyGrid = List.generate(10, (index) => '$index');
-  var dataSource;
+
   ProductProvider productProvider;
   CategoryProvider categoryProvider;
-  List<CategoryModel> categoryList = [];
-  List<ProductModel> newProductList = [];
-  // @override
-  // void initState() {
-  //   getInit();
-
-  //   super.initState();
-  // }
-
-  // getInit() async {
-  //   productProvider = Provider.of<ProductProvider>(context);
-  //   categoryProvider = Provider.of<CategoryProvider>(context);
-  //   dataSource = await Future.wait([
-  //     categoryProvider.getCategories(),
-  //   ]);
-  //   categoryList = dataSource[0] as List<CategoryModel>;
-  // }
 
   @override
   Widget build(BuildContext context) {
     productProvider = Provider.of<ProductProvider>(context);
     categoryProvider = Provider.of<CategoryProvider>(context);
-    categoryProvider.getCategories();
-    categoryList = categoryProvider.gatcategories;
     return Scaffold(
       backgroundColor: Colors.transparent,
       // backgroundColor: softOrangeColor,
@@ -185,14 +166,19 @@ class _HomePagesState extends State<HomePages> {
                           margin: EdgeInsets.symmetric(
                               vertical: 5.0, horizontal: 10),
                           height: 150,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: categoryList.length,
-                            itemBuilder: (context, index) => ListKategori(
-                              image: categoryList[index].imageUrl,
-                              kategori: categoryList[index].title,
-                              index: index,
-                            ),
+                          child: FutureBuilder(
+                            future: categoryProvider.getCategories(),
+                            builder: (context, snapshot) {
+                              return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: categoryProvider.categories.length,
+                                itemBuilder: (context, index) => ListKategori(
+                                  index: index,
+                                  categoryModel:
+                                      categoryProvider.categories[index],
+                                ),
+                              );
+                            },
                           ),
                         ),
                         Container(

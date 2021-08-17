@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kampoeng_roti/models/city_models.dart';
+import 'package:kampoeng_roti/models/outlet_model.dart';
+import 'package:kampoeng_roti/providers/outlet_provider.dart';
 import 'package:kampoeng_roti/ui/pages/outlet_pages/components/outlet_header.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 // created by - Bagus *2021-04-07*
 
@@ -35,6 +38,9 @@ class _OutletPagesState extends State<OutletPages> {
 
   @override
   Widget build(BuildContext context) {
+    OutletProvider outletProvider = Provider.of<OutletProvider>(context);
+    outletProvider.getOutlets();
+    // List<OutletModel> outletList = categoryProvider.categories;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -65,16 +71,25 @@ class _OutletPagesState extends State<OutletPages> {
               height: 15,
             ),
             Container(
-              child: ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return Visibility(
-                      visible: isVisible,
-                      child: OutletsCity(size: size),
-                    );
-                  }),
+              child: FutureBuilder(
+                future: outletProvider.getOutlets(),
+                builder: (context, snapshot) {
+                  return ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: outletProvider.outlets.length,
+                    itemBuilder: (context, index) {
+                      return Visibility(
+                        visible: isVisible,
+                        child: OutletsCity(
+                          size: size,
+                          outletModel: outletProvider.outlets[index],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -170,9 +185,11 @@ class OutletsCity extends StatelessWidget {
   const OutletsCity({
     Key key,
     @required this.size,
+    this.outletModel,
   }) : super(key: key);
 
   final Size size;
+  final OutletModel outletModel;
 
   @override
   Widget build(BuildContext context) {
@@ -210,21 +227,23 @@ class OutletsCity extends StatelessWidget {
             shape: CircleBorder(),
           ),
           Text(
-            "Mulyosari".toUpperCase(),
+            outletModel.title.toUpperCase(),
             style: TextStyle(
               color: softOrangeColor,
               fontWeight: FontWeight.w700,
             ),
           ),
           Text(
-            "Jl. Raya Mulyosari No.69D",
+            outletModel.address,
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w400,
             ),
+            overflow: TextOverflow.clip,
+            textAlign: TextAlign.center,
           ),
           Text(
-            "Telp :" + "(031) 5998905",
+            "Telp :" + "${outletModel.phone}",
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w400,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/providers/category_provider.dart';
+import 'package:kampoeng_roti/providers/faq_provider.dart';
+import 'package:kampoeng_roti/providers/outlet_provider.dart';
 import 'package:kampoeng_roti/providers/product_provider.dart';
 import 'package:kampoeng_roti/ui/pages/splash_pages/splash_page.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +24,12 @@ class MainApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => ProductProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FaqProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => OutletProvider(),
         ),
       ],
       child: GetMaterialApp(

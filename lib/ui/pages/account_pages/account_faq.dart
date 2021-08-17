@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/ui/pages/account_pages/components/faq_body.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
 class AccountFAQ extends StatelessWidget {
@@ -60,88 +61,6 @@ class AccountFAQ extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class Faq {
-  bool isExpanded;
-  int number;
-  String header;
-  String body;
-
-  Faq(this.number, this.header, this.body, this.isExpanded);
-}
-
-class FaqBody extends StatefulWidget {
-  @override
-  _FaqBodyState createState() => _FaqBodyState();
-}
-
-class _FaqBodyState extends State<FaqBody> {
-  List<Faq> _faqList = [
-    Faq(
-      01,
-      "Kapan Barang Akan Dikirimkan?",
-      "Kampoeng Roti doeloe berdiri pada tahun 2012 dan memiliki lebih dari 17 cabang yang telah tersebar di Surabaya, Sidoarjo, Gresik, Madura, dan Malang. Silahkan mengunjungi outlet terdekat kami.",
-      false,
-    ),
-    Faq(
-      02,
-      "Bagaimana Melakukan Pembayaran?",
-      "Kampoeng Roti doeloe berdiri pada tahun 2012 dan memiliki lebih dari 17 cabang yang telah tersebar di Surabaya, Sidoarjo, Gresik, Madura, dan Malang. Silahkan mengunjungi outlet terdekat kami.",
-      false,
-    ),
-    Faq(
-      03,
-      "Apakah Bisa Pesan Ulang?",
-      "Kampoeng Roti doeloe berdiri pada tahun 2012 dan memiliki lebih dari 17 cabang yang telah tersebar di Surabaya, Sidoarjo, Gresik, Madura, dan Malang. Silahkan mengunjungi outlet terdekat kami.",
-      false,
-    ),
-  ];
-  @override
-  Widget build(BuildContext context) {
-    return ExpansionPanelList(
-      expansionCallback: (int index, bool isExpanded) {
-        setState(() {
-          _faqList[index].isExpanded = !isExpanded;
-        });
-      },
-      children: _faqList.map<ExpansionPanel>((Faq item) {
-        return ExpansionPanel(
-          headerBuilder: (BuildContext context, bool isExpanded) {
-            return ListTile(
-                title: RichText(
-              text: TextSpan(
-                style: DefaultTextStyle.of(context).style,
-                children: <TextSpan>[
-                  TextSpan(
-                    text: item.number.toString().padLeft(2, "0"),
-                    style: TextStyle(
-                      color: choclateColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "  " + item.header,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ));
-          },
-          body: ListTile(
-            title: Text(
-              item.body,
-            ),
-          ),
-          isExpanded: item.isExpanded,
-        );
-      }).toList(),
     );
   }
 }

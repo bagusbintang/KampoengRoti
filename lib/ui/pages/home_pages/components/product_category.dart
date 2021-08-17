@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:kampoeng_roti/models/category_model.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
 class ListKategori extends StatelessWidget {
   const ListKategori({
     Key key,
-    this.image,
-    this.kategori,
     this.index,
+    this.categoryModel,
   }) : super(key: key);
-  final String image;
-  final String kategori;
   final int index;
+  final CategoryModel categoryModel;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +28,13 @@ class ListKategori extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.network(
-                  image,
+                  categoryModel.imageUrl,
                   fit: BoxFit.fill,
                 ),
               ),
             ),
             Text(
-              kategori,
+              categoryModel.title,
               style:
                   TextStyle(color: choclateColor, fontWeight: FontWeight.w400),
             )

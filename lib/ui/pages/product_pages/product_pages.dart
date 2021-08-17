@@ -19,20 +19,18 @@ class ProductPages extends StatefulWidget {
 
 class _ProductPagesState extends State<ProductPages> {
   // final List dummyGrid = List.generate(10, (index) => '$index');
-  ProductProvider productProvider;
-  CategoryProvider categoryProvider;
-  List<CategoryModel> categoryList = [];
-  List<ProductModel> productList = [];
+  // ProductProvider productProvider;
+  // CategoryProvider categoryProvider;
 
   @override
   Widget build(BuildContext context) {
-    final orientation = MediaQuery.of(context).orientation;
-    categoryProvider = Provider.of<CategoryProvider>(context);
-    productProvider = Provider.of<ProductProvider>(context);
+    // final orientation = MediaQuery.of(context).orientation;
+    CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+    ProductProvider productProvider = Provider.of<ProductProvider>(context);
     categoryProvider.getCategories();
     productProvider.getProducts();
-    categoryList = categoryProvider.gatcategories;
-    productList = productProvider.products;
+    List<CategoryModel> categoryList = categoryProvider.categories;
+    // List<ProductModel> productList = productProvider.products;
     return Scaffold(
       backgroundColor: Colors.transparent,
       // backgroundColor: softOrangeColor,
@@ -77,14 +75,19 @@ class _ProductPagesState extends State<ProductPages> {
                       Container(
                         margin: EdgeInsets.symmetric(vertical: 5.0),
                         height: 150.0,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: categoryList.length,
-                          itemBuilder: (context, index) => ListKategori(
-                            image: categoryList[index].imageUrl,
-                            kategori: categoryList[index].title,
-                            index: index,
-                          ),
+                        child: FutureBuilder(
+                          future: categoryProvider.getCategories(),
+                          builder: (context, snapshot) {
+                            return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: categoryProvider.categories.length,
+                              itemBuilder: (context, index) => ListKategori(
+                                index: index,
+                                categoryModel:
+                                    categoryProvider.categories[index],
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -120,23 +123,28 @@ class _ProductPagesState extends State<ProductPages> {
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints(maxHeight: double.infinity),
-                  child: Container(
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      scrollDirection: Axis.vertical,
-                      physics: NeverScrollableScrollPhysics(),
-                      // childAspectRatio: .6,
-                      children: productProvider.products
-                          .map(
-                            (product) => ProductCard(
-                              product: product,
-                            ),
-                          )
-                          .toList(),
-                    ),
+                  child: FutureBuilder(
+                    future: productProvider.getProducts(),
+                    builder: (context, snapshot) {
+                      return Container(
+                        child: GridView.count(
+                          crossAxisCount: 2,
+                          shrinkWrap: true,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          scrollDirection: Axis.vertical,
+                          physics: NeverScrollableScrollPhysics(),
+                          // childAspectRatio: .6,
+                          children: productProvider.products
+                              .map(
+                                (product) => ProductCard(
+                                  product: product,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

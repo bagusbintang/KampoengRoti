@@ -5,7 +5,7 @@ import 'package:kampoeng_roti/services/category_service.dart';
 class CategoryProvider with ChangeNotifier {
   List<CategoryModel> _categories = [];
 
-  List<CategoryModel> get gatcategories => _categories;
+  List<CategoryModel> get categories => _categories;
 
   set categories(List<CategoryModel> categories) {
     _categories = categories;
