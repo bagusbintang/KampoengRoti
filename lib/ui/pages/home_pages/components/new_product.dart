@@ -25,7 +25,7 @@ class NewItemCard extends StatelessWidget {
             ),
             contentPadding: EdgeInsets.zero,
             content: Container(
-              width: 180,
+              width: 200,
               child: Column(
                 children: <Widget>[
                   Stack(
@@ -112,7 +112,7 @@ class NewItemCard extends StatelessWidget {
       child: Container(
         height: 200,
         width: 150,
-        margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10),
+        margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -134,22 +134,29 @@ class NewItemCard extends StatelessWidget {
           children: <Widget>[
             Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.asset(
-                    "assets/images/banner_promo.png",
-                    fit: BoxFit.fill,
+                SizedBox(
+                  width: double.infinity,
+                  height: 150,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.asset(
+                      "assets/images/banner_promo.png",
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Image.asset(
                     "assets/images/vec_love.png",
-                    height: 25,
-                    width: 25,
+                    height: 20,
+                    width: 20,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 5,
             ),
             Text(
               "Roti Baper \nCoklat",
@@ -160,7 +167,9 @@ class NewItemCard extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            Spacer(),
+            SizedBox(
+              height: 10,
+            ),
             Text(
               "Rp. 2.000",
               style: TextStyle(
@@ -169,7 +178,8 @@ class NewItemCard extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
-            )
+            ),
+            Spacer(),
           ],
         ),
       ),

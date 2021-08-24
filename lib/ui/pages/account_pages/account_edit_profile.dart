@@ -36,11 +36,11 @@ class EditProfile extends StatelessWidget {
                 height: 15,
               ),
               textFieldPersonName(
-                "Nama Penerima",
+                "Nama Pengguna",
                 initValue: "Bima Aprianto Siono",
               ),
               textFieldAddress(
-                "Alamat",
+                "Alamat Email",
                 initValue: "bima.aprianto@gmail.com",
               ),
               textFieldPersonPhone(

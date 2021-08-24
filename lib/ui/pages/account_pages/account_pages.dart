@@ -3,9 +3,13 @@ import 'package:get/get.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_contact_us.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_edit_profile.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_faq.dart';
+import 'package:kampoeng_roti/ui/pages/account_pages/account_share_app.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/components/account_info.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/history_transaction.dart';
+import 'package:kampoeng_roti/ui/pages/member_pages/member_page.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/delivery_address.dart';
+import 'package:kampoeng_roti/ui/pages/order_pages/detail_transaction.dart';
+import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
 class AccountPages extends StatelessWidget {
@@ -107,7 +111,8 @@ class AccountPages extends StatelessWidget {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(() => HistoryTransaction());
+                // Get.to(() => HistoryTransaction());
+                Get.to(() => DetailTransaction());
               },
             ),
             AccountInfo(
@@ -128,7 +133,9 @@ class AccountPages extends StatelessWidget {
                 size: 40,
                 color: softOrangeColor,
               ),
-              pressed: () {},
+              pressed: () {
+                Get.to(() => PromoPage());
+              },
             ),
             AccountInfo(
               titleName: "Bagi Aplikasi",
@@ -137,7 +144,9 @@ class AccountPages extends StatelessWidget {
                 size: 40,
                 color: softOrangeColor,
               ),
-              pressed: () {},
+              pressed: () {
+                Get.to(() => AccountShareApps());
+              },
             ),
             AccountInfo(
               titleName: "Member Kampoeng Roti",
@@ -146,7 +155,9 @@ class AccountPages extends StatelessWidget {
                 size: 40,
                 color: softOrangeColor,
               ),
-              pressed: () {},
+              pressed: () {
+                Get.to(() => MemberPage());
+              },
             ),
             AccountInfo(
               titleName: "FAQ",

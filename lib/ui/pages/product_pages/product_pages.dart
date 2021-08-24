@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 import 'package:kampoeng_roti/models/category_model.dart';
 import 'package:kampoeng_roti/models/product_model.dart';
+import 'package:kampoeng_roti/providers/cart_provider.dart';
 import 'package:kampoeng_roti/providers/category_provider.dart';
 import 'package:kampoeng_roti/providers/product_provider.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/components/new_product.dart';
@@ -18,19 +20,14 @@ class ProductPages extends StatefulWidget {
 }
 
 class _ProductPagesState extends State<ProductPages> {
-  // final List dummyGrid = List.generate(10, (index) => '$index');
-  // ProductProvider productProvider;
-  // CategoryProvider categoryProvider;
-
+  String _productTitle = "Roti";
+  int _productId = 1;
   @override
   Widget build(BuildContext context) {
-    // final orientation = MediaQuery.of(context).orientation;
     CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
     ProductProvider productProvider = Provider.of<ProductProvider>(context);
     categoryProvider.getCategories();
     productProvider.getProducts();
-    List<CategoryModel> categoryList = categoryProvider.categories;
-    // List<ProductModel> productList = productProvider.products;
     return Scaffold(
       backgroundColor: Colors.transparent,
       // backgroundColor: softOrangeColor,
@@ -85,6 +82,15 @@ class _ProductPagesState extends State<ProductPages> {
                                 index: index,
                                 categoryModel:
                                     categoryProvider.categories[index],
+                                tap: () {
+                                  print("diklik");
+                                  setState(() {
+                                    _productTitle = categoryProvider
+                                        .categories[index].title;
+                                    _productId =
+                                        categoryProvider.categories[index].id;
+                                  });
+                                },
                               ),
                             );
                           },
@@ -108,7 +114,7 @@ class _ProductPagesState extends State<ProductPages> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          categoryList[0].title.toUpperCase(),
+                          _productTitle.toUpperCase(),
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black,
@@ -124,7 +130,7 @@ class _ProductPagesState extends State<ProductPages> {
                 ConstrainedBox(
                   constraints: BoxConstraints(maxHeight: double.infinity),
                   child: FutureBuilder(
-                    future: productProvider.getProducts(),
+                    future: productProvider.getProducts(cat_id: _productId),
                     builder: (context, snapshot) {
                       return Container(
                         child: GridView.count(
@@ -134,7 +140,7 @@ class _ProductPagesState extends State<ProductPages> {
                           mainAxisSpacing: 10,
                           scrollDirection: Axis.vertical,
                           physics: NeverScrollableScrollPhysics(),
-                          // childAspectRatio: .6,
+                          childAspectRatio: .7,
                           children: productProvider.products
                               .map(
                                 (product) => ProductCard(
@@ -178,119 +184,26 @@ class _ProductPagesState extends State<ProductPages> {
       ),
     );
   }
-
-  void showDialogWithFields() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          scrollable: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(18.0),
-            ),
-          ),
-          contentPadding: EdgeInsets.zero,
-          content: Container(
-            width: 180,
-            child: Column(
-              children: <Widget>[
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(18.0)),
-                      child: Image.asset(
-                        "assets/images/banner_promo.png",
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                    // Image.asset(
-                    //   "assets/images/banner_promo.png",
-                    //   fit: BoxFit.scaleDown,
-                    // ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        "assets/images/vec_love.png",
-                        height: 25,
-                        width: 25,
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  "Roti Baper Coklat",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Rp. 2.000",
-                  style: TextStyle(
-                    color: softOrangeColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                CartCounter(),
-                SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  child: FlatButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    color: softOrangeColor,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "Masukkan Keranjang".toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
     Key key,
     this.product,
-    this.press,
   }) : super(key: key);
   final ProductModel product;
-  final Function press;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final currencyFormatter = NumberFormat('#,###', 'ID');
+    // final formatCurrency = new NumberFormat.simpleCurrency();
+    return InkWell(
       onTap: () {
-        press;
+        showDialogProduct(context);
       },
       child: Container(
-        height: 150,
-        width: 150,
+        // height: 200,
+        // width: 150,
         // margin: EdgeInsets.symmetric(
         //     vertical: 5.0, horizontal: 10),
         decoration: BoxDecoration(
@@ -315,7 +228,7 @@ class ProductCard extends StatelessWidget {
             Stack(
               children: [
                 SizedBox(
-                  height: 100,
+                  height: 200,
                   width: double.infinity,
                   child: ClipRRect(
                     borderRadius:
@@ -336,6 +249,9 @@ class ProductCard extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(
+              height: 10,
+            ),
             Text(
               product.title,
               style: TextStyle(
@@ -345,19 +261,124 @@ class ProductCard extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            Spacer(),
+            SizedBox(
+              height: 15,
+            ),
             Text(
-              "Rp. ${product.price}",
+              // "Rp. ${product.price}",
+              "Rp. ${currencyFormatter.format(product.price)}",
               style: TextStyle(
                 color: choclateColor,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
-            )
+            ),
+            Spacer(),
           ],
         ),
       ),
+    );
+  }
+
+  Future showDialogProduct(BuildContext context) {
+    final currencyFormatter = NumberFormat('#,###', 'ID');
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          scrollable: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(18.0),
+            ),
+          ),
+          contentPadding: EdgeInsets.zero,
+          content: Container(
+            width: 180,
+            child: Column(
+              children: <Widget>[
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(18.0)),
+                      child: Image.network(
+                        product.imageUrl,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    // Image.asset(
+                    //   "assets/images/banner_promo.png",
+                    //   fit: BoxFit.scaleDown,
+                    // ),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        "assets/images/vec_love.png",
+                        height: 25,
+                        width: 25,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  product.title,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  // "Rp. ${product.price}",
+                  "Rp. ${currencyFormatter.format(product.price)}",
+                  style: TextStyle(
+                    color: softOrangeColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                CartCounter(),
+                SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  child: Consumer<CartProvider>(
+                    builder: (context, value, child) => FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      color: softOrangeColor,
+                      onPressed: () {
+                        value.addCart(product);
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Masukkan Keranjang".toUpperCase(),
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

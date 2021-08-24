@@ -12,9 +12,12 @@ class OutletProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getOutlets() async {
+  Future<void> getOutlets({
+    int city_id = 1,
+  }) async {
     try {
-      List<OutletModel> outlets = await OutletService().getOutlets();
+      List<OutletModel> outlets =
+          await OutletService().getOutlets(cityId: city_id);
       _outlets = outlets;
     } catch (e) {
       print(e);

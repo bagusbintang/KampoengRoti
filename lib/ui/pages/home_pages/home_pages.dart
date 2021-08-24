@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:kampoeng_roti/models/category_model.dart';
-import 'package:kampoeng_roti/models/product_model.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:kampoeng_roti/providers/category_provider.dart';
 import 'package:kampoeng_roti/providers/product_provider.dart';
+import 'package:kampoeng_roti/ui/pages/home_pages/outlet_home_page.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/components/main_app_bar.dart';
+import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
 
 import 'components/new_product.dart';
 import 'components/product_category.dart';
@@ -19,7 +20,26 @@ class HomePages extends StatefulWidget {
 }
 
 class _HomePagesState extends State<HomePages> {
+  Position _currentPosition;
+  _getCurrentLocation() {
+    Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+        print("lat : " +
+            _currentPosition.latitude.toString() +
+            "long : " +
+            _currentPosition.longitude.toString());
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
   int currentPage = 0;
+  String selectedOutlet = "Pilih Outlet";
   List<Map<String, String>> imageList = [
     {"image": "assets/images/banner.png"},
     {"image": "assets/images/kategori1.png"},
@@ -38,8 +58,46 @@ class _HomePagesState extends State<HomePages> {
       backgroundColor: Colors.transparent,
       // backgroundColor: softOrangeColor,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
-        child: MainAppBar(),
+        preferredSize: Size.fromHeight(130),
+        child: Column(
+          children: <Widget>[
+            MainAppBar(),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  color: softOrangeColor,
+                  onPressed: () async {
+                    _getCurrentLocation();
+                    String result = await Get.to(() => OutletHomePage(
+                          currentPosition: _currentPosition,
+                        ));
+                    setState(() {
+                      if (result != null) {
+                        selectedOutlet = "Outlet " + result;
+                      }
+                    });
+                  },
+                  child: Text(
+                    selectedOutlet.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 12),
@@ -50,7 +108,7 @@ class _HomePagesState extends State<HomePages> {
               child: Column(
                 children: <Widget>[
                   SizedBox(
-                    height: 15,
+                    height: 10,
                   ),
                   Container(
                     // padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
@@ -106,7 +164,9 @@ class _HomePagesState extends State<HomePages> {
                               icon: Image.asset(
                                 "assets/images/ic_promo.png",
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(() => PromoPage());
+                              },
                             ),
                             Text(
                               "PROMO",
@@ -176,6 +236,7 @@ class _HomePagesState extends State<HomePages> {
                                   index: index,
                                   categoryModel:
                                       categoryProvider.categories[index],
+                                  tap: () {},
                                 ),
                               );
                             },
@@ -203,28 +264,22 @@ class _HomePagesState extends State<HomePages> {
                           ),
                         ),
                         SizedBox(
-                          width: double.infinity,
-                          height: 400,
+                          height: 450,
                           child: GridView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: dummyGrid.length,
                             gridDelegate:
                                 SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 250,
-                                    childAspectRatio: 3 / 2,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10),
+                              maxCrossAxisExtent: 250,
+                              childAspectRatio: 5 / 4,
+                              crossAxisSpacing: 0,
+                              mainAxisSpacing: 0,
+                            ),
                             itemBuilder: (context, index) {
                               return NewItemCard();
-                              // GridTile(
-                              //     child: Container(
-                              //         color: Colors.blue[200],
-                              //         alignment: Alignment.center,
-                              //         child: Text(dummyGrid[index])));
                             },
                           ),
                         ),
-                        // NewItemCard(),
                       ],
                     ),
                   ),

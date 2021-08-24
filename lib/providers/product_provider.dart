@@ -12,9 +12,12 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getProducts() async {
+  Future<void> getProducts({
+    int cat_id,
+  }) async {
     try {
-      List<ProductModel> products = await ProductService().getProduct();
+      List<ProductModel> products =
+          await ProductService().getProduct(cat_id: cat_id);
       _products = products;
     } catch (e) {
       print(e);

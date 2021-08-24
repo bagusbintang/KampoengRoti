@@ -14,10 +14,8 @@ class SelectPayment extends StatefulWidget {
 class _SelectPaymentState extends State<SelectPayment> {
   Payment selectedPayment;
   List<Payment> paymentList = [
-    Payment("BCA"),
-    Payment("Mandiri"),
-    Payment("BRI"),
-    Payment("TUNAI"),
+    Payment("COD"),
+    Payment("OVO"),
   ];
   List<DropdownMenuItem> generateItems(List<Payment> paymentList) {
     List<DropdownMenuItem> items = [];

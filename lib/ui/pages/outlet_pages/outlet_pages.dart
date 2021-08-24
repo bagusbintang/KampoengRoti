@@ -14,7 +14,7 @@ class OutletPages extends StatefulWidget {
 }
 
 class _OutletPagesState extends State<OutletPages> {
-  bool isVisible = false;
+  // bool isVisible = false;
   City selectedCity;
   List<City> cityList = [
     City("Surabaya"),
@@ -39,14 +39,13 @@ class _OutletPagesState extends State<OutletPages> {
   @override
   Widget build(BuildContext context) {
     OutletProvider outletProvider = Provider.of<OutletProvider>(context);
-    outletProvider.getOutlets();
-    // List<OutletModel> outletList = categoryProvider.categories;
+
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SingleChildScrollView(
         child: Column(
-          children: [
+          children: <Widget>[
             OutletsHeader(size: size),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -72,19 +71,16 @@ class _OutletPagesState extends State<OutletPages> {
             ),
             Container(
               child: FutureBuilder(
-                future: outletProvider.getOutlets(),
+                future: outletProvider.getOutlets(city_id: 1),
                 builder: (context, snapshot) {
                   return ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: outletProvider.outlets.length,
                     itemBuilder: (context, index) {
-                      return Visibility(
-                        visible: isVisible,
-                        child: OutletsCity(
-                          size: size,
-                          outletModel: outletProvider.outlets[index],
-                        ),
+                      return OutletsCity(
+                        size: size,
+                        outletModel: outletProvider.outlets[index],
                       );
                     },
                   );
@@ -135,7 +131,7 @@ class _OutletPagesState extends State<OutletPages> {
                   iconEnabledColor: Colors.white,
                   hint: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Text("Pilih Kota",
+                    child: Text(cityList[0].cityName,
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -143,7 +139,6 @@ class _OutletPagesState extends State<OutletPages> {
                   ),
                   onChanged: (item) {
                     setState(() {
-                      isVisible = true;
                       selectedCity = item;
                     });
                   },

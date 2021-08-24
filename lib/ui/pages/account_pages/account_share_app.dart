@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:kampoeng_roti/ui/pages/account_pages/components/contact_us_header.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/mini_button.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
-class AccountContactUs extends StatelessWidget {
+class AccountShareApps extends StatelessWidget {
+  const AccountShareApps({
+    Key key,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -19,7 +23,14 @@ class AccountContactUs extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-              ContactUsHeader(size: size),
+              Container(
+                height: size.height / 10,
+                width: size.width,
+                decoration: BoxDecoration(
+                    color: softOrangeColor,
+                    borderRadius: BorderRadius.vertical(
+                        bottom: Radius.elliptical(size.width, 80))),
+              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 child: Center(
@@ -33,17 +44,18 @@ class AccountContactUs extends StatelessWidget {
                         width: 150,
                       ),
                       Text(
-                        "Hubungi Kami",
+                        "Bagi Aplikasi",
                         style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       SizedBox(
-                        height: 20,
+                        height: 10,
                       ),
                       Text(
-                        "Hubungi kami untuk mengetahui informasi lebih lanjut mengenai product atau layanan kami",
+                        "Bagikan aplikasi ini untuk temanmu dan dapatkan\npromo-promo special",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -56,16 +68,31 @@ class AccountContactUs extends StatelessWidget {
               SizedBox(
                 height: 15,
               ),
+              QrImage(
+                version: 5,
+                backgroundColor: Colors.grey[200],
+                foregroundColor: Colors.black,
+                errorCorrectionLevel: QrErrorCorrectLevel.M,
+                padding: EdgeInsets.all(20),
+                size: 250,
+                data: "https://www.qrcode.com/en/about/version.html",
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Text(
+                "Bagi Aplikasi Lewat Lainnya",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
               MiniButton(
                 text: "Whatsapp",
-                onpress: () {},
-              ),
-              MiniButton(
-                text: "Telp",
-                onpress: () {},
-              ),
-              MiniButton(
-                text: "Email",
                 onpress: () {},
               ),
             ],

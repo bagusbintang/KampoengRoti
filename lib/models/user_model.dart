@@ -6,6 +6,8 @@ class UserModel {
   String email;
   String profilePictureUrl;
   String token;
+  int active;
+  int verified;
 
   UserModel({
     this.id,
@@ -15,27 +17,33 @@ class UserModel {
     this.email,
     this.profilePictureUrl,
     this.token,
+    this.active,
+    this.verified,
   });
 
   UserModel.fromJson(Map<String, dynamic> jsonUser) {
-    id = jsonUser[''];
-    phone = jsonUser[''];
-    name = jsonUser[''];
-    username = jsonUser[''];
-    email = jsonUser[''];
-    profilePictureUrl = jsonUser[''];
-    token = jsonUser[''];
+    id = jsonUser['customer_id'];
+    // phone = jsonUser[''];
+    name = jsonUser['customer_name'];
+    username = jsonUser['customer_name'];
+    email = jsonUser['customer_email'];
+    // profilePictureUrl = jsonUser[''];
+    // token = jsonUser[''];
+    active = jsonUser['customer_active'];
+    verified = jsonUser['customer_emailverified'];
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '': id,
-      '': phone,
-      '': name,
-      '': username,
-      '': email,
-      '': profilePictureUrl,
-      '': token,
+      'customer_id': id,
+      // '': phone,
+      'customer_name': name,
+      'customer_name': username,
+      'customer_email': email,
+      // '': profilePictureUrl,
+      // '': token,
+      'customer_active': active,
+      'customer_emailverified': verified,
     };
   }
 }

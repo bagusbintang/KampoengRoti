@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:kampoeng_roti/ui/pages/member_pages/member_page.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/cart_choose_button.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/delivery_info.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/select_payment.dart';
+import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
 class DeliveryWay extends StatefulWidget {
@@ -107,7 +110,9 @@ class _DeliveryWayState extends State<DeliveryWay> {
                   ],
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => PromoPage());
+                  },
                   child: Text(
                     "Tambah Promo",
                     style: TextStyle(
@@ -145,7 +150,9 @@ class _DeliveryWayState extends State<DeliveryWay> {
                   ],
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => MemberPage());
+                  },
                   child: Text(
                     "Bima Aprianto(4040333)",
                     style: TextStyle(
@@ -242,6 +249,9 @@ class _DeliveryWayState extends State<DeliveryWay> {
                 const Divider(
                   height: 20,
                   thickness: 1,
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

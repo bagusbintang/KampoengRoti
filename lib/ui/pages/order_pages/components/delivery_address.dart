@@ -55,7 +55,7 @@ class DeliveryAddress extends StatelessWidget {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: textFieldSearchOutlets("Cari Outlets", Icon(Icons.search)),
+              child: textFieldSearchOutlets("Cari Alamat", Icon(Icons.search)),
             ),
             SizedBox(
               height: 15,

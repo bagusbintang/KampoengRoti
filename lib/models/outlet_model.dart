@@ -4,6 +4,8 @@ class OutletModel {
   String title;
   String address;
   String phone;
+  double latitude;
+  double longitude;
   Uri url;
 
   OutletModel({
@@ -12,6 +14,8 @@ class OutletModel {
     this.title,
     this.address,
     this.phone,
+    this.latitude,
+    this.longitude,
     this.url,
   });
 
@@ -21,6 +25,8 @@ class OutletModel {
     title = outletJson['outlet_title'];
     address = outletJson['outlet_address'];
     phone = outletJson['outlet_phone'];
+    latitude = double.parse(outletJson['outlet_latitude']);
+    longitude = double.parse(outletJson['outlet_longitude']);
   }
 
   Map<String, dynamic> toJson() {
@@ -30,6 +36,8 @@ class OutletModel {
       'outlet_title': title,
       'outlet_address': address,
       'outlet_phone': phone,
+      'outlet_latitude': latitude,
+      'outlet_longitude': longitude,
     };
   }
 }

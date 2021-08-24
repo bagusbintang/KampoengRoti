@@ -13,9 +13,10 @@ class AccountInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: pressed,
       child: Container(
+        width: double.maxFinite,
         child: Column(
           children: <Widget>[
             Padding(

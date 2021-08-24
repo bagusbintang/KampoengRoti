@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kampoeng_roti/ui/pages/order_pages/components/item_order.dart';
-import 'package:kampoeng_roti/ui/pages/order_pages/order_detail.dart';
+import 'package:kampoeng_roti/ui/pages/order_pages/components/delivery_way.dart';
+import 'package:kampoeng_roti/ui/pages/order_pages/components/item_order_detail.dart';
+import 'package:kampoeng_roti/ui/pages/order_pages/order_done.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 
-class OrderPages extends StatelessWidget {
+class OrderDetail extends StatelessWidget {
+  const OrderDetail({
+    Key key,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +44,7 @@ class OrderPages extends StatelessWidget {
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                   TextButton(
-                    child: Text("+ Tambah"),
+                    child: Text("Ubah Pesanan"),
                     style: TextButton.styleFrom(
                       primary: softOrangeColor,
                       textStyle: TextStyle(
@@ -60,12 +65,15 @@ class OrderPages extends StatelessWidget {
               child: Column(
                 children: List.generate(
                   3,
-                  (index) => ItemOrder(),
+                  (index) => ItemOrderDetail(),
                 ),
               ),
             ),
+            SizedBox(
+              width: 20,
+            ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -90,7 +98,10 @@ class OrderPages extends StatelessWidget {
                 ],
               ),
             ),
-            // DeliveryWay(),
+            SizedBox(
+              width: 20,
+            ),
+            DeliveryWay(),
             SizedBox(
               height: 10,
             ),
@@ -100,9 +111,9 @@ class OrderPages extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   DefaultButton(
-                    text: "LANJUTKAN",
+                    text: "SETUJU & ORDER",
                     press: () {
-                      Get.to(() => OrderDetail());
+                      Get.to(() => OrderDone());
                     },
                   ),
                   SizedBox(

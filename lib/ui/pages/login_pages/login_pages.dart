@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/providers/auth_provider.dart';
+import 'package:kampoeng_roti/ui/pages/login_pages/forget_password.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
 import 'package:kampoeng_roti/ui/pages/register_pages/register_pages.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,7 +14,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController usernameController = TextEditingController(text: '');
+  TextEditingController emailController = TextEditingController(text: '');
+  TextEditingController passwordController = TextEditingController(text: '');
+
   bool _obscureText = true;
+  bool _checkBoxValue = false;
 
   Icon _iconPwd = Icon(Icons.remove_red_eye_outlined);
   String _password;
@@ -27,8 +35,39 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  void _checkBoxOnChange() {}
+
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    handleSignIn() async {
+      if (await authProvider.login(
+        // username: usernameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+      )) {
+        Get.offAll(() => MainPages());
+      } else {
+        Get.snackbar(
+          "Gagal Login",
+          "Username atau Password salah / kosong",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: softOrangeColor,
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     backgroundColor: choclateColor,
+        //     content: Text(
+        //       'Gagal Login!',
+        //       textAlign: TextAlign.center,
+        //     ),
+        //   ),
+        // );
+      }
+    }
+
     return Scaffold(
       backgroundColor: softOrangeColor,
       appBar: PreferredSize(
@@ -49,71 +88,114 @@ class _LoginPageState extends State<LoginPage> {
               image: AssetImage("assets/images/kr_background.png"),
               fit: BoxFit.cover),
         ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: Column(
-                  children: <Widget>[
-                    Image(
-                      image: AssetImage(
-                        "assets/images/kr_logo.png",
-                      ),
-                      height: 200,
-                      width: 200,
+        child: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                children: <Widget>[
+                  Image(
+                    image: AssetImage(
+                      "assets/images/kr_logo.png",
                     ),
-                    Text(
-                      "Selamat Datang di\nKampoeng Roti",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 26,
-                      ),
+                    height: 200,
+                    width: 200,
+                  ),
+                  Text(
+                    "Selamat Datang di\nKampoeng Roti",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 26,
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    textFieldUsername("Username", Icon(Icons.person)),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    textFieldPassword("Password", Icon(Icons.lock)),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    DefaultButton(
-                      text: "MASUK",
-                      press: () {
-                        Get.offAll(() => MainPages());
-                      },
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Column(
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  textFieldUsername("Username", Icon(Icons.person)),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  textFieldPassword("Password", Icon(Icons.lock)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                          "Belum Punya Akun Kampoeng Roti?",
-                          style: TextStyle(color: Colors.grey[600]),
+                        Flexible(
+                          flex: 1,
+                          child: CheckboxListTile(
+                            title: Text(
+                              "Ingat Saya",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
+                            ),
+                            value: _checkBoxValue,
+                            activeColor: Colors.grey[600],
+                            onChanged: (bool newValue) {
+                              setState(() {
+                                _checkBoxValue = newValue;
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity
+                                .leading, //  <-- leading Checkbox
+                          ),
                         ),
-                        FlatButton(
-                          child: Text(
-                            "Daftar Akun",
-                            style: TextStyle(
+                        Flexible(
+                          flex: 1,
+                          child: FlatButton(
+                            child: Text(
+                              "Lupa Password?",
+                              style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 color: choclateColor,
-                                fontWeight: FontWeight.w600),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                              ),
+                            ),
+                            onPressed: () {
+                              Get.to(() => ForgetPassword());
+                            },
                           ),
-                          onPressed: () {
-                            Get.to(() => RegisterPages());
-                          },
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  DefaultButton(
+                    text: "MASUK",
+                    press: () {
+                      handleSignIn();
+                      // Get.offAll(() => MainPages());
+                    },
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Text(
+                        "Belum Punya Akun Kampoeng Roti?",
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      FlatButton(
+                        child: Text(
+                          "Daftar Akun",
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              color: choclateColor,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        onPressed: () {
+                          Get.to(() => RegisterPages());
+                        },
+                      ),
+                    ],
+                  ),
+                  // Spacer(),
+                ],
               ),
             ),
           ),
@@ -129,6 +211,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: TextFormField(
         keyboardType: TextInputType.name,
+        controller: emailController,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(25),
             border: new OutlineInputBorder(
@@ -153,6 +236,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: TextFormField(
         keyboardType: TextInputType.name,
+        controller: passwordController,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(25),
             border: new OutlineInputBorder(

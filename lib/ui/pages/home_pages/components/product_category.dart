@@ -7,14 +7,16 @@ class ListKategori extends StatelessWidget {
     Key key,
     this.index,
     this.categoryModel,
+    this.tap,
   }) : super(key: key);
   final int index;
   final CategoryModel categoryModel;
+  final Function tap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: tap,
       child: Container(
         // padding: EdgeInsets.all(5),
         height: 100,

@@ -4,8 +4,14 @@ import 'package:kampoeng_roti/models/product_model.dart';
 import 'package:kampoeng_roti/services/services.dart';
 
 class ProductService {
-  Future<List<ProductModel>> getProduct() async {
-    var response = await http.get(productUrl, headers: headers);
+  Future<List<ProductModel>> getProduct({
+    int cat_id = 1,
+  }) async {
+    final url = Uri.encodeFull("$productUrl/${cat_id}");
+    var response = await http.get(
+      url,
+      headers: headers,
+    );
 
     print(response.body);
 
