@@ -13,7 +13,7 @@ class OutletProvider with ChangeNotifier {
   }
 
   Future<void> getOutlets({
-    int city_id = 1,
+    int city_id = 0,
   }) async {
     try {
       List<OutletModel> outlets =

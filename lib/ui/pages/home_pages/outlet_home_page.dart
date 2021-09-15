@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/city_models.dart';
+import 'package:kampoeng_roti/providers/city_provider.dart';
 import 'package:kampoeng_roti/providers/outlet_provider.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/components/outlet_home_city.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
@@ -10,9 +11,9 @@ import 'package:provider/provider.dart';
 class OutletHomePage extends StatefulWidget {
   const OutletHomePage({
     Key key,
-    this.currentPosition,
+    // this.currentPosition,
   }) : super(key: key);
-  final Position currentPosition;
+  // final Position currentPosition;
 
   @override
   _OutletHomePageState createState() => _OutletHomePageState();
@@ -20,29 +21,34 @@ class OutletHomePage extends StatefulWidget {
 
 class _OutletHomePageState extends State<OutletHomePage> {
   // bool isVisible = false;
-  City selectedCity;
-  List<City> cityList = [
-    City("Surabaya"),
-    City("Sidoarjo"),
-    City("Gresik"),
-    City("Madura"),
-    City("Malang"),
-  ];
-  List<DropdownMenuItem> generateCities(List<City> cityList) {
-    List<DropdownMenuItem> items = [];
-    for (var item in cityList) {
-      items.add(
-        DropdownMenuItem(
-          child: Text(item.cityName, textAlign: TextAlign.center),
-          value: item,
-        ),
-      );
-    }
-    return items;
+  CityModel selectedCity;
+  // List<City> cityList = [
+  //   City("Surabaya"),
+  //   City("Sidoarjo"),
+  //   City("Gresik"),
+  //   City("Madura"),
+  //   City("Malang"),
+  // ];
+  // List<DropdownMenuItem> generateCities(List<City> cityList) {
+  //   List<DropdownMenuItem> items = [];
+  //   for (var item in cityList) {
+  //     items.add(
+  //       DropdownMenuItem(
+  //         child: Text(item.cityName, textAlign: TextAlign.center),
+  //         value: item,
+  //       ),
+  //     );
+  //   }
+  //   return items;
+  // }
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    CityProvider cityProvider = Provider.of<CityProvider>(context);
     OutletProvider outletProvider = Provider.of<OutletProvider>(context);
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -101,13 +107,83 @@ class _OutletHomePageState extends State<OutletHomePage> {
                   SizedBox(
                     height: 15,
                   ),
-                  selectCity(context),
+                  Container(
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          "Pilih Kota Anda",
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          decoration: BoxDecoration(
+                            color: softOrangeColor,
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(15),
+                              topRight: const Radius.circular(15),
+                              bottomLeft: const Radius.circular(15),
+                              bottomRight: const Radius.circular(15),
+                            ),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                canvasColor: softOrangeColor,
+                              ),
+                              child: FutureBuilder(
+                                future: cityProvider.getCity(),
+                                builder: (context, snapshot) {
+                                  return DropdownButton(
+                                    // value: selectedCity,
+                                    items: cityProvider.city.map((city) {
+                                      return DropdownMenuItem(
+                                        child: Text(city.cityName,
+                                            textAlign: TextAlign.center),
+                                        value: city,
+                                      );
+                                    }).toList(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    iconEnabledColor: Colors.white,
+                                    hint: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15),
+                                      child: Text(
+                                          selectedCity == null
+                                              ? "Surabaya"
+                                              : selectedCity.cityName,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700)),
+                                    ),
+                                    onChanged: (item) {
+                                      setState(() {
+                                        selectedCity = item;
+                                      });
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   SizedBox(
                     height: 15,
                   ),
                   Container(
                     child: FutureBuilder(
-                      future: outletProvider.getOutlets(),
+                      future: outletProvider.getOutlets(
+                          city_id: selectedCity == null ? 1 : selectedCity.id),
                       builder: (context, snapshot) {
                         return ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
@@ -117,7 +193,7 @@ class _OutletHomePageState extends State<OutletHomePage> {
                             return OutletsHomeCity(
                               size: size,
                               outletModel: outletProvider.outlets[index],
-                              currentPosition: widget.currentPosition,
+                              // currentPosition: widget.currentPosition,
                             );
                           },
                         );
@@ -136,65 +212,6 @@ class _OutletHomePageState extends State<OutletHomePage> {
     );
   }
 
-  Container selectCity(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Text(
-            "Pilih Kota Anda",
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            decoration: BoxDecoration(
-              color: softOrangeColor,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(15),
-                topRight: const Radius.circular(15),
-                bottomLeft: const Radius.circular(15),
-                bottomRight: const Radius.circular(15),
-              ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  canvasColor: softOrangeColor,
-                ),
-                child: DropdownButton(
-                  value: selectedCity,
-                  items: generateCities(cityList),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  iconEnabledColor: Colors.white,
-                  hint: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Text(cityList[0].cityName,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700)),
-                  ),
-                  onChanged: (item) {
-                    setState(() {
-                      // isVisible = true;
-                      selectedCity = item;
-                    });
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Theme textFieldSearchOutlets(String text, Icon icon) {
     return Theme(
       data: ThemeData(
@@ -204,7 +221,7 @@ class _OutletHomePageState extends State<OutletHomePage> {
         textAlign: TextAlign.center,
         keyboardType: TextInputType.name,
         decoration: InputDecoration(
-            contentPadding: EdgeInsets.zero,
+            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 25),
             border: new OutlineInputBorder(
               borderRadius: const BorderRadius.all(
                 const Radius.circular(20.0),

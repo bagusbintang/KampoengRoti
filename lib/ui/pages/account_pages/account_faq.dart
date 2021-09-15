@@ -33,12 +33,13 @@ class AccountFAQ extends StatelessWidget {
               height: 70,
               width: double.infinity,
               child: Container(
-                padding: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.all(20.0),
                 color: softOrangeColor,
                 child: Column(
                   children: <Widget>[
                     Text(
                       "Frequently Asked Questions",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

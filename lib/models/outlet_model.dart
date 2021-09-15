@@ -7,6 +7,7 @@ class OutletModel {
   double latitude;
   double longitude;
   Uri url;
+  int rangeOutlet;
 
   OutletModel({
     this.id,
@@ -17,6 +18,7 @@ class OutletModel {
     this.latitude,
     this.longitude,
     this.url,
+    this.rangeOutlet,
   });
 
   OutletModel.fromJson(Map<String, dynamic> outletJson) {

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/providers/auth_provider.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/login_pages.dart';
-import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
 import 'package:kampoeng_roti/ui/pages/register_pages/register_member_pages.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
@@ -59,15 +58,6 @@ class _RegisterPagesState extends State<RegisterPages> {
           backgroundColor: softOrangeColor,
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         );
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     backgroundColor: choclateColor,
-        //     content: Text(
-        //       'Gagal Login!',
-        //       textAlign: TextAlign.center,
-        //     ),
-        //   ),
-        // );
       }
     }
 

@@ -1,9 +1,33 @@
+import 'dart:convert';
+
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MySharedPreferences {
   MySharedPreferences._privateConstructor();
   static final MySharedPreferences instance =
       MySharedPreferences._privateConstructor();
+
+  setUserModel(String key, UserModel value) async {
+    SharedPreferences myPrefs = await SharedPreferences.getInstance();
+    myPrefs.setString(key, jsonEncode(value));
+  }
+
+  Future<UserModel> getUserModel(String key) async {
+    SharedPreferences myPrefs = await SharedPreferences.getInstance();
+    // Map userMap = jsonDecode(myPrefs.getString(key) ?? "");
+    return UserModel.fromJson(jsonDecode(myPrefs.getString(key) ?? ""));
+  }
+
+  setLoginValue(String key, bool value) async {
+    SharedPreferences myPrefs = await SharedPreferences.getInstance();
+    myPrefs.setBool(key, value);
+  }
+
+  Future<bool> getLoginValue(String key) async {
+    SharedPreferences myPrefs = await SharedPreferences.getInstance();
+    return myPrefs.getBool(key) ?? false;
+  }
 
   setStringValue(String key, String value) async {
     SharedPreferences myPrefs = await SharedPreferences.getInstance();

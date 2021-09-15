@@ -63,20 +63,20 @@ class RegisMemberBody extends StatelessWidget {
                   expiredAndNumberMember(),
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(5),
-                        topRight: Radius.circular(5),
-                        bottomLeft: Radius.circular(5),
-                        bottomRight: Radius.circular(5),
-                      ),
+                      borderRadius: BorderRadius.circular(100
+                          // topLeft: Radius.circular(5),
+                          // topRight: Radius.circular(5),
+                          // bottomLeft: Radius.circular(5),
+                          // bottomRight: Radius.circular(5),
+                          ),
                       color: Colors.white,
                     ),
                     child: Image(
                       image: AssetImage(
                         "assets/images/kr_logo.png",
                       ),
-                      height: 50,
-                      width: 50,
+                      height: 100,
+                      width: 100,
                     ),
                   ),
                 ],
@@ -122,7 +122,7 @@ class RegisMemberBody extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "07/23",
+                        "Seumur Hidup",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -150,7 +150,7 @@ class RegisMemberBody extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       Text(
-                        "NOMER MEMBER",
+                        "NOMOR MEMBER",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 12,

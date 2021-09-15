@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:kampoeng_roti/models/invoice_detail_model.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
 class HistoryItemOrder extends StatelessWidget {
   const HistoryItemOrder({
     Key key,
+    this.invoiceDetailModel,
   }) : super(key: key);
+  final InvoiceDetailModel invoiceDetailModel;
 
   @override
   Widget build(BuildContext context) {
+    final currencyFormatter = NumberFormat('#,###', 'ID');
     return Column(
       children: <Widget>[
         const Divider(
@@ -18,8 +23,8 @@ class HistoryItemOrder extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.circular(15.0),
-              child: Image.asset(
-                "assets/images/product_1.png",
+              child: Image.network(
+                invoiceDetailModel.imageUrl,
                 height: 120,
                 width: 100,
                 fit: BoxFit.cover,
@@ -34,7 +39,7 @@ class HistoryItemOrder extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "10x",
+                      "${invoiceDetailModel.qty}x",
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -45,14 +50,15 @@ class HistoryItemOrder extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          "Roti Baper Coklat",
+                          invoiceDetailModel.title,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
-                          "Rp 20.000",
+                          // "Rp 20.000",
+                          "Rp. ${currencyFormatter.format(invoiceDetailModel.subTotal)}",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -62,7 +68,7 @@ class HistoryItemOrder extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      "Rp 2.000 / biji",
+                      "Rp ${currencyFormatter.format(invoiceDetailModel.price)} / biji",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,

@@ -1,19 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_address_model.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/cart_provider.dart';
-import 'package:kampoeng_roti/ui/pages/order_pages/detail_transaction.dart';
-
+import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/order_pages.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-class MainAppBar extends StatelessWidget {
+import '../../../../shared_preferences.dart';
+
+class MainAppBar extends StatefulWidget {
   const MainAppBar({
     Key key,
   }) : super(key: key);
 
   @override
+  _MainAppBarState createState() => _MainAppBarState();
+}
+
+class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
+  UserAddressModel userAddress;
+  CartProvider cartProvider;
+  UserModel userModel;
+
+  Future<void> getCartList() async {
+    // cartProvider = Provider.of<CartProvider>(context);
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    await cartProvider.getCart(userId: userModel.id);
+    // setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
+    cartProvider = Provider.of<CartProvider>(context);
     return AppBar(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -23,43 +43,60 @@ class MainAppBar extends StatelessWidget {
       ),
       backgroundColor: softOrangeColor,
       elevation: 0,
-      title: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            color: Colors.white),
-        // padding: EdgeInsets.only(left: 5),
-        padding: const EdgeInsets.only(left: 15),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    child: Text(
-                      'Lokasi Pengiriman',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 10),
+      title: InkWell(
+        onTap: () async {
+          var result = await Get.to(() => DeliveryAddress());
+          setState(() {
+            userAddress = result;
+          });
+        },
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              color: Colors.white),
+          // padding: EdgeInsets.only(left: 5),
+          padding: const EdgeInsets.only(left: 15),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        'Lokasi Pengiriman',
+                        style: TextStyle(color: Colors.grey[500], fontSize: 10),
+                      ),
                     ),
-                  ),
-                  Container(
-                    child: Text(
-                      'RUMAH BIMA - Prambanan Residance Surabaya',
-                      style: TextStyle(color: Colors.black87, fontSize: 14),
-                      overflow: TextOverflow.ellipsis,
+                    Container(
+                      child: Text(
+                        userAddress != null
+                            ? userAddress.tagAddress.toUpperCase() +
+                                " - " +
+                                userAddress.address
+                            : 'RUMAH BIMA - Prambanan Residance Surabaya',
+                        style: TextStyle(color: Colors.black87, fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            IconButton(
-              icon: ImageIcon(
-                AssetImage("assets/images/icon_edit.png"),
-                color: Colors.grey,
-                size: 20,
+              IconButton(
+                icon: ImageIcon(
+                  AssetImage("assets/images/icon_edit.png"),
+                  color: Colors.grey,
+                  size: 20,
+                ),
+                onPressed: () async {
+                  var result = await Get.to(() => DeliveryAddress());
+                  setState(() {
+                    userAddress = result;
+                  });
+                },
               ),
-              onPressed: () {},
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: <Widget>[
@@ -93,8 +130,8 @@ class MainAppBar extends StatelessWidget {
                     // },
                     Image.asset(
                   "assets/images/icon_cart.png",
-                  height: 50,
-                  width: 50,
+                  height: 27,
+                  width: 27,
                 ),
                 onPressed: () {
                   Get.to(() => OrderPages());
@@ -102,9 +139,9 @@ class MainAppBar extends StatelessWidget {
                 },
               ),
               Positioned(
-                right: 2,
+                right: 3,
                 // left: 0,
-                top: 2,
+                top: 3,
                 child: Container(
                   padding: const EdgeInsets.all(5.0),
                   decoration: BoxDecoration(
@@ -116,9 +153,18 @@ class MainAppBar extends StatelessWidget {
                     ),
                     color: softOrangeColor,
                   ),
-                  child: Consumer<CartProvider>(
-                    builder: (context, value, child) => Text(
-                      value.carts.length.toString(),
+                  // child: Consumer<CartProvider>(
+                  //   builder: (context, value, child) => Text(
+                  //     value.totalCart().toString(),
+                  //     style: TextStyle(
+                  //       fontSize: 8,
+                  //     ),
+                  //   ),
+                  // ),
+                  child: FutureBuilder(
+                    future: getCartList(),
+                    builder: (context, snapshot) => Text(
+                      cartProvider.totalCart().toString(),
                       style: TextStyle(
                         fontSize: 8,
                       ),

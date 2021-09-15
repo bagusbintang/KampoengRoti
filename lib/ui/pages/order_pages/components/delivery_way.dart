@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:kampoeng_roti/providers/cart_provider.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/member_page.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/cart_choose_button.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/delivery_info.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/select_payment.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 class DeliveryWay extends StatefulWidget {
   @override
@@ -18,6 +21,8 @@ class _DeliveryWayState extends State<DeliveryWay> {
 
   @override
   Widget build(BuildContext context) {
+    final currencyFormatter = NumberFormat('#,###', 'ID');
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
     return Container(
       color: Colors.grey[200],
       child: Column(
@@ -200,7 +205,7 @@ class _DeliveryWayState extends State<DeliveryWay> {
                       ),
                     ),
                     Text(
-                      "Rp 125.000",
+                      "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -219,7 +224,7 @@ class _DeliveryWayState extends State<DeliveryWay> {
                       ),
                     ),
                     Text(
-                      "Rp 25.000",
+                      "Rp 0",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -264,7 +269,9 @@ class _DeliveryWayState extends State<DeliveryWay> {
                       ),
                     ),
                     Text(
-                      "Rp 150.000",
+                      isDeliveryChoosen
+                          ? "Rp. ${currencyFormatter.format(cartProvider.totalPrice() + 25000)}"
+                          : "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}",
                       style: TextStyle(
                         color: softOrangeColor,
                         fontSize: 16,

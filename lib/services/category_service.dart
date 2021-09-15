@@ -5,9 +5,9 @@ import 'package:kampoeng_roti/services/services.dart';
 
 class CategoryService {
   Future<List<CategoryModel>> getCategory() async {
-    var response = await http.get(categoryUrl, headers: headers);
+    var response = await http.get(Uri.parse(categoryUrl), headers: headers);
 
-    print(response.body);
+    // print(response.body);
 
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data']['respons_res'];

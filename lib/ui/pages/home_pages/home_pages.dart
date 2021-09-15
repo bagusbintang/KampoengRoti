@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/category_model.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/category_provider.dart';
 import 'package:kampoeng_roti/providers/product_provider.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/outlet_home_page.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/components/main_app_bar.dart';
+import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
+import 'package:kampoeng_roti/ui/pages/product_pages/components/product_card.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:provider/provider.dart';
 
+import '../../../shared_preferences.dart';
 import 'components/new_product.dart';
 import 'components/product_category.dart';
 
@@ -20,38 +24,38 @@ class HomePages extends StatefulWidget {
 }
 
 class _HomePagesState extends State<HomePages> {
-  Position _currentPosition;
-  _getCurrentLocation() {
-    Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.best,
-            forceAndroidLocationManager: true)
-        .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-        print("lat : " +
-            _currentPosition.latitude.toString() +
-            "long : " +
-            _currentPosition.longitude.toString());
-      });
-    }).catchError((e) {
-      print(e);
-    });
-  }
-
   int currentPage = 0;
   String selectedOutlet = "Pilih Outlet";
   List<Map<String, String>> imageList = [
     {"image": "assets/images/banner.png"},
-    {"image": "assets/images/kategori1.png"},
-    {"image": "assets/images/kategori2.png"},
+    {"image": "assets/images/banner.png"},
+    {"image": "assets/images/banner.png"},
   ];
-  final List dummyGrid = List.generate(10, (index) => '$index');
 
   ProductProvider productProvider;
   CategoryProvider categoryProvider;
+  CategorySingleton categorySingleton = CategorySingleton();
+  UserModel userModel;
+  void getUserModel() async {
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserModel();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final MainPageController mainPageController =
+        Get.put(MainPageController(), permanent: true);
     productProvider = Provider.of<ProductProvider>(context);
     categoryProvider = Provider.of<CategoryProvider>(context);
     return Scaffold(
@@ -75,9 +79,9 @@ class _HomePagesState extends State<HomePages> {
                       borderRadius: BorderRadius.circular(20)),
                   color: softOrangeColor,
                   onPressed: () async {
-                    _getCurrentLocation();
+                    // _getCurrentLocation();
                     String result = await Get.to(() => OutletHomePage(
-                          currentPosition: _currentPosition,
+                        // currentPosition: _currentPosition,
                         ));
                     setState(() {
                       if (result != null) {
@@ -110,22 +114,49 @@ class _HomePagesState extends State<HomePages> {
                   SizedBox(
                     height: 10,
                   ),
-                  Container(
-                    // padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                    child: Column(
-                      children: <Widget>[
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            "assets/images/banner_promo.png",
-                            height: 200.0,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
+                  SizedBox(
+                    height: 200,
+                    child: PageView.builder(
+                      onPageChanged: (value) {
+                        setState(() {
+                          currentPage = value;
+                        });
+                      },
+                      itemCount: imageList.length,
+                      itemBuilder: (context, index) => Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Column(
+                          children: <Widget>[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.asset(
+                                "assets/images/banner_promo.png",
+                                height: 200.0,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
+                  // Container(
+                  //   // padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                  //   child: Column(
+                  //     children: <Widget>[
+                  //       ClipRRect(
+                  //         borderRadius: BorderRadius.circular(8.0),
+                  //         child: Image.asset(
+                  //           "assets/images/banner_promo.png",
+                  //           height: 200.0,
+                  //           width: double.infinity,
+                  //           fit: BoxFit.cover,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 15,
                   ),
@@ -146,21 +177,23 @@ class _HomePagesState extends State<HomePages> {
                         Column(
                           children: [
                             IconButton(
+                              iconSize: 25,
                               icon: Image.asset(
                                 "assets/images/ic_nearme.png",
                               ),
                               onPressed: () {},
                             ),
                             Text(
-                              "NEAR ME",
+                              "Near Me",
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                                  fontSize: 14, fontWeight: FontWeight.w500),
                             )
                           ],
                         ),
                         Column(
                           children: [
                             IconButton(
+                              iconSize: 30,
                               icon: Image.asset(
                                 "assets/images/ic_promo.png",
                               ),
@@ -169,25 +202,35 @@ class _HomePagesState extends State<HomePages> {
                               },
                             ),
                             Text(
-                              "PROMO",
+                              "Promo",
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                                  fontSize: 14, fontWeight: FontWeight.w500),
                             )
                           ],
                         ),
                         Column(
                           children: [
                             IconButton(
+                              iconSize: 25,
                               icon: Image.asset(
                                 "assets/images/ic_paket.png",
                                 fit: BoxFit.cover,
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.snackbar(
+                                  "Paket belum ada",
+                                  "Oops.. paket baru sedang kami persiapkan nih, ditunggu ya..",
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: softOrangeColor,
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 15),
+                                );
+                              },
                             ),
                             Text(
-                              "PAKET",
+                              "Paket",
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
+                                  fontSize: 14, fontWeight: FontWeight.w500),
                             )
                           ],
                         ),
@@ -208,7 +251,7 @@ class _HomePagesState extends State<HomePages> {
                               Text(
                                 "Kategori Produk",
                                 style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: choclateColor,
                                     fontWeight: FontWeight.w700),
                               ),
@@ -236,7 +279,13 @@ class _HomePagesState extends State<HomePages> {
                                   index: index,
                                   categoryModel:
                                       categoryProvider.categories[index],
-                                  tap: () {},
+                                  tap: () {
+                                    mainPageController.changeTabIndex(1);
+                                    categorySingleton.id =
+                                        categoryProvider.categories[index].id;
+                                    categorySingleton.title = categoryProvider
+                                        .categories[index].title;
+                                  },
                                 ),
                               );
                             },
@@ -244,39 +293,71 @@ class _HomePagesState extends State<HomePages> {
                         ),
                         Container(
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 "Produk Baru",
                                 style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: choclateColor,
                                     fontWeight: FontWeight.w700),
                               ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: choclateColor,
-                                ),
-                                onPressed: () {},
-                              )
+                              // IconButton(
+                              //   icon: Icon(
+                              //     Icons.arrow_forward_ios,
+                              //     color: choclateColor,
+                              //   ),
+                              //   onPressed: () {},
+                              // )
                             ],
                           ),
                         ),
                         SizedBox(
-                          height: 450,
-                          child: GridView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: dummyGrid.length,
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 250,
-                              childAspectRatio: 5 / 4,
-                              crossAxisSpacing: 0,
-                              mainAxisSpacing: 0,
-                            ),
-                            itemBuilder: (context, index) {
-                              return NewItemCard();
+                          height: 20,
+                        ),
+                        // SizedBox(
+                        //   height: 450,
+                        //   child: GridView.builder(
+                        //     scrollDirection: Axis.vertical,
+                        //     itemCount: 6,
+                        //     gridDelegate:
+                        //         SliverGridDelegateWithMaxCrossAxisExtent(
+                        //       maxCrossAxisExtent: 250,
+                        //       childAspectRatio: 5 / 6,
+                        //       crossAxisSpacing: 0,
+                        //       mainAxisSpacing: 0,
+                        //     ),
+                        //     itemBuilder: (context, index) {
+                        //       return NewItemCard();
+                        //     },
+                        //   ),
+                        // ),
+
+                        ConstrainedBox(
+                          constraints:
+                              BoxConstraints(maxHeight: double.infinity),
+                          child: FutureBuilder(
+                            future: productProvider.getNewProducts(),
+                            builder: (context, snapshot) {
+                              return Container(
+                                child: GridView.count(
+                                  crossAxisCount: 2,
+                                  shrinkWrap: true,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  scrollDirection: Axis.vertical,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  childAspectRatio: 4 / 6,
+                                  children: productProvider.newProducts
+                                      .map(
+                                        (product) => NewItemCard(
+                                          product: product,
+                                          userModel: userModel,
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              );
                             },
                           ),
                         ),

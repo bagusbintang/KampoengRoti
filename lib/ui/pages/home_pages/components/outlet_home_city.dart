@@ -6,18 +6,23 @@ import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/outlet_model.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
-class OutletsHomeCity extends StatelessWidget {
+class OutletsHomeCity extends StatefulWidget {
   const OutletsHomeCity({
     Key key,
     @required this.size,
     this.outletModel,
-    this.currentPosition,
+    // this.currentPosition,
   }) : super(key: key);
 
   final Size size;
   final OutletModel outletModel;
-  final Position currentPosition;
+  // final Position currentPosition;
 
+  @override
+  _OutletsHomeCityState createState() => _OutletsHomeCityState();
+}
+
+class _OutletsHomeCityState extends State<OutletsHomeCity> {
   double calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
@@ -27,14 +32,32 @@ class OutletsHomeCity extends StatelessWidget {
     return 12742 * asin(sqrt(a));
   }
 
+  Position _currentPosition;
+  _getCurrentLocation() {
+    Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+        print("lat : " +
+            _currentPosition.latitude.toString() +
+            "long : " +
+            _currentPosition.longitude.toString());
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.back(result: outletModel.title);
+        Get.back(result: widget.outletModel.title);
       },
       child: Container(
-        width: size.width,
+        width: widget.size.width,
         padding: const EdgeInsets.symmetric(
           horizontal: 15,
           vertical: 10,
@@ -67,14 +90,14 @@ class OutletsHomeCity extends StatelessWidget {
               shape: CircleBorder(),
             ),
             Text(
-              outletModel.title.toUpperCase(),
+              widget.outletModel.title.toUpperCase(),
               style: TextStyle(
                 color: softOrangeColor,
                 fontWeight: FontWeight.w700,
               ),
             ),
             Text(
-              outletModel.address,
+              widget.outletModel.address,
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w400,
@@ -83,7 +106,7 @@ class OutletsHomeCity extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             Text(
-              "Telp :" + "${outletModel.phone}",
+              "Telp :" + "${widget.outletModel.phone}",
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w400,
@@ -92,25 +115,53 @@ class OutletsHomeCity extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            if (currentPosition != null)
-              Text(
-                // "10KM",
-                calculateDistance(
-                      currentPosition.latitude,
-                      currentPosition.longitude,
-                      outletModel.latitude,
-                      outletModel.longitude,
-                    ).ceil().toString() +
-                    " KM",
-                style: TextStyle(
-                  color: softOrangeColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
+            Container(
+              child: FutureBuilder(
+                future: _getCurrentLocation(),
+                builder: (context, snapshot) {
+                  if (_currentPosition != null) {
+                    return Text(
+                      // "10KM",
+                      calculateDistance(
+                            _currentPosition.latitude,
+                            _currentPosition.longitude,
+                            widget.outletModel.latitude,
+                            widget.outletModel.longitude,
+                          ).ceil().toString() +
+                          " KM",
+                      style: TextStyle(
+                        color: softOrangeColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    );
+                  } else {
+                    return SizedBox(
+                      height: 10,
+                    );
+                  }
+                },
               ),
-            SizedBox(
-              height: 10,
             ),
+            // if (widget.currentPosition != null)
+            // Text(
+            //   // "10KM",
+            //   calculateDistance(
+            //         widget.currentPosition.latitude,
+            //         widget.currentPosition.longitude,
+            //         widget.outletModel.latitude,
+            //         widget.outletModel.longitude,
+            //       ).ceil().toString() +
+            //       " KM",
+            //   style: TextStyle(
+            //     color: softOrangeColor,
+            //     fontWeight: FontWeight.w600,
+            //     fontSize: 14,
+            //   ),
+            // ),
+            // SizedBox(
+            //   height: 10,
+            // ),
           ],
         ),
       ),

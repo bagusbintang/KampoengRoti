@@ -1,13 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
+import 'package:kampoeng_roti/providers/cart_provider.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/item_order.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/order_detail.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
+import 'package:provider/provider.dart';
 
-class OrderPages extends StatelessWidget {
+import '../../../shared_preferences.dart';
+
+class OrderPages extends StatefulWidget {
+  @override
+  _OrderPagesState createState() => _OrderPagesState();
+}
+
+class _OrderPagesState extends State<OrderPages> with WidgetsBindingObserver {
+  CartProvider cartProvider;
+  UserModel userModel;
+
+  Future<void> getCartList() async {
+    // cartProvider = Provider.of<CartProvider>(context);
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    await cartProvider.getCart(userId: userModel.id);
+    // setState(() {});
+  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addObserver(this);
+  //   getCartList();
+  // }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   // TODO: implement didChangeAppLifecycleState
+  //   getCartList();
+  // }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
+    double total = 0;
+    final currencyFormatter = NumberFormat('#,###', 'ID');
+    cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -26,104 +73,132 @@ class OrderPages extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0.0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    "Ringkasan Pesanan",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
-                  TextButton(
-                    child: Text("+ Tambah"),
-                    style: TextButton.styleFrom(
-                      primary: softOrangeColor,
-                      textStyle: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+      body: FutureBuilder(
+        future: getCartList(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          return (cartProvider.carts.length > 0)
+              ? SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              "Ringkasan Pesanan",
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w500),
+                            ),
+                            TextButton(
+                              child: Text("+ Tambah"),
+                              style: TextButton.styleFrom(
+                                primary: softOrangeColor,
+                                textStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              onPressed: () {
+                                Get.back();
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    onPressed: () {},
+                      const Divider(
+                        height: 20,
+                        thickness: 1,
+                      ),
+                      FutureBuilder(
+                        future: getCartList(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          return Container(
+                            child: Column(
+                              children: cartProvider.carts
+                                  .map((cart) => ItemOrder(
+                                        cart: cart,
+                                      ))
+                                  .toList(),
+                            ),
+                          );
+                        },
+                      ),
+                      // Container(
+                      //   child: Column(
+                      //     children: cartProvider.carts
+                      //         .map((cart) => ItemOrder(
+                      //               cart: cart,
+                      //             ))
+                      //         .toList(),
+                      //   ),
+                      // ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              "Sub-Total",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: softOrangeColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // DeliveryWay(),
+                      SizedBox(
+                        height: 10,
+                      ),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 15),
+                        color: Colors.white,
+                        child: Column(
+                          children: <Widget>[
+                            DefaultButton(
+                              text: "LANJUTKAN",
+                              press: () {
+                                Get.off(() => OrderDetail());
+                              },
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Dengan menekan tombol diatas, saya menyetujui untuk\nsyarat dan ketentuan yang berlaku",
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const Divider(
-              height: 20,
-              thickness: 1,
-            ),
-            Container(
-              child: Column(
-                children: List.generate(
-                  3,
-                  (index) => ItemOrder(),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    "Sub-Total",
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "Rp 125.000",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: softOrangeColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // DeliveryWay(),
-            SizedBox(
-              height: 10,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              color: Colors.white,
-              child: Column(
-                children: <Widget>[
-                  DefaultButton(
-                    text: "LANJUTKAN",
-                    press: () {
-                      Get.to(() => OrderDetail());
-                    },
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    "Dengan menekan tombol diatas, saya menyetujui untuk\nsyarat dan ketentuan yang berlaku",
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
+                )
+              : Container();
+        },
       ),
     );
   }

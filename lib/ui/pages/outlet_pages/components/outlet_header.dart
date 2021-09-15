@@ -20,23 +20,23 @@ class OutletsHeader extends StatelessWidget {
               bottom: Radius.elliptical(size.width, 150))),
       child: Column(
         children: <Widget>[
-          Spacer(),
-          Text(
-            "Outlets\nKampoeng Roti",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Text(
-            "Kampoeng Roti doloe berdiri pada tahun 2012 dan\nmemliki lebih dari 17 cabang yang telah tersebar di\nSurabaya, Sidoarjo, Gresik, Madura, dan Malang. Silahkan\nmengunjungi outlet terdekat kami",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w400, fontSize: 12),
-          ),
-          Spacer(),
+          // Spacer(),
+          // Text(
+          //   "Outlets\nKampoeng Roti",
+          //   textAlign: TextAlign.center,
+          //   style: TextStyle(
+          //       color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
+          // ),
+          // SizedBox(
+          //   height: 15,
+          // ),
+          // Text(
+          //   "Kampoeng Roti doloe berdiri pada tahun 2012 dan\nmemliki lebih dari 17 cabang yang telah tersebar di\nSurabaya, Sidoarjo, Gresik, Madura, dan Malang. Silahkan\nmengunjungi outlet terdekat kami",
+          //   textAlign: TextAlign.center,
+          //   style: TextStyle(
+          //       color: Colors.white, fontWeight: FontWeight.w400, fontSize: 12),
+          // ),
+          // Spacer(),
         ],
       ),
     );

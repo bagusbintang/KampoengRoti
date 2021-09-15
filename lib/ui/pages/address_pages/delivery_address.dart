@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kampoeng_roti/ui/pages/order_pages/components/address_container.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
+import 'package:kampoeng_roti/ui/pages/address_pages/add_address.dart';
+import 'package:kampoeng_roti/ui/pages/address_pages/components/user_address_list.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 
-class DeliveryAddress extends StatelessWidget {
-  List<AccountAddress> addressList = [
-    AccountAddress(
-      "Kantor",
-      "Bima Aprianto Siono",
-      "Petemon Barat No. 223, Lakasantri, Lidah Kulon\nKota Surabaya, 60213",
-      081081808103,
-      true,
-    ),
-    AccountAddress(
-      "Rumah Prambanan",
-      "Bima Aprianto Siono",
-      "Petemon Barat No. 223, Lakasantri, Lidah Kulon\nKota Surabaya, 60213",
-      081011122134,
-      false,
-    ),
-    AccountAddress(
-      "Rumah Lily",
-      "Tjio Lily Indrawati",
-      "Petemon Barat No. 223, Lakasantri, Lidah Kulon\nKota Surabaya, 60213",
-      081088808123,
-      false,
-    ),
-  ];
+import '../../../shared_preferences.dart';
+
+class DeliveryAddress extends StatefulWidget {
+  @override
+  _DeliveryAddressState createState() => _DeliveryAddressState();
+}
+
+class _DeliveryAddressState extends State<DeliveryAddress> {
+  UserModel userModel;
+
+  void getUserModel() async {
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    getUserModel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,13 +50,13 @@ class DeliveryAddress extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            SizedBox(
-              height: 30,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: textFieldSearchOutlets("Cari Alamat", Icon(Icons.search)),
-            ),
+            // SizedBox(
+            //   height: 30,
+            // ),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 15),
+            //   child: textFieldSearchOutlets("Cari Alamat", Icon(Icons.search)),
+            // ),
             SizedBox(
               height: 15,
             ),
@@ -64,25 +64,17 @@ class DeliveryAddress extends StatelessWidget {
               height: 20,
               thickness: 1,
             ),
-            Container(
-              child: Column(
-                children: List.generate(
-                  addressList.length,
-                  (index) => AddressContainer(
-                    addressName: addressList[index].addressName,
-                    personName: addressList[index].personName,
-                    personAddres: addressList[index].personAddres,
-                    personPhone: addressList[index].personPhone,
-                    mainAddress: addressList[index].mainAddress,
-                  ),
-                ),
-              ),
-            ),
+            UserAddressList(userModel: userModel),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: DefaultButton(
                 text: "+TAMBAH ALAMAT BARU",
-                press: () {},
+                press: () {
+                  Get.off(
+                    () => AddAddress(),
+                    arguments: userModel.id,
+                  );
+                },
               ),
             )
           ],

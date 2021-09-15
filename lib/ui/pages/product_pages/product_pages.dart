@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
 import 'package:kampoeng_roti/models/category_model.dart';
-import 'package:kampoeng_roti/models/product_model.dart';
-import 'package:kampoeng_roti/providers/cart_provider.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/category_provider.dart';
 import 'package:kampoeng_roti/providers/product_provider.dart';
-import 'package:kampoeng_roti/ui/pages/home_pages/components/new_product.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/components/product_category.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/components/main_app_bar.dart';
-import 'package:kampoeng_roti/ui/pages/order_pages/components/cart_counter.dart';
+import 'package:kampoeng_roti/ui/pages/product_pages/components/product_card.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:provider/provider.dart';
+
+import '../../../shared_preferences.dart';
 
 // created by - Bagus *2021-04-07*
 class ProductPages extends StatefulWidget {
@@ -20,14 +19,33 @@ class ProductPages extends StatefulWidget {
 }
 
 class _ProductPagesState extends State<ProductPages> {
-  String _productTitle = "Roti";
-  int _productId = 1;
+  String search;
+  TextEditingController searchController = TextEditingController(text: '');
+  CategorySingleton categorySingleton = CategorySingleton();
+  UserModel userModel;
+  void getUserModel() async {
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserModel();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
     ProductProvider productProvider = Provider.of<ProductProvider>(context);
-    categoryProvider.getCategories();
-    productProvider.getProducts();
+    // categoryProvider.getCategories();
+    // productProvider.getProducts();
     return Scaffold(
       backgroundColor: Colors.transparent,
       // backgroundColor: softOrangeColor,
@@ -55,7 +73,7 @@ class _ProductPagesState extends State<ProductPages> {
                             Text(
                               "Kategori Produk",
                               style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   color: choclateColor,
                                   fontWeight: FontWeight.w700),
                             ),
@@ -85,9 +103,9 @@ class _ProductPagesState extends State<ProductPages> {
                                 tap: () {
                                   print("diklik");
                                   setState(() {
-                                    _productTitle = categoryProvider
+                                    categorySingleton.title = categoryProvider
                                         .categories[index].title;
-                                    _productId =
+                                    categorySingleton.id =
                                         categoryProvider.categories[index].id;
                                   });
                                 },
@@ -102,8 +120,7 @@ class _ProductPagesState extends State<ProductPages> {
                 SizedBox(
                   height: 15,
                 ),
-                textFieldSearch(
-                    "Cari Produk di Kampoeng Roti", Icon(Icons.search)),
+                textFieldSearch("Cari Produk...", Icon(Icons.search)),
                 SizedBox(
                   height: 20,
                 ),
@@ -114,9 +131,9 @@ class _ProductPagesState extends State<ProductPages> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          _productTitle.toUpperCase(),
+                          categorySingleton.title,
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               color: Colors.black,
                               fontWeight: FontWeight.w700),
                         ),
@@ -130,7 +147,14 @@ class _ProductPagesState extends State<ProductPages> {
                 ConstrainedBox(
                   constraints: BoxConstraints(maxHeight: double.infinity),
                   child: FutureBuilder(
-                    future: productProvider.getProducts(cat_id: _productId),
+                    future: productProvider.getProducts(
+                      catId: categorySingleton.id,
+                      search: search == null
+                          ? "all"
+                          : search == ''
+                              ? "all"
+                              : search,
+                    ),
                     builder: (context, snapshot) {
                       return Container(
                         child: GridView.count(
@@ -145,6 +169,7 @@ class _ProductPagesState extends State<ProductPages> {
                               .map(
                                 (product) => ProductCard(
                                   product: product,
+                                  userModel: userModel,
                                 ),
                               )
                               .toList(),
@@ -168,9 +193,16 @@ class _ProductPagesState extends State<ProductPages> {
       ),
       child: TextFormField(
         textAlign: TextAlign.center,
+        controller: searchController,
+        onChanged: (value) {
+          if (value != null && value != '') {
+            search = value;
+          }
+          // value != "" ? search = value : search = "all";
+        },
         keyboardType: TextInputType.name,
         decoration: InputDecoration(
-            contentPadding: EdgeInsets.zero,
+            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 25),
             border: new OutlineInputBorder(
               borderRadius: const BorderRadius.all(
                 const Radius.circular(20.0),
@@ -182,203 +214,6 @@ class _ProductPagesState extends State<ProductPages> {
             prefixIcon: icon,
             fillColor: Colors.grey[300]),
       ),
-    );
-  }
-}
-
-class ProductCard extends StatelessWidget {
-  const ProductCard({
-    Key key,
-    this.product,
-  }) : super(key: key);
-  final ProductModel product;
-
-  @override
-  Widget build(BuildContext context) {
-    final currencyFormatter = NumberFormat('#,###', 'ID');
-    // final formatCurrency = new NumberFormat.simpleCurrency();
-    return InkWell(
-      onTap: () {
-        showDialogProduct(context);
-      },
-      child: Container(
-        // height: 200,
-        // width: 150,
-        // margin: EdgeInsets.symmetric(
-        //     vertical: 5.0, horizontal: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-            bottomLeft: Radius.circular(10),
-            bottomRight: Radius.circular(10),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 0,
-              offset: Offset(0, 1), // changes position of shadow
-            ),
-          ],
-        ),
-        child: Column(
-          children: <Widget>[
-            Stack(
-              children: [
-                SizedBox(
-                  height: 200,
-                  width: double.infinity,
-                  child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(10.0)),
-                    child: Image.network(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Image.asset(
-                    "assets/images/vec_love.png",
-                    height: 25,
-                    width: 25,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              product.title,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Text(
-              // "Rp. ${product.price}",
-              "Rp. ${currencyFormatter.format(product.price)}",
-              style: TextStyle(
-                color: choclateColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            Spacer(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future showDialogProduct(BuildContext context) {
-    final currencyFormatter = NumberFormat('#,###', 'ID');
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          scrollable: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(18.0),
-            ),
-          ),
-          contentPadding: EdgeInsets.zero,
-          content: Container(
-            width: 180,
-            child: Column(
-              children: <Widget>[
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(18.0)),
-                      child: Image.network(
-                        product.imageUrl,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    // Image.asset(
-                    //   "assets/images/banner_promo.png",
-                    //   fit: BoxFit.scaleDown,
-                    // ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        "assets/images/vec_love.png",
-                        height: 25,
-                        width: 25,
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  product.title,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  // "Rp. ${product.price}",
-                  "Rp. ${currencyFormatter.format(product.price)}",
-                  style: TextStyle(
-                    color: softOrangeColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                CartCounter(),
-                SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  child: Consumer<CartProvider>(
-                    builder: (context, value, child) => FlatButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      color: softOrangeColor,
-                      onPressed: () {
-                        value.addCart(product);
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "Masukkan Keranjang".toUpperCase(),
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

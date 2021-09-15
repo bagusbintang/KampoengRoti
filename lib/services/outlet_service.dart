@@ -7,7 +7,7 @@ class OutletService {
   Future<List<OutletModel>> getOutlets({
     int cityId,
   }) async {
-    final url = Uri.encodeFull("$outletUrl?city_id=$cityId");
+    final url = Uri.encodeFull("$outletUrl/${cityId}");
     // var params = {
     //   "city_id": cityId.toString(),
     // };
@@ -15,14 +15,14 @@ class OutletService {
     // final newURI = uri.replace(queryParameters: params);
 
     var response = await http.get(
-      url,
+      Uri.parse(url),
       headers: headers,
     );
 
-    print(response.body);
+    // print(response.body);
 
     if (response.statusCode == 200) {
-      List data = jsonDecode(response.body)['data'];
+      List data = jsonDecode(response.body)['data']['respons_res'];
       List<OutletModel> outlets = [];
 
       for (var item in data) {

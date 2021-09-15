@@ -5,9 +5,9 @@ import 'package:kampoeng_roti/services/services.dart';
 
 class FaqService {
   Future<List<FaqModel>> getFaq() async {
-    var response = await http.get(faqUrl, headers: headers);
+    var response = await http.get(Uri.parse(faqUrl), headers: headers);
 
-    print(response.body);
+    // print(response.body);
 
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data']['respons_res'];

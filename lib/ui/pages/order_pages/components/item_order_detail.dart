@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:kampoeng_roti/models/cart_model.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
 class ItemOrderDetail extends StatelessWidget {
   const ItemOrderDetail({
     Key key,
+    this.cart,
   }) : super(key: key);
+  final CartModel cart;
 
   @override
   Widget build(BuildContext context) {
+    final currencyFormatter = NumberFormat('#,###', 'ID');
     return Column(
       children: <Widget>[
         Container(
@@ -16,8 +21,8 @@ class ItemOrderDetail extends StatelessWidget {
             children: <Widget>[
               ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: Image.asset(
-                  "assets/images/product_1.png",
+                child: Image.network(
+                  cart.prodUrlPhoto,
                   height: 120,
                   width: 100,
                   fit: BoxFit.cover,
@@ -35,14 +40,14 @@ class ItemOrderDetail extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "Roti Baper Coklat",
+                            cart.prodTitle,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           Text(
-                            "Rp 20.000",
+                            "Rp. ${currencyFormatter.format(cart.prodPrice * cart.quantity)}",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -55,7 +60,7 @@ class ItemOrderDetail extends StatelessWidget {
                         height: 15,
                       ),
                       Text(
-                        "Rp 2.000 / biji",
+                        "Rp. ${currencyFormatter.format(cart.prodPrice)} / biji",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,

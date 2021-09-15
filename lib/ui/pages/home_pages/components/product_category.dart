@@ -38,7 +38,7 @@ class ListKategori extends StatelessWidget {
             Text(
               categoryModel.title,
               style:
-                  TextStyle(color: choclateColor, fontWeight: FontWeight.w400),
+                  TextStyle(color: choclateColor, fontWeight: FontWeight.w600),
             )
           ],
         ),

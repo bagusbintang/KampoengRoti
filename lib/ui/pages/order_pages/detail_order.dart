@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:kampoeng_roti/models/invoice_model.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_contact_us.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/components/history_item_order.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/confirm_order.dart';
@@ -8,34 +10,31 @@ import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 
 class DetailOrder extends StatelessWidget {
-  var data = Get.arguments;
-  String _name;
-  String _address;
-  String _titleStatus;
-  String _status;
-  String _phone;
-  int _statusInvoice;
-  Color _colorStatus;
-
+  const DetailOrder({
+    Key key,
+    this.invoiceModel,
+  }) : super(key: key);
+  final InvoiceModel invoiceModel;
   @override
   Widget build(BuildContext context) {
-    _statusInvoice = data[3];
-    if (_statusInvoice == 1) {
-      _name = "Bima Aprianto Siono";
-      _address =
-          "Petemon Barat No. 223, Lakasantri, Lidah Kulon\nKota Surabaya, 60213";
-      _phone = "081081808103";
-      _titleStatus = "Alamat Pengirim";
-      _status = "Delivery Order";
-      _colorStatus = Colors.amber;
-    } else {
-      _name = "Kampoeng Roti Wiyung";
-      _address = "Jl. Raya Menganti No.19\nKota SBY, Jawa Timur 60228";
-      _phone = "031-7526303";
-      _titleStatus = "Alamat Pengambilan";
-      _status = "Pickup Order";
-      _colorStatus = Colors.orange;
-    }
+    final currencyFormatter = NumberFormat('#,###', 'ID');
+    // _statusInvoice = data;
+    // if (_statusInvoice == 1) {
+    //   _name = "Bima Aprianto Siono";
+    //   _address =
+    //       "Petemon Barat No. 223, Lakasantri, Lidah Kulon\nKota Surabaya, 60213";
+    //   _phone = "081081808103";
+    //   _titleStatus = "Alamat Pengirim";
+    //   _status = "Delivery Order";
+    //   _colorStatus = Colors.amber;
+    // } else {
+    //   _name = "Kampoeng Roti Wiyung";
+    //   _address = "Jl. Raya Menganti No.19\nKota SBY, Jawa Timur 60228";
+    //   _phone = "031-7526303";
+    //   _titleStatus = "Alamat Pengambilan";
+    //   _status = "Pickup Order";
+    //   _colorStatus = Colors.orange;
+    // }
 
     return Scaffold(
       backgroundColor: Colors.grey[200],
@@ -77,7 +76,7 @@ class DetailOrder extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "Menunggu Pembayaran",
+                      invoiceModel.iHeaderStatus,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -105,7 +104,8 @@ class DetailOrder extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "12 Desember 2021" + " | " + "05 AM - 10 AM",
+                      // "12 Desember 2021" + " | " + "05 AM - 10 AM",
+                      invoiceModel.iHeaderDelivTime.toString(),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
@@ -148,7 +148,7 @@ class DetailOrder extends StatelessWidget {
                               bottomRight: Radius.circular(5),
                             )),
                         child: Text(
-                          "Delivery Order".toUpperCase(),
+                          invoiceModel.iHeaderDelivMethod.toUpperCase(),
                           style: TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.w700,
@@ -162,14 +162,16 @@ class DetailOrder extends StatelessWidget {
                     height: 10,
                   ),
                   Text(
-                    "Bima Aprianto Siono (Rumah Prambanan)",
+                    // "Bima Aprianto Siono (Rumah Prambanan)",
+                    invoiceModel.iHeaderName,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   Text(
-                    "Petemon Barat No. 223, Lakasantri, Lidah Kulon\nKota Surabaya, 60213",
+                    // "Petemon Barat No. 223, Lakasantri, Lidah Kulon\nKota Surabaya, 60213",
+                    invoiceModel.iHeaderAddress,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -177,7 +179,8 @@ class DetailOrder extends StatelessWidget {
                     overflow: TextOverflow.clip,
                   ),
                   Text(
-                    "No. Telpon : 081805512618",
+                    // "No. Telpon : 081805512618",
+                    "No. Telpon : ${invoiceModel.iHeaderPhone}",
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -250,7 +253,8 @@ class DetailOrder extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Rp 125.000",
+                        // "Rp 125.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderTotal)}",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -269,7 +273,8 @@ class DetailOrder extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Rp 25.000",
+                        // "Rp 25.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderPromoDisc + invoiceModel.iHeaderMemberDisc)}",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -288,7 +293,8 @@ class DetailOrder extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Rp 25.000",
+                        // "Rp 25.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderOngkir)}",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -311,7 +317,8 @@ class DetailOrder extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Rp 150.000",
+                        // "Rp 150.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderGrandTotal)}",
                         style: TextStyle(
                           color: choclateColor,
                           fontSize: 16,
@@ -350,11 +357,18 @@ class DetailOrder extends StatelessWidget {
                     ),
                   ),
                   Container(
+                    // child: Column(
+                    //   children: List.generate(
+                    //     3,
+                    //     (index) => HistoryItemOrder(),
+                    //   ),
+                    // ),
                     child: Column(
-                      children: List.generate(
-                        3,
-                        (index) => HistoryItemOrder(),
-                      ),
+                      children: invoiceModel.invDetail
+                          .map((detail) => HistoryItemOrder(
+                                invoiceDetailModel: detail,
+                              ))
+                          .toList(),
                     ),
                   ),
                   const Divider(
@@ -398,7 +412,8 @@ class DetailOrder extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Rp. 25.000",
+                        // "Rp. 25.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderTotal)}",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -419,7 +434,8 @@ class DetailOrder extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Rp. 25.000",
+                        // "Rp. 25.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderPromoDisc + invoiceModel.iHeaderMemberDisc)}",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -440,7 +456,8 @@ class DetailOrder extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Rp. 25.000",
+                        // "Rp. 25.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderOngkir)}",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -457,7 +474,8 @@ class DetailOrder extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Text(
-                        "Rp. 75.000",
+                        // "Rp. 75.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderGrandTotal)}",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,

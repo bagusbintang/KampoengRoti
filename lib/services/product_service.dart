@@ -5,15 +5,16 @@ import 'package:kampoeng_roti/services/services.dart';
 
 class ProductService {
   Future<List<ProductModel>> getProduct({
-    int cat_id = 1,
+    int catId = 0,
+    String search = 'all',
   }) async {
-    final url = Uri.encodeFull("$productUrl/${cat_id}");
+    final url = Uri.encodeFull("$productUrl/${catId}/${search}");
     var response = await http.get(
-      url,
+      Uri.parse(url),
       headers: headers,
     );
 
-    print(response.body);
+    // print(response.body);
 
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data']['respons_res'];
@@ -26,6 +27,28 @@ class ProductService {
       return products;
     } else {
       throw Exception('Gagal mendapat kan data Product!');
+    }
+  }
+
+  Future<List<ProductModel>> getNewProduct() async {
+    var response = await http.get(
+      Uri.parse(newProductUrl),
+      headers: headers,
+    );
+
+    // print(response.body);
+
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body)['data']['respons_res'];
+      List<ProductModel> products = [];
+
+      for (var item in data) {
+        products.add(ProductModel.fromJson(item));
+      }
+
+      return products;
+    } else {
+      throw Exception('Gagal mendapat kan data New Product!');
     }
   }
 }

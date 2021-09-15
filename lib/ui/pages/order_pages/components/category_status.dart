@@ -28,7 +28,7 @@ class _CategoryStatusState extends State<CategoryStatus> {
     );
   }
 
-  Padding buildCategory(int index) {
+  Widget buildCategory(int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: GestureDetector(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/providers/auth_provider.dart';
+import 'package:kampoeng_roti/shared_preferences.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/forget_password.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
 import 'package:kampoeng_roti/ui/pages/register_pages/register_pages.dart';
@@ -36,6 +38,32 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _checkBoxOnChange() {}
+  Position _currentPosition;
+  _getCurrentLocation() {
+    Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+        print("lat : " +
+            _currentPosition.latitude.toString() +
+            "long : " +
+            _currentPosition.longitude.toString());
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _getCurrentLocation();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +75,10 @@ class _LoginPageState extends State<LoginPage> {
         email: emailController.text,
         password: passwordController.text,
       )) {
+        MySharedPreferences.instance.setLoginValue("LoggedIn", true);
+        MySharedPreferences.instance.setUserModel("user", authProvider.user);
         Get.offAll(() => MainPages());
+        _getCurrentLocation();
       } else {
         Get.snackbar(
           "Gagal Login",
@@ -56,15 +87,6 @@ class _LoginPageState extends State<LoginPage> {
           backgroundColor: softOrangeColor,
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         );
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     backgroundColor: choclateColor,
-        //     content: Text(
-        //       'Gagal Login!',
-        //       textAlign: TextAlign.center,
-        //     ),
-        //   ),
-        // );
       }
     }
 
@@ -118,37 +140,56 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   textFieldPassword("Password", Icon(Icons.lock)),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    padding: EdgeInsets.symmetric(horizontal: 15),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Flexible(
                           flex: 1,
-                          child: CheckboxListTile(
-                            title: Text(
-                              "Ingat Saya",
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12,
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                margin: EdgeInsets.symmetric(vertical: 10),
+                                width: 25,
+                                height: 25,
+                                child: Checkbox(
+                                  // contentPadding: EdgeInsets.all(0),
+                                  // title: Text(
+                                  //   "Ingat Saya",
+                                  //   style: TextStyle(
+                                  //     color: Colors.grey[600],
+                                  //     fontSize: 12,
+                                  //   ),
+                                  // ),
+                                  value: _checkBoxValue,
+                                  activeColor: Colors.grey[600],
+                                  onChanged: (bool newValue) {
+                                    setState(() {
+                                      _checkBoxValue = newValue;
+                                    });
+                                  },
+                                  // controlAffinity: ListTileControlAffinity
+                                  //     .leading, //  <-- leading Checkbox
+                                ),
                               ),
-                            ),
-                            value: _checkBoxValue,
-                            activeColor: Colors.grey[600],
-                            onChanged: (bool newValue) {
-                              setState(() {
-                                _checkBoxValue = newValue;
-                              });
-                            },
-                            controlAffinity: ListTileControlAffinity
-                                .leading, //  <-- leading Checkbox
+                              Text(
+                                "Ingat Saya",
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         Flexible(
                           flex: 1,
                           child: FlatButton(
+                            padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
                               "Lupa Password?",
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 color: choclateColor,

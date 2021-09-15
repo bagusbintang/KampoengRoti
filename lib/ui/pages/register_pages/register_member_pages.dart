@@ -39,22 +39,21 @@ class _RegisterMemberState extends State<RegisterMember> {
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: Column(
               children: <Widget>[
-                SizedBox(
-                  height: 30,
-                ),
+                Spacer(),
                 Text(
-                  "Apakah Anda\nSudah Memiliki Member KAMPEONG ROTI",
+                  "Sudah Jadi Member?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
+                    fontSize: 40,
                     fontWeight: FontWeight.w700,
-                    fontSize: 24,
+                    color: choclateColor,
                   ),
                 ),
                 SizedBox(
                   height: 30,
                 ),
                 Text(
-                  "Masukkan nomer member anda di kolom\nbawah untuk mendapatkan promo dan manfaat lainnya",
+                  "Masukkan nomer member anda di kolom bawah.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
@@ -92,7 +91,7 @@ class _RegisterMemberState extends State<RegisterMember> {
                   height: 40,
                 ),
                 Text(
-                  "Bila tidak memiliki member, anda bisa\nmendaftar atau lewati promo member kami",
+                  "Belum jadi Member?\nDaftarkan dirimu sekarang untuk dapat menikmati promo khusus Member Kampoeng Roti",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
@@ -103,7 +102,7 @@ class _RegisterMemberState extends State<RegisterMember> {
                   height: 20,
                 ),
                 DefaultButton(
-                  text: "DEFAULT MEMBER",
+                  text: "DAFTAR MEMBER",
                   press: () {
                     Get.to(() => LoginPage());
                   },
@@ -117,6 +116,7 @@ class _RegisterMemberState extends State<RegisterMember> {
                     Get.to(() => LoginPage());
                   },
                 ),
+                Spacer(),
               ],
             ),
           ),

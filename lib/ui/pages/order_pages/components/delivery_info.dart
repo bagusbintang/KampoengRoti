@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_address_model.dart';
+import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/address_info.dart';
-import 'package:kampoeng_roti/ui/pages/order_pages/components/delivery_address.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
-class DeliveryInfo extends StatelessWidget {
+class DeliveryInfo extends StatefulWidget {
   const DeliveryInfo({
     Key key,
     @required this.isChoosen,
@@ -13,9 +14,15 @@ class DeliveryInfo extends StatelessWidget {
   final bool isChoosen;
 
   @override
+  _DeliveryInfoState createState() => _DeliveryInfoState();
+}
+
+class _DeliveryInfoState extends State<DeliveryInfo> {
+  UserAddressModel userAddress;
+  @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: isChoosen,
+      visible: widget.isChoosen,
       child: Container(
         color: softOrangeColor,
         margin: const EdgeInsets.only(bottom: 8),
@@ -63,7 +70,11 @@ class DeliveryInfo extends StatelessWidget {
                           ),
                           Container(
                             child: Text(
-                              'RUMAH BIMA - Prambanan Residance Surabaya Maharaja CD-05',
+                              userAddress != null
+                                  ? userAddress.tagAddress.toUpperCase() +
+                                      " - " +
+                                      userAddress.address
+                                  : 'RUMAH BIMA - Prambanan Residance Surabaya',
                               style: TextStyle(
                                 color: Colors.black87,
                                 fontSize: 12,
@@ -81,8 +92,11 @@ class DeliveryInfo extends StatelessWidget {
                         color: Colors.grey,
                         size: 20,
                       ),
-                      onPressed: () {
-                        Get.to(() => DeliveryAddress());
+                      onPressed: () async {
+                        var result = await Get.to(() => DeliveryAddress());
+                        setState(() {
+                          userAddress = result;
+                        });
                       },
                     ),
                   ],

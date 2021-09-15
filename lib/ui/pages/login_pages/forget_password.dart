@@ -35,68 +35,70 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               image: AssetImage("assets/images/kr_background.png"),
               fit: BoxFit.cover),
         ),
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-              children: <Widget>[
-                Image(
-                  image: AssetImage(
-                    "assets/images/kr_logo.png",
-                  ),
-                  height: 200,
-                  width: 200,
-                ),
-                RichText(
-                  text: TextSpan(
-                    text: 'Sudah memiliki account?',
-                    style: TextStyle(
-                      color: choclateColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+        child: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                children: <Widget>[
+                  Image(
+                    image: AssetImage(
+                      "assets/images/kr_logo.png",
                     ),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: ' Masuk disini',
-                        style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Get.to(() => LoginPage());
-                          },
+                    height: 200,
+                    width: 200,
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      text: 'Sudah memiliki account?',
+                      style: TextStyle(
+                        color: choclateColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
                       ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    "Masukkan alamat email atau username untuk mereset password anda",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: ' Masuk disini',
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Get.to(() => LoginPage());
+                            },
+                        ),
+                      ],
                     ),
-                    overflow: TextOverflow.clip,
                   ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                textFieldEmailOrUsername("Email atau Username"),
-                SizedBox(
-                  height: 30,
-                ),
-                DefaultButton(
-                  text: "RESET PASSWORD",
-                  press: () {},
-                ),
-              ],
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      "Masukkan alamat email atau username untuk mereset password anda",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      overflow: TextOverflow.clip,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  textFieldEmailOrUsername("Email atau Username"),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  DefaultButton(
+                    text: "RESET PASSWORD",
+                    press: () {},
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -33,6 +33,7 @@ dependencies:
   # location: ^3.2.4
   geocoding: ^1.0.5
   geolocator: ^6.1.1
+  url_launcher: ^5.7.10
 
 dev_dependencies:
   flutter_test:

@@ -19,12 +19,10 @@ class AuthService {
     });
 
     var response = await http.post(
-      registerUrl,
+      Uri.parse(registerUrl),
       headers: headers,
       body: body,
     );
-
-    print(response.body);
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body)['data'];
@@ -48,7 +46,7 @@ class AuthService {
     });
 
     var response = await http.post(
-      loginUrl,
+      Uri.parse(loginUrl),
       headers: headers,
       body: body,
     );
