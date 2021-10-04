@@ -174,7 +174,7 @@ class _OrderPagesState extends State<OrderPages> with WidgetsBindingObserver {
                             DefaultButton(
                               text: "LANJUTKAN",
                               press: () {
-                                Get.off(() => OrderDetail());
+                                Get.off(OrderDetail());
                               },
                             ),
                             SizedBox(

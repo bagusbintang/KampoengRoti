@@ -49,7 +49,8 @@ class _RegisterPagesState extends State<RegisterPages> {
         phone: phoneController.text,
         password: passwordController.text,
       )) {
-        Get.to(() => RegisterMember());
+        // Get.to(() => RegisterMember());
+        Get.to(RegisterMember());
       } else {
         Get.snackbar(
           "Gagal Register",
@@ -97,19 +98,39 @@ class _RegisterPagesState extends State<RegisterPages> {
                   SizedBox(
                     height: 20,
                   ),
-                  textFieldUsername("Username", Icon(Icons.person)),
+                  textFieldUsername(
+                      "Username",
+                      Icon(
+                        Icons.person,
+                        color: Colors.grey[600],
+                      )),
                   SizedBox(
                     height: 20,
                   ),
-                  textFieldEmail("Email", Icon(Icons.mail)),
+                  textFieldEmail(
+                      "Email",
+                      Icon(
+                        Icons.mail,
+                        color: Colors.grey[600],
+                      )),
                   SizedBox(
                     height: 20,
                   ),
-                  textFieldPhone("Telpon", Icon(Icons.phone_android)),
+                  textFieldPhone(
+                      "Telpon",
+                      Icon(
+                        Icons.phone_android,
+                        color: Colors.grey[600],
+                      )),
                   SizedBox(
                     height: 20,
                   ),
-                  textFieldPassword("Password", Icon(Icons.lock)),
+                  textFieldPassword(
+                      "Password",
+                      Icon(
+                        Icons.lock,
+                        color: Colors.grey[600],
+                      )),
                   SizedBox(
                     height: 20,
                   ),
@@ -191,7 +212,8 @@ class _RegisterPagesState extends State<RegisterPages> {
                                   fontWeight: FontWeight.w600),
                             ),
                             onPressed: () {
-                              Get.to(() => LoginPage());
+                              // Get.to(() => LoginPage());
+                              Get.to(LoginPage());
                             },
                           ),
                         ],

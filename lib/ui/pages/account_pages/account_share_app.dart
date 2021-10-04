@@ -98,7 +98,7 @@ class AccountShareApps extends StatelessWidget {
                         height: 30,
                       ),
                       Text(
-                        "Aplikasi",
+                        "APLIKASI",
                         style: TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.w700,

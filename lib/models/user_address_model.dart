@@ -1,4 +1,5 @@
 class UserAddressModel {
+  //TODO : MENAMBAHKAN LATITUDE DAN LONGITUDE PADA MODEL INI !
   int id;
   int userId;
   String tagAddress;
@@ -8,6 +9,8 @@ class UserAddressModel {
   String city;
   String province;
   int defaultAddress;
+  double latitude;
+  double longitude;
 
   UserAddressModel({
     this.id,
@@ -19,6 +22,8 @@ class UserAddressModel {
     this.city,
     this.province,
     this.defaultAddress,
+    this.latitude,
+    this.longitude,
   });
 
   UserAddressModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +36,10 @@ class UserAddressModel {
     city = json["caddress_city"];
     province = json["caddress_province"];
     defaultAddress = json["caddress_default"];
+    if (json['latitude'] != null && json['longitude'] != null) {
+      latitude = double.parse(json['latitude'].toString());
+      longitude = double.parse(json['longitude'].toString());
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -44,6 +53,8 @@ class UserAddressModel {
       'caddress_city': city,
       'caddress_province': province,
       'caddress_default': defaultAddress,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }

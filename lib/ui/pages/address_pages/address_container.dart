@@ -95,9 +95,10 @@ class AddressContainer extends StatelessWidget {
                   ),
                   InkWell(
                     onTap: () {
-                      Get.off(() => EditAddress(), arguments: [
-                        userAddres,
-                      ]);
+                      Get.to(
+                        EditAddress(),
+                        arguments: userAddres,
+                      );
                     },
                     child: Container(
                       child: Row(

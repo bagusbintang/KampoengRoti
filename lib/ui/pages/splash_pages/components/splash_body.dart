@@ -62,7 +62,8 @@ class SplashBody extends StatelessWidget {
                 DefaultButton(
                   text: "MASUK",
                   press: () {
-                    Get.to(() => LoginPage());
+                    Get.to(LoginPage());
+                    // Get.to(() => LoginPage());
                     // Navigator.pushReplacement(
                     //   context,
                     //   MaterialPageRoute(builder: (context) {

@@ -85,7 +85,7 @@ class AccountPages extends StatelessWidget {
                       children: <Widget>[
                         IconButton(
                           onPressed: () {
-                            Get.to(() => EditProfile());
+                            Get.to(EditProfile());
                           },
                           icon: Icon(
                             Icons.settings,
@@ -115,7 +115,7 @@ class AccountPages extends StatelessWidget {
               ),
               pressed: () {
                 // Get.to(() => HistoryTransaction());
-                Get.to(() => DetailTransaction());
+                Get.to(DetailTransaction());
               },
             ),
             AccountInfo(
@@ -126,7 +126,7 @@ class AccountPages extends StatelessWidget {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(() => DeliveryAddress());
+                Get.to(DeliveryAddress());
               },
             ),
             AccountInfo(
@@ -137,7 +137,7 @@ class AccountPages extends StatelessWidget {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(() => PromoPage());
+                Get.to(PromoPage());
               },
             ),
             AccountInfo(
@@ -148,7 +148,7 @@ class AccountPages extends StatelessWidget {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(() => AccountShareApps());
+                Get.to(AccountShareApps());
               },
             ),
             AccountInfo(
@@ -159,7 +159,7 @@ class AccountPages extends StatelessWidget {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(() => MemberPage());
+                Get.to(MemberPage());
               },
             ),
             AccountInfo(
@@ -170,7 +170,7 @@ class AccountPages extends StatelessWidget {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(() => AccountFAQ());
+                Get.to(AccountFAQ());
               },
             ),
             AccountInfo(
@@ -181,7 +181,7 @@ class AccountPages extends StatelessWidget {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(() => AccountContactUs());
+                Get.to(AccountContactUs());
               },
             ),
             AccountInfo(
@@ -193,7 +193,7 @@ class AccountPages extends StatelessWidget {
               ),
               pressed: () async {
                 MySharedPreferences.instance.removeAll();
-                Get.offAll(() => LoginPage());
+                Get.offAll(LoginPage());
               },
             ),
           ],

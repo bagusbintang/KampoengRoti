@@ -60,9 +60,12 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    if (mounted) {
       _getCurrentLocation();
-    });
+    }
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   _getCurrentLocation();
+    // });
   }
 
   @override
@@ -77,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
       )) {
         MySharedPreferences.instance.setLoginValue("LoggedIn", true);
         MySharedPreferences.instance.setUserModel("user", authProvider.user);
-        Get.offAll(() => MainPages());
+        Get.offAll(MainPages());
         _getCurrentLocation();
       } else {
         Get.snackbar(
@@ -134,11 +137,21 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     height: 20,
                   ),
-                  textFieldUsername("Username", Icon(Icons.person)),
+                  textFieldUsername(
+                      "Username",
+                      Icon(
+                        Icons.person,
+                        color: Colors.grey[600],
+                      )),
                   SizedBox(
                     height: 20,
                   ),
-                  textFieldPassword("Password", Icon(Icons.lock)),
+                  textFieldPassword(
+                      "Password",
+                      Icon(
+                        Icons.lock,
+                        color: Colors.grey[600],
+                      )),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15),
                     child: Row(
@@ -198,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             onPressed: () {
-                              Get.to(() => ForgetPassword());
+                              Get.to(ForgetPassword());
                             },
                           ),
                         ),
@@ -230,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                               fontWeight: FontWeight.w600),
                         ),
                         onPressed: () {
-                          Get.to(() => RegisterPages());
+                          Get.to(RegisterPages());
                         },
                       ),
                     ],
@@ -247,9 +260,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Theme textFieldUsername(String text, Icon icon) {
     return Theme(
-      data: ThemeData(
-        primaryColor: Colors.grey,
-      ),
+      // data: ThemeData(
+      //   primaryColor: Colors.grey,
+      // ),
+      data: Theme.of(context).copyWith(primaryColor: Colors.grey),
       child: TextFormField(
         keyboardType: TextInputType.name,
         controller: emailController,

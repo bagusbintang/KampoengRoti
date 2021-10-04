@@ -65,7 +65,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Get.to(() => LoginPage());
+                              Get.to(LoginPage());
                             },
                         ),
                       ],

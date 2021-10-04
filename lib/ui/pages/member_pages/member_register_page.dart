@@ -269,7 +269,7 @@ class MemberRegister extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: choclateColor,
         onPressed: () {
-          Get.to(() => ConfirmPayment());
+          Get.to(ConfirmPayment());
         },
         child: Text(
           "DAFTAR SEKARANG",

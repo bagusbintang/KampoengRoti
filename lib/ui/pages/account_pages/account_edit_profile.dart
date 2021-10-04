@@ -10,7 +10,7 @@ class EditProfile extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Edit Profil",
+          "Ubah Profil",
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w700,
@@ -39,7 +39,7 @@ class EditProfile extends StatelessWidget {
                 "Nama Pengguna",
                 initValue: "Bima Aprianto Siono",
               ),
-              textFieldAddress(
+              textFieldEmail(
                 "Alamat Email",
                 initValue: "bima.aprianto@gmail.com",
               ),
@@ -109,7 +109,7 @@ class EditProfile extends StatelessWidget {
     );
   }
 
-  Container textFieldAddress(String title, {String initValue}) {
+  Container textFieldEmail(String title, {String initValue}) {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       child: Column(
@@ -132,8 +132,7 @@ class EditProfile extends StatelessWidget {
             ),
             child: TextFormField(
               initialValue: initValue,
-              keyboardType: TextInputType.name,
-              maxLines: 3,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                   contentPadding: const EdgeInsets.all(25),
                   border: OutlineInputBorder(

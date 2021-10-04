@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kampoeng_roti/models/user_address_model.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/cart_provider.dart';
 import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
@@ -20,9 +19,19 @@ class MainAppBar extends StatefulWidget {
 }
 
 class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
-  UserAddressModel userAddress;
   CartProvider cartProvider;
   UserModel userModel;
+
+  void getUserModel() async {
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserModel();
+  }
 
   Future<void> getCartList() async {
     // cartProvider = Provider.of<CartProvider>(context);
@@ -45,10 +54,8 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
       elevation: 0,
       title: InkWell(
         onTap: () async {
-          var result = await Get.to(() => DeliveryAddress());
-          setState(() {
-            userAddress = result;
-          });
+          var result = await Get.to(DeliveryAddress());
+          setState(() {});
         },
         child: Container(
           decoration: BoxDecoration(
@@ -70,11 +77,11 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
                     ),
                     Container(
                       child: Text(
-                        userAddress != null
-                            ? userAddress.tagAddress.toUpperCase() +
+                        userModel.defaulAdress != null
+                            ? userModel.defaulAdress.tagAddress.toUpperCase() +
                                 " - " +
-                                userAddress.address
-                            : 'RUMAH BIMA - Prambanan Residance Surabaya',
+                                userModel.defaulAdress.address
+                            : 'Alamat utama belum ditentukan. ',
                         style: TextStyle(color: Colors.black87, fontSize: 14),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -89,10 +96,8 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
                   size: 20,
                 ),
                 onPressed: () async {
-                  var result = await Get.to(() => DeliveryAddress());
-                  setState(() {
-                    userAddress = result;
-                  });
+                  var result = await Get.to(DeliveryAddress());
+                  setState(() {});
                 },
               ),
             ],
@@ -134,7 +139,7 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
                   width: 27,
                 ),
                 onPressed: () {
-                  Get.to(() => OrderPages());
+                  Get.to(OrderPages());
                   // do something
                 },
               ),

@@ -7,11 +7,14 @@ import 'package:kampoeng_roti/providers/city_provider.dart';
 import 'package:kampoeng_roti/providers/province_provider.dart';
 import 'package:kampoeng_roti/providers/user_address_provider.dart';
 import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
+import 'package:kampoeng_roti/ui/pages/address_pages/map_picker.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 import 'package:provider/provider.dart';
 
 class EditAddress extends StatefulWidget {
-  const EditAddress({Key key}) : super(key: key);
+  const EditAddress({
+    Key key,
+  }) : super(key: key);
 
   @override
   _EditAddressState createState() => _EditAddressState();
@@ -24,9 +27,19 @@ class _EditAddressState extends State<EditAddress> {
   TextEditingController addressController;
   ProvinceModel selectedProvince;
   CityModel selectedCity;
-  UserAddressModel userAddress = Get.arguments[0];
-  String provinceName;
-  String cityName;
+  UserAddressModel userAddress = Get.arguments;
+  // String provinceName;
+  // String cityName;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    tagNameController.dispose();
+    personNameController.dispose();
+    phoneController.dispose();
+    addressController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,23 +48,26 @@ class _EditAddressState extends State<EditAddress> {
     phoneController = TextEditingController(text: userAddress.personPhone);
     addressController = TextEditingController(text: userAddress.address);
 
-    provinceName = userAddress.province;
-    cityName = userAddress.city;
+    // provinceName = userAddress.province;
+    // cityName = userAddress.city;
 
     UserAddressProvider addressProvider =
         Provider.of<UserAddressProvider>(context);
 
     handleAddAddress() async {
+      print(userAddress.latitude.toString());
       if (await addressProvider.editUserAddress(
         addressId: userAddress.id,
         tagAddress: tagNameController.text,
         personName: personNameController.text,
         personPhone: phoneController.text,
         address: addressController.text,
-        province: provinceName,
-        city: cityName,
+        province: userAddress.province,
+        city: userAddress.city,
+        latitude: userAddress.latitude,
+        longitude: userAddress.longitude,
       )) {
-        Get.off(() => DeliveryAddress());
+        Get.off(DeliveryAddress());
       } else {
         // Get.snackbar(
         //   "Gagal Register",
@@ -63,8 +79,6 @@ class _EditAddressState extends State<EditAddress> {
       }
     }
 
-    ProvinceProvider provinceProvider = Provider.of<ProvinceProvider>(context);
-    CityProvider cityProvider = Provider.of<CityProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -106,7 +120,15 @@ class _EditAddressState extends State<EditAddress> {
               ),
               // selectProvinceAndCity(context, provinceProvider, cityProvider),
               GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  var result =
+                      await Get.to(MapPicker(addressModel: userAddress));
+                  setState(() {
+                    userAddress = result;
+                    addressController =
+                        TextEditingController(text: userAddress.address);
+                  });
+                },
                 child: textFieldPinLocation("Pin Peta Lokasi",
                     initValue: userAddress.address),
               ),
@@ -129,200 +151,200 @@ class _EditAddressState extends State<EditAddress> {
     );
   }
 
-  Row selectProvinceAndCity(BuildContext context,
-      ProvinceProvider provinceProvider, CityProvider cityProvider) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          flex: 2,
-          child: Container(
-            margin: const EdgeInsets.only(top: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Provinsi",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(15),
-                            topRight: const Radius.circular(15),
-                            bottomLeft: const Radius.circular(15),
-                            bottomRight: const Radius.circular(15),
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              canvasColor: Colors.grey[300],
-                            ),
-                            child: FutureBuilder(
-                              future: provinceProvider.getProvinces(),
-                              builder: (context, snapshot) {
-                                return DropdownButton(
-                                  // value: selectedProvince,
-                                  items: provinceProvider.provinces
-                                      .map((provinces) {
-                                    return DropdownMenuItem(
-                                      child: Text(provinces.provinceName,
-                                          textAlign: TextAlign.start),
-                                      value: provinces,
-                                    );
-                                  }).toList(),
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  iconEnabledColor: Colors.black,
-                                  hint: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
-                                    child: Text(
-                                        selectedProvince == null
-                                            ? provinceProvider
-                                                        .provinces.length ==
-                                                    0
-                                                ? ""
-                                                : provinceName
-                                            : selectedProvince.provinceName,
-                                        style: TextStyle(
-                                            color: Colors.grey[500],
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
-                                  ),
-                                  onChanged: (item) {
-                                    setState(() {
-                                      selectedProvince = item;
-                                      provinceName =
-                                          selectedProvince.provinceName;
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        // SizedBox(
-        //   width: 10,
-        // ),
-        Flexible(
-          flex: 1,
-          child: Container(
-            margin: const EdgeInsets.only(top: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Kota",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(15),
-                            topRight: const Radius.circular(15),
-                            bottomLeft: const Radius.circular(15),
-                            bottomRight: const Radius.circular(15),
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              canvasColor: Colors.grey[300],
-                            ),
-                            child: FutureBuilder(
-                              future: cityProvider.getCity(
-                                  provinceId: selectedProvince == null
-                                      ? 11
-                                      : selectedProvince.id),
-                              builder: (context, snapshot) {
-                                return DropdownButton(
-                                  // value: selectedCity,
-                                  items: cityProvider.city.map((city) {
-                                    return DropdownMenuItem(
-                                      child: Text(city.cityName,
-                                          textAlign: TextAlign.center),
-                                      value: city,
-                                    );
-                                  }).toList(),
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  iconEnabledColor: Colors.black,
-                                  hint: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
-                                    child: Text(
-                                        cityProvider.city.length == 0
-                                            ? "Pilih Kota"
-                                            : selectedCity == null
-                                                ? cityName
-                                                : selectedCity.cityName,
-                                        style: TextStyle(
-                                            color: Colors.grey[500],
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
-                                  ),
-                                  onChanged: (item) {
-                                    setState(() {
-                                      selectedCity = item;
-                                      cityName = selectedCity.cityName;
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Row selectProvinceAndCity(BuildContext context,
+  //     ProvinceProvider provinceProvider, CityProvider cityProvider) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //     children: [
+  //       Flexible(
+  //         flex: 2,
+  //         child: Container(
+  //           margin: const EdgeInsets.only(top: 10),
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               Text(
+  //                 "Provinsi",
+  //                 style: TextStyle(
+  //                   color: Colors.black,
+  //                   fontWeight: FontWeight.w500,
+  //                   fontSize: 14,
+  //                 ),
+  //               ),
+  //               Container(
+  //                 child: Column(
+  //                   children: <Widget>[
+  //                     SizedBox(
+  //                       height: 5,
+  //                     ),
+  //                     Container(
+  //                       padding: const EdgeInsets.symmetric(horizontal: 5),
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.grey[300],
+  //                         borderRadius: BorderRadius.only(
+  //                           topLeft: const Radius.circular(15),
+  //                           topRight: const Radius.circular(15),
+  //                           bottomLeft: const Radius.circular(15),
+  //                           bottomRight: const Radius.circular(15),
+  //                         ),
+  //                       ),
+  //                       child: DropdownButtonHideUnderline(
+  //                         child: Theme(
+  //                           data: Theme.of(context).copyWith(
+  //                             canvasColor: Colors.grey[300],
+  //                           ),
+  //                           child: FutureBuilder(
+  //                             future: provinceProvider.getProvinces(),
+  //                             builder: (context, snapshot) {
+  //                               return DropdownButton(
+  //                                 // value: selectedProvince,
+  //                                 items: provinceProvider.provinces
+  //                                     .map((provinces) {
+  //                                   return DropdownMenuItem(
+  //                                     child: Text(provinces.provinceName,
+  //                                         textAlign: TextAlign.start),
+  //                                     value: provinces,
+  //                                   );
+  //                                 }).toList(),
+  //                                 style: TextStyle(
+  //                                   color: Colors.grey[500],
+  //                                   fontSize: 14,
+  //                                   fontWeight: FontWeight.w700,
+  //                                 ),
+  //                                 iconEnabledColor: Colors.black,
+  //                                 hint: Container(
+  //                                   padding: const EdgeInsets.symmetric(
+  //                                       horizontal: 12),
+  //                                   child: Text(
+  //                                       selectedProvince == null
+  //                                           ? provinceProvider
+  //                                                       .provinces.length ==
+  //                                                   0
+  //                                               ? ""
+  //                                               : provinceName
+  //                                           : selectedProvince.provinceName,
+  //                                       style: TextStyle(
+  //                                           color: Colors.grey[500],
+  //                                           fontSize: 14,
+  //                                           fontWeight: FontWeight.w700)),
+  //                                 ),
+  //                                 onChanged: (item) {
+  //                                   setState(() {
+  //                                     selectedProvince = item;
+  //                                     provinceName =
+  //                                         selectedProvince.provinceName;
+  //                                   });
+  //                                 },
+  //                               );
+  //                             },
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       // SizedBox(
+  //       //   width: 10,
+  //       // ),
+  //       Flexible(
+  //         flex: 1,
+  //         child: Container(
+  //           margin: const EdgeInsets.only(top: 10),
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               Text(
+  //                 "Kota",
+  //                 style: TextStyle(
+  //                   color: Colors.black,
+  //                   fontWeight: FontWeight.w500,
+  //                   fontSize: 14,
+  //                 ),
+  //               ),
+  //               Container(
+  //                 child: Column(
+  //                   children: <Widget>[
+  //                     SizedBox(
+  //                       height: 5,
+  //                     ),
+  //                     Container(
+  //                       padding: const EdgeInsets.symmetric(horizontal: 5),
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.grey[300],
+  //                         borderRadius: BorderRadius.only(
+  //                           topLeft: const Radius.circular(15),
+  //                           topRight: const Radius.circular(15),
+  //                           bottomLeft: const Radius.circular(15),
+  //                           bottomRight: const Radius.circular(15),
+  //                         ),
+  //                       ),
+  //                       child: DropdownButtonHideUnderline(
+  //                         child: Theme(
+  //                           data: Theme.of(context).copyWith(
+  //                             canvasColor: Colors.grey[300],
+  //                           ),
+  //                           child: FutureBuilder(
+  //                             future: cityProvider.getCity(
+  //                                 provinceId: selectedProvince == null
+  //                                     ? 11
+  //                                     : selectedProvince.id),
+  //                             builder: (context, snapshot) {
+  //                               return DropdownButton(
+  //                                 // value: selectedCity,
+  //                                 items: cityProvider.city.map((city) {
+  //                                   return DropdownMenuItem(
+  //                                     child: Text(city.cityName,
+  //                                         textAlign: TextAlign.center),
+  //                                     value: city,
+  //                                   );
+  //                                 }).toList(),
+  //                                 style: TextStyle(
+  //                                   color: Colors.grey[500],
+  //                                   fontSize: 14,
+  //                                   fontWeight: FontWeight.w700,
+  //                                 ),
+  //                                 iconEnabledColor: Colors.black,
+  //                                 hint: Container(
+  //                                   padding: const EdgeInsets.symmetric(
+  //                                       horizontal: 12),
+  //                                   child: Text(
+  //                                       cityProvider.city.length == 0
+  //                                           ? "Pilih Kota"
+  //                                           : selectedCity == null
+  //                                               ? cityName
+  //                                               : selectedCity.cityName,
+  //                                       style: TextStyle(
+  //                                           color: Colors.grey[500],
+  //                                           fontSize: 14,
+  //                                           fontWeight: FontWeight.w700)),
+  //                                 ),
+  //                                 onChanged: (item) {
+  //                                   setState(() {
+  //                                     selectedCity = item;
+  //                                     cityName = selectedCity.cityName;
+  //                                   });
+  //                                 },
+  //                               );
+  //                             },
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Container textFieldPinLocation(String title, {String initValue}) {
     return Container(

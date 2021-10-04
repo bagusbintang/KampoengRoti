@@ -93,6 +93,10 @@ class _ProductPagesState extends State<ProductPages> {
                         child: FutureBuilder(
                           future: categoryProvider.getCategories(),
                           builder: (context, snapshot) {
+                            categorySingleton.title =
+                                categoryProvider.categories[0].title;
+                            categorySingleton.id =
+                                categoryProvider.categories[0].id;
                             return ListView.builder(
                               scrollDirection: Axis.horizontal,
                               itemCount: categoryProvider.categories.length,
@@ -120,7 +124,12 @@ class _ProductPagesState extends State<ProductPages> {
                 SizedBox(
                   height: 15,
                 ),
-                textFieldSearch("Cari Produk...", Icon(Icons.search)),
+                textFieldSearch(
+                    "Cari Produk...",
+                    Icon(
+                      Icons.search,
+                      color: Colors.grey[600],
+                    )),
                 SizedBox(
                   height: 20,
                 ),

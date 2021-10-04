@@ -494,7 +494,7 @@ class DetailOrder extends StatelessWidget {
                   DefaultButton(
                     text: "KONFIRMASI PEMBAYARAN",
                     press: () {
-                      Get.to(() => ConfirmOrder());
+                      Get.to(ConfirmOrder());
                     },
                   ),
                 ],
@@ -518,7 +518,7 @@ class DetailOrder extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20)),
                     color: Colors.amber,
                     onPressed: () {
-                      Get.to(() => AccountContactUs());
+                      Get.to(AccountContactUs());
                     },
                     child: Text(
                       "Hubungi Kami",

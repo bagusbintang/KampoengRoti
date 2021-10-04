@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kampoeng_roti/providers/product_provider.dart';
 import 'package:kampoeng_roti/ui/pages/splash_pages/components/splash_body.dart';
-import 'package:provider/provider.dart';
 
 class SplashPage extends StatelessWidget {
   static String routeName = "/splash";

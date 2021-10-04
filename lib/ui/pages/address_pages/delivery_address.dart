@@ -50,13 +50,6 @@ class _DeliveryAddressState extends State<DeliveryAddress> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            // SizedBox(
-            //   height: 30,
-            // ),
-            // Container(
-            //   padding: const EdgeInsets.symmetric(horizontal: 15),
-            //   child: textFieldSearchOutlets("Cari Alamat", Icon(Icons.search)),
-            // ),
             SizedBox(
               height: 15,
             ),
@@ -70,9 +63,9 @@ class _DeliveryAddressState extends State<DeliveryAddress> {
               child: DefaultButton(
                 text: "+TAMBAH ALAMAT BARU",
                 press: () {
-                  Get.off(
-                    () => AddAddress(),
-                    arguments: userModel.id,
+                  Get.to(
+                    AddAddress(),
+                    arguments: userModel,
                   );
                 },
               ),

@@ -107,76 +107,76 @@ class _OutletHomePageState extends State<OutletHomePage> {
                   SizedBox(
                     height: 15,
                   ),
-                  Container(
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          "Pilih Kota Anda",
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          decoration: BoxDecoration(
-                            color: softOrangeColor,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(15),
-                              topRight: const Radius.circular(15),
-                              bottomLeft: const Radius.circular(15),
-                              bottomRight: const Radius.circular(15),
-                            ),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                canvasColor: softOrangeColor,
-                              ),
-                              child: FutureBuilder(
-                                future: cityProvider.getCity(),
-                                builder: (context, snapshot) {
-                                  return DropdownButton(
-                                    // value: selectedCity,
-                                    items: cityProvider.city.map((city) {
-                                      return DropdownMenuItem(
-                                        child: Text(city.cityName,
-                                            textAlign: TextAlign.center),
-                                        value: city,
-                                      );
-                                    }).toList(),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                    iconEnabledColor: Colors.white,
-                                    hint: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15),
-                                      child: Text(
-                                          selectedCity == null
-                                              ? "Surabaya"
-                                              : selectedCity.cityName,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700)),
-                                    ),
-                                    onChanged: (item) {
-                                      setState(() {
-                                        selectedCity = item;
-                                      });
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   child: Column(
+                  //     children: <Widget>[
+                  //       Text(
+                  //         "Pilih Kota Anda",
+                  //         style: TextStyle(fontWeight: FontWeight.w700),
+                  //       ),
+                  //       SizedBox(
+                  //         height: 10,
+                  //       ),
+                  //       Container(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 15),
+                  //         decoration: BoxDecoration(
+                  //           color: softOrangeColor,
+                  //           borderRadius: BorderRadius.only(
+                  //             topLeft: const Radius.circular(15),
+                  //             topRight: const Radius.circular(15),
+                  //             bottomLeft: const Radius.circular(15),
+                  //             bottomRight: const Radius.circular(15),
+                  //           ),
+                  //         ),
+                  //         child: DropdownButtonHideUnderline(
+                  //           child: Theme(
+                  //             data: Theme.of(context).copyWith(
+                  //               canvasColor: softOrangeColor,
+                  //             ),
+                  //             child: FutureBuilder(
+                  //               future: cityProvider.getCity(),
+                  //               builder: (context, snapshot) {
+                  //                 return DropdownButton(
+                  //                   // value: selectedCity,
+                  //                   items: cityProvider.city.map((city) {
+                  //                     return DropdownMenuItem(
+                  //                       child: Text(city.cityName,
+                  //                           textAlign: TextAlign.center),
+                  //                       value: city,
+                  //                     );
+                  //                   }).toList(),
+                  //                   style: TextStyle(
+                  //                     color: Colors.white,
+                  //                     fontSize: 16,
+                  //                     fontWeight: FontWeight.w700,
+                  //                   ),
+                  //                   iconEnabledColor: Colors.white,
+                  //                   hint: Container(
+                  //                     padding: const EdgeInsets.symmetric(
+                  //                         horizontal: 15),
+                  //                     child: Text(
+                  //                         selectedCity == null
+                  //                             ? "Surabaya"
+                  //                             : selectedCity.cityName,
+                  //                         style: TextStyle(
+                  //                             color: Colors.white,
+                  //                             fontSize: 16,
+                  //                             fontWeight: FontWeight.w700)),
+                  //                   ),
+                  //                   onChanged: (item) {
+                  //                     setState(() {
+                  //                       selectedCity = item;
+                  //                     });
+                  //                   },
+                  //                 );
+                  //               },
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 15,
                   ),

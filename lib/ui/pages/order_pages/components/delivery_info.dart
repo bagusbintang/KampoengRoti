@@ -93,7 +93,7 @@ class _DeliveryInfoState extends State<DeliveryInfo> {
                         size: 20,
                       ),
                       onPressed: () async {
-                        var result = await Get.to(() => DeliveryAddress());
+                        var result = await Get.to(DeliveryAddress());
                         setState(() {
                           userAddress = result;
                         });

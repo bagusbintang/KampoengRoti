@@ -1,6 +1,9 @@
-import 'dart:convert';
+// import 'dart:convert';
+
+import 'package:kampoeng_roti/models/user_address_model.dart';
 
 class UserModel {
+  //TODO : MENAMBAHKAN UserAddressModel PADA MODEL INI !
   int id;
   int phone;
   String name;
@@ -10,6 +13,7 @@ class UserModel {
   String token;
   int active;
   int verified;
+  UserAddressModel defaulAdress;
 
   UserModel({
     this.id,
@@ -21,6 +25,7 @@ class UserModel {
     this.token,
     this.active,
     this.verified,
+    this.defaulAdress,
   });
 
   UserModel.fromJson(Map<String, dynamic> jsonUser) {
@@ -33,6 +38,7 @@ class UserModel {
     // token = jsonUser[''];
     active = jsonUser['customer_active'];
     verified = jsonUser['customer_emailverified'];
+    defaulAdress = UserAddressModel.fromJson(jsonUser['default_address']);
   }
 
   Map<String, dynamic> toJson() {
@@ -46,6 +52,7 @@ class UserModel {
       // '': token,
       'customer_active': active,
       'customer_emailverified': verified,
+      'default_address': defaulAdress.toJson(),
     };
   }
 }

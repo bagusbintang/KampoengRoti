@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/city_models.dart';
 import 'package:kampoeng_roti/models/province_models.dart';
+import 'package:kampoeng_roti/models/user_address_model.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/city_provider.dart';
 import 'package:kampoeng_roti/providers/province_provider.dart';
 import 'package:kampoeng_roti/providers/user_address_provider.dart';
 import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
+import 'package:kampoeng_roti/ui/pages/address_pages/map_picker.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 import 'package:provider/provider.dart';
 
@@ -19,14 +22,26 @@ class AddAddress extends StatefulWidget {
 }
 
 class _AddAddressState extends State<AddAddress> {
+  // static final kInitialPosition = LatLng(-33.8567844, 151.213108);
   TextEditingController tagNameController = TextEditingController(text: '');
   TextEditingController personNameController = TextEditingController(text: '');
   TextEditingController phoneController = TextEditingController(text: '');
   TextEditingController addressController = TextEditingController(text: '');
 
-  var data = Get.arguments;
+  UserModel userModel = Get.arguments;
+  UserAddressModel userAddressModel = UserAddressModel();
   ProvinceModel selectedProvince;
   CityModel selectedCity;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    tagNameController.dispose();
+    personNameController.dispose();
+    phoneController.dispose();
+    addressController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +50,15 @@ class _AddAddressState extends State<AddAddress> {
 
     handleAddAddress() async {
       if (await addressProvider.addUserAddress(
-        userId: data,
+        userId: userModel.id,
         tagAddress: tagNameController.text,
         personName: personNameController.text,
         personPhone: phoneController.text,
         address: addressController.text,
-        province: selectedProvince.provinceName,
-        city: selectedCity.cityName,
+        province: userAddressModel.province,
+        city: userAddressModel.city,
       )) {
-        Get.off(() => DeliveryAddress());
+        Get.off(DeliveryAddress());
       } else {
         // Get.snackbar(
         //   "Gagal Register",
@@ -55,8 +70,8 @@ class _AddAddressState extends State<AddAddress> {
       }
     }
 
-    ProvinceProvider provinceProvider = Provider.of<ProvinceProvider>(context);
-    CityProvider cityProvider = Provider.of<CityProvider>(context);
+    // ProvinceProvider provinceProvider = Provider.of<ProvinceProvider>(context);
+    // CityProvider cityProvider = Provider.of<CityProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -98,7 +113,15 @@ class _AddAddressState extends State<AddAddress> {
               ),
               // selectProvinceAndCity(context, provinceProvider, cityProvider),
               GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  var result =
+                      await Get.to(MapPicker(addressModel: userAddressModel));
+                  setState(() {
+                    userAddressModel = result;
+                    addressController =
+                        TextEditingController(text: userAddressModel.address);
+                  });
+                },
                 child: textFieldPinLocation(
                   "Pin Peta Lokasi",
                 ),
@@ -352,7 +375,9 @@ class _AddAddressState extends State<AddAddress> {
                   ),
                   filled: true,
                   hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
+                  hintText: userModel.defaulAdress.address == null
+                      ? title
+                      : userModel.defaulAdress.address,
                   fillColor: Colors.grey[300]),
             ),
           )

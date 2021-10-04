@@ -48,7 +48,7 @@ class DeliveryTransactionContainer extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Get.to(
-          () => DetailOrder(
+          DetailOrder(
             invoiceModel: invoiceModel,
           ),
         );

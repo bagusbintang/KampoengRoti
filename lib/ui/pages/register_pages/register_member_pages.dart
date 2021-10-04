@@ -76,7 +76,7 @@ class _RegisterMemberState extends State<RegisterMember> {
                         borderRadius: BorderRadius.circular(10)),
                     color: choclateColor,
                     onPressed: () {
-                      Get.to(() => LoginPage());
+                      Get.to(LoginPage());
                     },
                     child: Text(
                       "SUBMIT",
@@ -104,7 +104,7 @@ class _RegisterMemberState extends State<RegisterMember> {
                 DefaultButton(
                   text: "DAFTAR MEMBER",
                   press: () {
-                    Get.to(() => LoginPage());
+                    Get.to(LoginPage());
                   },
                 ),
                 SizedBox(
@@ -113,7 +113,7 @@ class _RegisterMemberState extends State<RegisterMember> {
                 DefaultButton(
                   text: "LEWATI",
                   press: () {
-                    Get.to(() => LoginPage());
+                    Get.to(LoginPage());
                   },
                 ),
                 Spacer(),

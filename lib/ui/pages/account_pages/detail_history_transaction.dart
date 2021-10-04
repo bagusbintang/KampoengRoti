@@ -17,7 +17,7 @@ class DetailHistoryTransaction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _statusInvoice = data[3];
+    _statusInvoice = data;
     if (_statusInvoice == 1) {
       _name = "Bima Aprianto Siono";
       _address =
@@ -69,7 +69,7 @@ class DetailHistoryTransaction extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    data[0],
+                    "",
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
@@ -100,7 +100,7 @@ class DetailHistoryTransaction extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: data[2],
+                                text: "",
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -131,7 +131,7 @@ class DetailHistoryTransaction extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: data[1],
+                                text: "",
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -334,7 +334,7 @@ class DetailHistoryTransaction extends StatelessWidget {
                   DefaultButton(
                     text: "HUBUNGI ADMIN",
                     press: () {
-                      Get.to(() => AccountContactUs());
+                      Get.to(AccountContactUs());
                     },
                   ),
                 ],

@@ -160,7 +160,7 @@ buildBottomNavigationMenu(context, mainPageController) {
                   AssetImage("assets/images/icon_outlets.png"),
                   size: 18,
                 ),
-                label: 'Pilih Outlet'),
+                label: 'Outlets'),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.person,
@@ -182,10 +182,5 @@ class MainPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

@@ -116,7 +116,7 @@ class _DeliveryWayState extends State<DeliveryWay> {
                 ),
                 InkWell(
                   onTap: () {
-                    Get.to(() => PromoPage());
+                    Get.to(PromoPage());
                   },
                   child: Text(
                     "Tambah Promo",
@@ -156,7 +156,7 @@ class _DeliveryWayState extends State<DeliveryWay> {
                 ),
                 InkWell(
                   onTap: () {
-                    Get.to(() => MemberPage());
+                    Get.to(MemberPage());
                   },
                   child: Text(
                     "Bima Aprianto(4040333)",

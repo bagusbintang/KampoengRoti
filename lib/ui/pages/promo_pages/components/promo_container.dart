@@ -12,7 +12,7 @@ class PromoContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.to(() => PromoDetail());
+        Get.to(PromoDetail());
       },
       child: Container(
         margin: const EdgeInsets.symmetric(

@@ -115,7 +115,7 @@ class OrderDone extends StatelessWidget {
                     DefaultButton(
                       text: "HUBUNGI ADMIN",
                       press: () {
-                        Get.to(() => AccountContactUs());
+                        Get.to(AccountContactUs());
                       },
                     )
                   ],

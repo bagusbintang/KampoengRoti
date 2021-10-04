@@ -80,7 +80,7 @@ class _HomePagesState extends State<HomePages> {
                   color: softOrangeColor,
                   onPressed: () async {
                     // _getCurrentLocation();
-                    String result = await Get.to(() => OutletHomePage(
+                    String result = await Get.to(OutletHomePage(
                         // currentPosition: _currentPosition,
                         ));
                     setState(() {
@@ -198,7 +198,7 @@ class _HomePagesState extends State<HomePages> {
                                 "assets/images/ic_promo.png",
                               ),
                               onPressed: () {
-                                Get.to(() => PromoPage());
+                                Get.to(PromoPage());
                               },
                             ),
                             Text(

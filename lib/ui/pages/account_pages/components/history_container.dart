@@ -63,7 +63,7 @@ class HistoryContainer extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
-        Get.to(() => DetailHistoryTransaction(), arguments: [
+        Get.to(DetailHistoryTransaction(), arguments: [
           invoice,
           date,
           time,

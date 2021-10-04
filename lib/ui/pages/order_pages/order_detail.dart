@@ -81,7 +81,7 @@ class _OrderDetailState extends State<OrderDetail> {
             ? cartProvider.totalPrice() + 10000
             : cartProvider.totalPrice(),
       )) {
-        Get.off(() => OrderDone());
+        Get.off(OrderDone());
       } else {
         Get.snackbar(
           "Gagal CheckOut",
@@ -320,7 +320,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 ),
                 InkWell(
                   onTap: () {
-                    Get.to(() => PromoPage());
+                    Get.to(PromoPage());
                   },
                   child: Text(
                     "Tambah Promo",
@@ -360,7 +360,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 ),
                 InkWell(
                   onTap: () {
-                    Get.to(() => MemberPage());
+                    Get.to(MemberPage());
                   },
                   child: Text(
                     "Tambah Member",
@@ -595,7 +595,7 @@ class _OrderDetailState extends State<OrderDetail> {
               ),
               InkWell(
                 onTap: () async {
-                  var result = await Get.to(() => DeliveryAddress());
+                  var result = await Get.to(DeliveryAddress());
                   setState(() {
                     userAddress = result;
                   });
@@ -645,7 +645,7 @@ class _OrderDetailState extends State<OrderDetail> {
                           size: 20,
                         ),
                         onPressed: () async {
-                          var result = await Get.to(() => DeliveryAddress());
+                          var result = await Get.to(DeliveryAddress());
                           setState(() {
                             userAddress = result;
                           });

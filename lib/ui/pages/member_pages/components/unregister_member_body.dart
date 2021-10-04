@@ -190,7 +190,7 @@ class UnregisterMemberBody extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: choclateColor,
         onPressed: () {
-          Get.to(() => MemberRegister());
+          Get.to(MemberRegister());
         },
         child: Text(
           "DAFTAR SEKARANG",
