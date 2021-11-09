@@ -14,10 +14,11 @@ class OrderProvider with ChangeNotifier {
 
   Future<void> getInvoices({
     int userId,
+    int status,
   }) async {
     try {
       List<InvoiceModel> invoices =
-          await OrderService().getInvoice(userId: userId);
+          await OrderService().getInvoice(userId: userId, status: status);
       _invoice = invoices;
     } catch (e) {
       print(e);

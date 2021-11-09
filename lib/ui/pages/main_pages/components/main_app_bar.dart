@@ -22,27 +22,29 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
   CartProvider cartProvider;
   UserModel userModel;
 
-  void getUserModel() async {
+  Future<void> getUserModel() async {
     userModel = await MySharedPreferences.instance.getUserModel("user");
-    setState(() {});
+    // userSingleton.address = userModel.defaulAdress;
+    // setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    getUserModel();
+    // getUserModel();
   }
 
-  Future<void> getCartList() async {
-    // cartProvider = Provider.of<CartProvider>(context);
-    userModel = await MySharedPreferences.instance.getUserModel("user");
-    await cartProvider.getCart(userId: userModel.id);
-    // setState(() {});
-  }
+  // Future<void> getCartList() async {
+  //   // cartProvider = Provider.of<CartProvider>(context);
+  //   // userModel = await MySharedPreferences.instance.getUserModel("user");
+  //   await cartProvider.getCart(userId: userModel.id);
+  //   // setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
     cartProvider = Provider.of<CartProvider>(context);
+    UserSingleton userSingleton = UserSingleton();
     return AppBar(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -52,58 +54,77 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
       ),
       backgroundColor: softOrangeColor,
       elevation: 0,
-      title: InkWell(
-        onTap: () async {
-          var result = await Get.to(DeliveryAddress());
-          setState(() {});
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              color: Colors.white),
-          // padding: EdgeInsets.only(left: 5),
-          padding: const EdgeInsets.only(left: 15),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      title: FutureBuilder(
+          future: getUserModel(),
+          builder: (context, snapshot) {
+            if (userSingleton.address == null) {
+              userSingleton.address = userModel.defaulAdress;
+            }
+            return InkWell(
+              onTap: () async {
+                // Get.to(DeliveryAddress());
+                var result = await Get.to(DeliveryAddress());
+                setState(() {
+                  userSingleton.address = result;
+                  userSingleton.outlet = userSingleton.address.outletModel;
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    color: Colors.white),
+                // padding: EdgeInsets.only(left: 5),
+                padding: const EdgeInsets.only(left: 15),
+                child: Row(
                   children: <Widget>[
-                    Container(
-                      child: Text(
-                        'Lokasi Pengiriman',
-                        style: TextStyle(color: Colors.grey[500], fontSize: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            child: Text(
+                              'Lokasi Pengiriman',
+                              style: TextStyle(
+                                  color: Colors.grey[500], fontSize: 10),
+                            ),
+                          ),
+                          Container(
+                            child: Text(
+                              userSingleton.address != null
+                                  ? userSingleton.address.tagAddress
+                                          .toUpperCase() +
+                                      " - " +
+                                      userSingleton.address.address
+                                  : 'Alamat utama belum ditentukan. ',
+                              style: TextStyle(
+                                  color: Colors.black87, fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Container(
-                      child: Text(
-                        userModel.defaulAdress != null
-                            ? userModel.defaulAdress.tagAddress.toUpperCase() +
-                                " - " +
-                                userModel.defaulAdress.address
-                            : 'Alamat utama belum ditentukan. ',
-                        style: TextStyle(color: Colors.black87, fontSize: 14),
-                        overflow: TextOverflow.ellipsis,
+                    IconButton(
+                      icon: ImageIcon(
+                        AssetImage("assets/images/icon_edit.png"),
+                        color: Colors.grey,
+                        size: 20,
                       ),
+                      onPressed: () async {
+                        // Get.to(DeliveryAddress());
+                        var result = await Get.to(DeliveryAddress());
+                        setState(() {
+                          userSingleton.address = result;
+                          userSingleton.outlet =
+                              userSingleton.address.outletModel;
+                        });
+                      },
                     ),
                   ],
                 ),
               ),
-              IconButton(
-                icon: ImageIcon(
-                  AssetImage("assets/images/icon_edit.png"),
-                  color: Colors.grey,
-                  size: 20,
-                ),
-                onPressed: () async {
-                  var result = await Get.to(DeliveryAddress());
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+            );
+          }),
       actions: <Widget>[
         Padding(
           padding: const EdgeInsets.all(2.0),
@@ -167,7 +188,7 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
                   //   ),
                   // ),
                   child: FutureBuilder(
-                    future: getCartList(),
+                    future: cartProvider.getCart(userId: userSingleton.user.id),
                     builder: (context, snapshot) => Text(
                       cartProvider.totalCart().toString(),
                       style: TextStyle(

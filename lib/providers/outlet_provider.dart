@@ -14,10 +14,12 @@ class OutletProvider with ChangeNotifier {
 
   Future<void> getOutlets({
     int city_id = 0,
+    double latitude,
+    double longitude,
   }) async {
     try {
-      List<OutletModel> outlets =
-          await OutletService().getOutlets(cityId: city_id);
+      List<OutletModel> outlets = await OutletService().getOutlets(
+          cityId: city_id, latitude: latitude, longitude: longitude);
       _outlets = outlets;
     } catch (e) {
       print(e);

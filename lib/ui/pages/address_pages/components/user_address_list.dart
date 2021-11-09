@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/user_address_provider.dart';
+import 'package:kampoeng_roti/ui/pages/address_pages/edit_address.dart';
 import 'package:provider/provider.dart';
 
 import '../address_container.dart';
@@ -29,6 +30,10 @@ class UserAddressList extends StatelessWidget {
                             userAddres: address,
                             press: () {
                               Get.back(result: address);
+                              // Get.to(
+                              //   EditAddress(),
+                              //   arguments: address,
+                              // );
                             },
                           ))
                       .toList(),

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/cart_provider.dart';
+import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/item_order.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/order_detail.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
@@ -55,6 +56,8 @@ class _OrderPagesState extends State<OrderPages> with WidgetsBindingObserver {
     double total = 0;
     final currencyFormatter = NumberFormat('#,###', 'ID');
     cartProvider = Provider.of<CartProvider>(context);
+    final MainPageController mainPageController =
+        Get.put(MainPageController(), permanent: true);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -197,7 +200,54 @@ class _OrderPagesState extends State<OrderPages> with WidgetsBindingObserver {
                     ],
                   ),
                 )
-              : Container();
+              : Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 80,
+                        ),
+                        Image(
+                          image: AssetImage(
+                            "assets/images/ic_empty_cart.png",
+                          ),
+                          height: 80,
+                          width: 80,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          "Keranjang belanjamu kosong",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          "BELANJA SEKARANG",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        DefaultButton(
+                          text: "MULAI BELANJA",
+                          press: () {
+                            Get.back();
+                            mainPageController.changeTabIndex(1);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
         },
       ),
     );

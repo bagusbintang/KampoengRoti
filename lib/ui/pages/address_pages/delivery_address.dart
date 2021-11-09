@@ -63,6 +63,9 @@ class _DeliveryAddressState extends State<DeliveryAddress> {
               child: DefaultButton(
                 text: "+TAMBAH ALAMAT BARU",
                 press: () {
+                  userModel.defaulAdress.address = null;
+                  userModel.defaulAdress.latitude = null;
+                  userModel.defaulAdress.longitude = null;
                   Get.to(
                     AddAddress(),
                     arguments: userModel,

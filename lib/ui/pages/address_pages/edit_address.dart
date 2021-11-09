@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/city_models.dart';
 import 'package:kampoeng_roti/models/province_models.dart';
 import 'package:kampoeng_roti/models/user_address_model.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/city_provider.dart';
 import 'package:kampoeng_roti/providers/province_provider.dart';
 import 'package:kampoeng_roti/providers/user_address_provider.dart';
@@ -10,6 +11,8 @@ import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
 import 'package:kampoeng_roti/ui/pages/address_pages/map_picker.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 import 'package:provider/provider.dart';
+
+import '../../../shared_preferences.dart';
 
 class EditAddress extends StatefulWidget {
   const EditAddress({
@@ -25,11 +28,26 @@ class _EditAddressState extends State<EditAddress> {
   TextEditingController personNameController;
   TextEditingController phoneController;
   TextEditingController addressController;
+  TextEditingController addressDetailController;
+  TextEditingController notesController;
   ProvinceModel selectedProvince;
   CityModel selectedCity;
   UserAddressModel userAddress = Get.arguments;
+  UserModel userModel;
   // String provinceName;
   // String cityName;
+  bool _checkBoxValue = false;
+
+  void getUserModel() async {
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    // setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserModel();
+  }
 
   @override
   void dispose() {
@@ -39,7 +57,10 @@ class _EditAddressState extends State<EditAddress> {
     personNameController.dispose();
     phoneController.dispose();
     addressController.dispose();
+    notesController.dispose();
   }
+
+  void _checkBoxOnChange() {}
 
   @override
   Widget build(BuildContext context) {
@@ -47,27 +68,39 @@ class _EditAddressState extends State<EditAddress> {
     personNameController = TextEditingController(text: userAddress.personName);
     phoneController = TextEditingController(text: userAddress.personPhone);
     addressController = TextEditingController(text: userAddress.address);
+    notesController = TextEditingController(text: userAddress.personName);
+    addressDetailController =
+        TextEditingController(text: userAddress.personPhone);
 
     // provinceName = userAddress.province;
     // cityName = userAddress.city;
 
     UserAddressProvider addressProvider =
         Provider.of<UserAddressProvider>(context);
+    if (userAddress.defaultAddress == 1) {
+      _checkBoxValue = true;
+    }
 
     handleAddAddress() async {
       print(userAddress.latitude.toString());
       if (await addressProvider.editUserAddress(
         addressId: userAddress.id,
         tagAddress: tagNameController.text,
-        personName: personNameController.text,
-        personPhone: phoneController.text,
+        personName: addressController.text,
+        personPhone: notesController.text,
         address: addressController.text,
         province: userAddress.province,
         city: userAddress.city,
         latitude: userAddress.latitude,
         longitude: userAddress.longitude,
+        defaultAddress: userAddress.defaultAddress,
       )) {
+        if (_checkBoxValue) {
+          userModel.defaulAdress = userAddress;
+          MySharedPreferences.instance.setUserModel("user", userModel);
+        }
         Get.off(DeliveryAddress());
+        // Get.back();
       } else {
         // Get.snackbar(
         //   "Gagal Register",
@@ -109,16 +142,6 @@ class _EditAddressState extends State<EditAddress> {
               textFieldAddressName(
                 "Tag Alamat",
               ),
-              textFieldPersonName(
-                "Nama Penerima",
-              ),
-              textFieldPersonPhone(
-                "Nomor Telpon",
-              ),
-              textFieldAddress(
-                "Alamat",
-              ),
-              // selectProvinceAndCity(context, provinceProvider, cityProvider),
               GestureDetector(
                 onTap: () async {
                   var result =
@@ -129,9 +152,51 @@ class _EditAddressState extends State<EditAddress> {
                         TextEditingController(text: userAddress.address);
                   });
                 },
-                child: textFieldPinLocation("Pin Peta Lokasi",
+                child: textFieldPinLocation("Alamat",
                     initValue: userAddress.address),
               ),
+              textFieldAddress(
+                "Detil Alamat",
+              ),
+              textFieldNotes(
+                "Catatan",
+              ),
+              Row(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    width: 25,
+                    height: 25,
+                    child: Checkbox(
+                      value: _checkBoxValue,
+                      activeColor: Colors.grey[600],
+                      onChanged: (bool newValue) {
+                        setState(() {
+                          _checkBoxValue = newValue;
+                          if (newValue == true) {
+                            userAddress.defaultAddress = 1;
+                          } else {
+                            userAddress.defaultAddress = 0;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  Text(
+                    "Jadikan Alamat Utama",
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              // textFieldPersonName(
+              //   "Nama Penerima",
+              // ),
+              // textFieldPersonPhone(
+              //   "Nomor Telpon",
+              // ),
               SizedBox(
                 height: 30,
               ),
@@ -147,6 +212,273 @@ class _EditAddressState extends State<EditAddress> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Container textFieldPinLocation(String title, {String initValue}) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Theme(
+            data: ThemeData(
+              primaryColor: Colors.grey[300],
+            ),
+            child: TextFormField(
+              enabled: false,
+              // initialValue: initValue,
+              controller: addressController,
+              keyboardType: TextInputType.name,
+              maxLines: 4,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.all(25),
+                  border: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  hintStyle: new TextStyle(color: Colors.grey[800]),
+                  hintText: title,
+                  fillColor: Colors.grey[300]),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container textFieldAddressName(String title, {String initValue}) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Theme(
+            data: ThemeData(
+              primaryColor: Colors.grey[300],
+            ),
+            child: TextFormField(
+              // initialValue: initValue,
+              controller: tagNameController,
+              keyboardType: TextInputType.name,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.all(25),
+                  border: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  hintStyle: new TextStyle(color: Colors.grey[800]),
+                  hintText: title,
+                  fillColor: Colors.grey[300]),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container textFieldPersonName(String title, {String initValue}) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Theme(
+            data: ThemeData(
+              primaryColor: Colors.grey[300],
+            ),
+            child: TextFormField(
+              // initialValue: initValue,
+              controller: personNameController,
+              keyboardType: TextInputType.name,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.all(25),
+                  border: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  hintStyle: new TextStyle(color: Colors.grey[800]),
+                  hintText: title,
+                  fillColor: Colors.grey[300]),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container textFieldPersonPhone(String title, {int initValue}) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Theme(
+            data: ThemeData(
+              primaryColor: Colors.grey[300],
+            ),
+            child: TextFormField(
+              // initialValue: initValue.toString(),
+              controller: phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.all(25),
+                  border: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  hintStyle: new TextStyle(color: Colors.grey[800]),
+                  hintText: title,
+                  fillColor: Colors.grey[300]),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container textFieldAddress(String title, {String initValue}) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Theme(
+            data: ThemeData(
+              primaryColor: Colors.grey[300],
+            ),
+            child: TextFormField(
+              // initialValue: initValue,
+              controller: addressController,
+              keyboardType: TextInputType.name,
+              maxLines: 3,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.all(25),
+                  border: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  hintStyle: new TextStyle(color: Colors.grey[800]),
+                  hintText: title,
+                  fillColor: Colors.grey[300]),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container textFieldNotes(String title) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Theme(
+            data: ThemeData(
+              primaryColor: Colors.grey[300],
+            ),
+            child: TextFormField(
+              // initialValue: initValue,
+              controller: notesController,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.all(25),
+                  border: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  hintStyle: new TextStyle(color: Colors.grey[800]),
+                  hintText: title,
+                  fillColor: Colors.grey[300]),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -345,226 +677,4 @@ class _EditAddressState extends State<EditAddress> {
   //     ],
   //   );
   // }
-
-  Container textFieldPinLocation(String title, {String initValue}) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Theme(
-            data: ThemeData(
-              primaryColor: Colors.grey[300],
-            ),
-            child: TextFormField(
-              enabled: false,
-              initialValue: initValue,
-              keyboardType: TextInputType.name,
-              maxLines: 4,
-              decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(25),
-                  border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(20.0),
-                    ),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
-                  fillColor: Colors.grey[300]),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Container textFieldAddressName(String title, {String initValue}) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Theme(
-            data: ThemeData(
-              primaryColor: Colors.grey[300],
-            ),
-            child: TextFormField(
-              // initialValue: initValue,
-              controller: tagNameController,
-              keyboardType: TextInputType.name,
-              decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(25),
-                  border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(20.0),
-                    ),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
-                  fillColor: Colors.grey[300]),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Container textFieldPersonName(String title, {String initValue}) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Theme(
-            data: ThemeData(
-              primaryColor: Colors.grey[300],
-            ),
-            child: TextFormField(
-              // initialValue: initValue,
-              controller: personNameController,
-              keyboardType: TextInputType.name,
-              decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(25),
-                  border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(20.0),
-                    ),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
-                  fillColor: Colors.grey[300]),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Container textFieldPersonPhone(String title, {int initValue}) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Theme(
-            data: ThemeData(
-              primaryColor: Colors.grey[300],
-            ),
-            child: TextFormField(
-              // initialValue: initValue.toString(),
-              controller: phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(25),
-                  border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(20.0),
-                    ),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
-                  fillColor: Colors.grey[300]),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Container textFieldAddress(String title, {String initValue}) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Theme(
-            data: ThemeData(
-              primaryColor: Colors.grey[300],
-            ),
-            child: TextFormField(
-              // initialValue: initValue,
-              controller: addressController,
-              keyboardType: TextInputType.name,
-              maxLines: 3,
-              decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(25),
-                  border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(20.0),
-                    ),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
-                  fillColor: Colors.grey[300]),
-            ),
-          )
-        ],
-      ),
-    );
-  }
 }

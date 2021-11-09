@@ -22,20 +22,22 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> getProducts({
     int catId,
+    int outletId,
     String search,
   }) async {
     try {
-      List<ProductModel> products =
-          await ProductService().getProduct(catId: catId, search: search);
+      List<ProductModel> products = await ProductService()
+          .getProduct(catId: catId, search: search, outletId: outletId);
       _products = products;
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> getNewProducts() async {
+  Future<void> getNewProducts({int outletId}) async {
     try {
-      List<ProductModel> products = await ProductService().getNewProduct();
+      List<ProductModel> products =
+          await ProductService().getNewProduct(outletId: outletId);
       _newProducts = products;
     } catch (e) {
       print(e);

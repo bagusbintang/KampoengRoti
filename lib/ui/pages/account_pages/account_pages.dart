@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/shared_preferences.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_contact_us.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_edit_profile.dart';
@@ -13,7 +14,26 @@ import 'package:kampoeng_roti/ui/pages/order_pages/detail_transaction.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
-class AccountPages extends StatelessWidget {
+class AccountPages extends StatefulWidget {
+  @override
+  State<AccountPages> createState() => _AccountPagesState();
+}
+
+class _AccountPagesState extends State<AccountPages> {
+  UserModel userModel;
+  UserSingleton userSingleton = UserSingleton();
+  void getUserModel() async {
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserModel();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -30,7 +50,7 @@ class AccountPages extends StatelessWidget {
                 color: softOrangeColor,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                // mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   RawMaterialButton(
                     onPressed: null,
@@ -46,12 +66,13 @@ class AccountPages extends StatelessWidget {
                   ),
                   Flexible(
                     child: Container(
-                      margin: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+                      margin: const EdgeInsets.fromLTRB(10, 50, 0, 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            "Bima Aprianto Siono",
+                            // "Bima Aprianto Siono",
+                            userModel.name,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -59,7 +80,8 @@ class AccountPages extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "bima.aprianto@gmail.com",
+                            // "bima.aprianto@gmail.com",
+                            userModel.email,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -67,7 +89,10 @@ class AccountPages extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "+6281804643014",
+                            // "+6281804643014",
+                            userModel.phone != null
+                                ? userModel.phone.toString()
+                                : " - ",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -78,6 +103,7 @@ class AccountPages extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Spacer(),
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 35, 0, 0),
                     child: Column(
@@ -85,7 +111,7 @@ class AccountPages extends StatelessWidget {
                       children: <Widget>[
                         IconButton(
                           onPressed: () {
-                            Get.to(EditProfile());
+                            Get.to(EditProfile(), arguments: userModel);
                           },
                           icon: Icon(
                             Icons.settings,
@@ -115,7 +141,9 @@ class AccountPages extends StatelessWidget {
               ),
               pressed: () {
                 // Get.to(() => HistoryTransaction());
-                Get.to(DetailTransaction());
+                Get.to(DetailTransaction(
+                  userModel: userModel,
+                ));
               },
             ),
             AccountInfo(

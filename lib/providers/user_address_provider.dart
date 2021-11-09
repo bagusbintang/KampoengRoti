@@ -42,6 +42,7 @@ class UserAddressProvider with ChangeNotifier {
     String province,
     double latitude,
     double longitude,
+    int defaultAddress,
   }) async {
     try {
       UserAddressModel userAddressModel =
@@ -55,6 +56,7 @@ class UserAddressProvider with ChangeNotifier {
         province: province,
         latitude: latitude,
         longitude: longitude,
+        defaultAddress: defaultAddress,
       );
 
       _userAddressModel = userAddressModel;
@@ -76,6 +78,7 @@ class UserAddressProvider with ChangeNotifier {
     String province,
     double latitude,
     double longitude,
+    int defaultAddress,
   }) async {
     try {
       UserAddressModel userAddressModel =
@@ -89,6 +92,7 @@ class UserAddressProvider with ChangeNotifier {
         province: province,
         latitude: latitude,
         longitude: longitude,
+        defaultAddress: defaultAddress,
       );
 
       _userAddressModel = userAddressModel;

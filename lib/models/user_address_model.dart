@@ -1,5 +1,6 @@
+import 'package:kampoeng_roti/models/outlet_model.dart';
+
 class UserAddressModel {
-  //TODO : MENAMBAHKAN LATITUDE DAN LONGITUDE PADA MODEL INI !
   int id;
   int userId;
   String tagAddress;
@@ -11,6 +12,7 @@ class UserAddressModel {
   int defaultAddress;
   double latitude;
   double longitude;
+  OutletModel outletModel;
 
   UserAddressModel({
     this.id,
@@ -24,6 +26,7 @@ class UserAddressModel {
     this.defaultAddress,
     this.latitude,
     this.longitude,
+    this.outletModel,
   });
 
   UserAddressModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +43,9 @@ class UserAddressModel {
       latitude = double.parse(json['latitude'].toString());
       longitude = double.parse(json['longitude'].toString());
     }
+    if (json['outlet_data'] != null) {
+      outletModel = OutletModel.fromJson(json['outlet_data']);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -55,6 +61,7 @@ class UserAddressModel {
       'caddress_default': defaultAddress,
       'latitude': latitude,
       'longitude': longitude,
+      'outlet_data': outletModel.toJson(),
     };
   }
 }

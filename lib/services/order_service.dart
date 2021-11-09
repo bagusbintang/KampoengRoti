@@ -53,8 +53,9 @@ class OrderService {
 
   Future<List<InvoiceModel>> getInvoice({
     int userId = 1,
+    int status,
   }) async {
-    final url = Uri.encodeFull("$getInvoiceUrl/${userId}");
+    final url = Uri.encodeFull("$getInvoiceUrl/${userId}/${status}");
     var response = await http.get(
       Uri.parse(url),
       headers: headers,

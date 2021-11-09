@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/auth_provider.dart';
 import 'package:kampoeng_roti/shared_preferences.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/forget_password.dart';
@@ -71,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-
+    UserSingleton userSingleton = UserSingleton();
     handleSignIn() async {
       if (await authProvider.login(
         // username: usernameController.text,
@@ -80,6 +81,9 @@ class _LoginPageState extends State<LoginPage> {
       )) {
         MySharedPreferences.instance.setLoginValue("LoggedIn", true);
         MySharedPreferences.instance.setUserModel("user", authProvider.user);
+        userSingleton.user = authProvider.user;
+        userSingleton.address = authProvider.user.defaulAdress;
+        userSingleton.outlet = authProvider.user.defaulAdress.outletModel;
         Get.offAll(MainPages());
         _getCurrentLocation();
       } else {

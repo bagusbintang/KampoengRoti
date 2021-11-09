@@ -12,9 +12,12 @@ class CategoryProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getCategories() async {
+  Future<void> getCategories({
+    int outletId,
+  }) async {
     try {
-      List<CategoryModel> categories = await CategoryService().getCategory();
+      List<CategoryModel> categories =
+          await CategoryService().getCategory(outletId: outletId);
       _categories = categories;
     } catch (e) {
       print(e);

@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/category_model.dart';
 import 'package:kampoeng_roti/models/outlet_model.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+
+import '../../../../shared_preferences.dart';
 
 class OutletsHomeCity extends StatefulWidget {
   const OutletsHomeCity({
@@ -23,38 +26,41 @@ class OutletsHomeCity extends StatefulWidget {
 }
 
 class _OutletsHomeCityState extends State<OutletsHomeCity> {
-  double calculateDistance(lat1, lon1, lat2, lon2) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    return 12742 * asin(sqrt(a));
-  }
+  // double calculateDistance(lat1, lon1, lat2, lon2) {
+  //   var p = 0.017453292519943295;
+  //   var c = cos;
+  //   var a = 0.5 -
+  //       c((lat2 - lat1) * p) / 2 +
+  //       c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+  //   return 12742 * asin(sqrt(a));
+  // }
 
-  Position _currentPosition;
-  _getCurrentLocation() {
-    Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.best,
-            forceAndroidLocationManager: true)
-        .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-        print("lat : " +
-            _currentPosition.latitude.toString() +
-            "long : " +
-            _currentPosition.longitude.toString());
-      });
-    }).catchError((e) {
-      print(e);
-    });
-  }
+  CategorySingleton categorySingleton = CategorySingleton();
+
+  // Position _currentPosition;
+  // _getCurrentLocation() {
+  //   Geolocator.getCurrentPosition(
+  //           desiredAccuracy: LocationAccuracy.best,
+  //           forceAndroidLocationManager: true)
+  //       .then((Position position) {
+  //     setState(() {
+  //       _currentPosition = position;
+  //       print("lat : " +
+  //           _currentPosition.latitude.toString() +
+  //           "long : " +
+  //           _currentPosition.longitude.toString());
+  //     });
+  //   }).catchError((e) {
+  //     print(e);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.back(result: widget.outletModel.title);
+        Get.back(result: widget.outletModel);
+        categorySingleton.outletId = widget.outletModel.id;
       },
       child: Container(
         width: widget.size.width,
@@ -116,32 +122,36 @@ class _OutletsHomeCityState extends State<OutletsHomeCity> {
               height: 10,
             ),
             Container(
-              child: FutureBuilder(
-                future: _getCurrentLocation(),
-                builder: (context, snapshot) {
-                  if (_currentPosition != null) {
-                    return Text(
-                      // "10KM",
-                      calculateDistance(
-                            _currentPosition.latitude,
-                            _currentPosition.longitude,
-                            widget.outletModel.latitude,
-                            widget.outletModel.longitude,
-                          ).ceil().toString() +
-                          " KM",
-                      style: TextStyle(
-                        color: softOrangeColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    );
-                  } else {
-                    return SizedBox(
-                      height: 10,
-                    );
-                  }
-                },
+              child: Text(
+                // "10KM",
+                widget.outletModel.distance.round().toString() + " KM",
+                style: TextStyle(
+                  color: softOrangeColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
               ),
+              // child: FutureBuilder(
+              //   future: _getCurrentLocation(),
+              //   builder: (context, snapshot) {
+              //     if (_currentPosition != null) {
+              //       print(widget.outletModel.distance.toString());
+              //       return Text(
+              //         // "10KM",
+              //         widget.outletModel.distance.toString() + " KM",
+              //         style: TextStyle(
+              //           color: softOrangeColor,
+              //           fontWeight: FontWeight.w600,
+              //           fontSize: 14,
+              //         ),
+              //       );
+              //     } else {
+              //       return SizedBox(
+              //         height: 10,
+              //       );
+              //     }
+              //   },
+              // ),
             ),
             // if (widget.currentPosition != null)
             // Text(

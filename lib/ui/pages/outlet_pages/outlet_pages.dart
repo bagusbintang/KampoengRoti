@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:kampoeng_roti/models/city_models.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/city_provider.dart';
 import 'package:kampoeng_roti/providers/outlet_provider.dart';
 import 'package:kampoeng_roti/ui/pages/outlet_pages/components/outlet_city.dart';
 import 'package:kampoeng_roti/ui/pages/outlet_pages/components/outlet_header.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:provider/provider.dart';
+
+import '../../../shared_preferences.dart';
 
 // created by - Bagus *2021-04-07*
 
@@ -16,6 +19,22 @@ class OutletPages extends StatefulWidget {
 
 class _OutletPagesState extends State<OutletPages> {
   CityModel selectedCity;
+  UserModel userModel;
+  void getUserModel() async {
+    userModel = await MySharedPreferences.instance.getUserModel("user");
+    // outletId = await MySharedPreferences.instance.getIntegerValue("outletId");
+    // if (outletId == null) {
+    //   outletId = 0;
+    // }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserModel();
+  }
 
   @override
   void dispose() {
@@ -26,6 +45,7 @@ class _OutletPagesState extends State<OutletPages> {
   Widget build(BuildContext context) {
     CityProvider cityProvider = Provider.of<CityProvider>(context);
     OutletProvider outletProvider = Provider.of<OutletProvider>(context);
+    UserSingleton userSingleton = UserSingleton();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -166,7 +186,10 @@ class _OutletPagesState extends State<OutletPages> {
             Container(
               child: FutureBuilder(
                 future: outletProvider.getOutlets(
-                    city_id: selectedCity == null ? 1 : selectedCity.id),
+                  city_id: selectedCity == null ? 1 : selectedCity.id,
+                  latitude: userSingleton.address.latitude,
+                  longitude: userSingleton.address.longitude,
+                ),
                 builder: (context, snapshot) {
                   return ListView.builder(
                     physics: NeverScrollableScrollPhysics(),

@@ -4,8 +4,13 @@ import 'package:kampoeng_roti/models/category_model.dart';
 import 'package:kampoeng_roti/services/services.dart';
 
 class CategoryService {
-  Future<List<CategoryModel>> getCategory() async {
-    var response = await http.get(Uri.parse(categoryUrl), headers: headers);
+  Future<List<CategoryModel>> getCategory({
+    int outletId,
+  }) async {
+    var response = await http.get(
+      Uri.parse("$categoryUrl/${outletId}"),
+      headers: headers,
+    );
 
     // print(response.body);
 

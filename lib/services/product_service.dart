@@ -6,9 +6,10 @@ import 'package:kampoeng_roti/services/services.dart';
 class ProductService {
   Future<List<ProductModel>> getProduct({
     int catId = 0,
+    int outletId,
     String search = 'all',
   }) async {
-    final url = Uri.encodeFull("$productUrl/${catId}/${search}");
+    final url = Uri.encodeFull("$productUrl/${catId}/${search}/${outletId}");
     var response = await http.get(
       Uri.parse(url),
       headers: headers,
@@ -30,9 +31,11 @@ class ProductService {
     }
   }
 
-  Future<List<ProductModel>> getNewProduct() async {
+  Future<List<ProductModel>> getNewProduct({
+    int outletId,
+  }) async {
     var response = await http.get(
-      Uri.parse(newProductUrl),
+      Uri.parse("$newProductUrl/${outletId}"),
       headers: headers,
     );
 

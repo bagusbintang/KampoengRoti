@@ -27,6 +27,8 @@ class CategoryModel {
 class CategorySingleton {
   int id = 1;
   String title = "Roti";
+
+  int outletId = 0;
   // String imageUrl;
 
   // CategorySingleton({

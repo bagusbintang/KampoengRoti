@@ -39,16 +39,18 @@ class UserAddressService {
     String province,
     double latitude,
     double longitude,
+    int defaultAddress,
   }) async {
     var body = jsonEncode({
       'tag': tagAddress,
-      'name': personName,
-      'phone': personPhone,
+      'detail': personName,
+      'note': personPhone,
       'address': address,
       'city': city,
       'province': province,
       'latitude': latitude,
       'longitude': longitude,
+      'default': defaultAddress,
     });
 
     var response = await http.post(
@@ -79,16 +81,18 @@ class UserAddressService {
     String province,
     double latitude,
     double longitude,
+    int defaultAddress,
   }) async {
     var body = jsonEncode({
       'tag': tagAddress,
-      'name': personName,
-      'phone': personPhone,
+      'detail': personName,
+      'note': personPhone,
       'address': address,
       'city': city,
       'province': province,
       'latitude': latitude,
       'longitude': longitude,
+      'default': defaultAddress,
     });
 
     var response = await http.post(
@@ -97,7 +101,7 @@ class UserAddressService {
       body: body,
     );
 
-    // print(response.body);
+    print(response.body);
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body)['data'];

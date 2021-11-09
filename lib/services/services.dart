@@ -37,4 +37,8 @@ var deleteCartUrl = '$baseUrl/deleteshopingcartdetail';
 
 var checkoutUrl = '$baseUrl/checkout';
 
-var getInvoiceUrl = '$baseUrl/getuserinvoicelist';
+var getInvoiceUrl = '$baseUrl/getuserinvoicelistbystatus';
+
+var getBannerUrl = '$baseUrl/banner';
+
+var getUpdateUserUrl = '$baseUrl/updateuserdata';

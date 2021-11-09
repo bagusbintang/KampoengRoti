@@ -78,6 +78,9 @@ class _MapPickerState extends State<MapPicker> {
         "${placemark.locality}, " + //nama kecamatan
         "${placemark.subAdministrativeArea}, " + //nama kota
         "${placemark.administrativeArea}, "; // nama provinsi
+
+    widget.addressModel.city = placemark.subAdministrativeArea;
+    widget.addressModel.province = placemark.administrativeArea;
     _latitude = latLng.latitude;
     _longitude = latLng.longitude;
   }

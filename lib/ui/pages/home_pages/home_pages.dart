@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/category_model.dart';
+import 'package:kampoeng_roti/models/outlet_model.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
+import 'package:kampoeng_roti/providers/banner_provider.dart';
 import 'package:kampoeng_roti/providers/category_provider.dart';
 import 'package:kampoeng_roti/providers/product_provider.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/outlet_home_page.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/components/main_app_bar.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
-import 'package:kampoeng_roti/ui/pages/product_pages/components/product_card.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class HomePages extends StatefulWidget {
 
 class _HomePagesState extends State<HomePages> {
   int currentPage = 0;
+  int outletId = 0;
   String selectedOutlet = "Pilih Outlet";
   List<Map<String, String>> imageList = [
     {"image": "assets/images/banner.png"},
@@ -34,10 +36,16 @@ class _HomePagesState extends State<HomePages> {
 
   ProductProvider productProvider;
   CategoryProvider categoryProvider;
+  BannerProvider bannerProvider;
   CategorySingleton categorySingleton = CategorySingleton();
+  UserSingleton userSingleton = UserSingleton();
   UserModel userModel;
   void getUserModel() async {
     userModel = await MySharedPreferences.instance.getUserModel("user");
+    // outletId = await MySharedPreferences.instance.getIntegerValue("outletId");
+    // if (outletId == null) {
+    //   outletId = 0;
+    // }
     setState(() {});
   }
 
@@ -58,6 +66,8 @@ class _HomePagesState extends State<HomePages> {
         Get.put(MainPageController(), permanent: true);
     productProvider = Provider.of<ProductProvider>(context);
     categoryProvider = Provider.of<CategoryProvider>(context);
+    bannerProvider = Provider.of<BannerProvider>(context);
+    selectedOutlet = "Outlet " + userSingleton.outlet.title;
     return Scaffold(
       backgroundColor: Colors.transparent,
       // backgroundColor: softOrangeColor,
@@ -80,12 +90,14 @@ class _HomePagesState extends State<HomePages> {
                   color: softOrangeColor,
                   onPressed: () async {
                     // _getCurrentLocation();
-                    String result = await Get.to(OutletHomePage(
-                        // currentPosition: _currentPosition,
-                        ));
+                    OutletModel result = await Get.to(OutletHomePage(
+                      // currentPosition: _currentPosition,
+                      userModel: userModel,
+                    ));
                     setState(() {
                       if (result != null) {
-                        selectedOutlet = "Outlet " + result;
+                        selectedOutlet = "Outlet " + result.title;
+                        userSingleton.outlet = result;
                       }
                     });
                   },
@@ -114,58 +126,52 @@ class _HomePagesState extends State<HomePages> {
                   SizedBox(
                     height: 10,
                   ),
-                  SizedBox(
-                    height: 200,
-                    child: PageView.builder(
-                      onPageChanged: (value) {
-                        setState(() {
-                          currentPage = value;
-                        });
-                      },
-                      itemCount: imageList.length,
-                      itemBuilder: (context, index) => Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Column(
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.asset(
-                                "assets/images/banner_promo.png",
-                                height: 200.0,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
+                  FutureBuilder(
+                    future: bannerProvider.getBanners(),
+                    builder: (context, snapshot) {
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: 200,
+                            child: PageView.builder(
+                              onPageChanged: (value) {
+                                setState(() {
+                                  currentPage = value;
+                                });
+                              },
+                              itemCount: bannerProvider.banners.length,
+                              itemBuilder: (context, index) => Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Column(
+                                  children: <Widget>[
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Image.network(
+                                        bannerProvider.banners[index].imageUrl,
+                                        height: 200.0,
+                                        width: double.infinity,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Container(
-                  //   // padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                  //   child: Column(
-                  //     children: <Widget>[
-                  //       ClipRRect(
-                  //         borderRadius: BorderRadius.circular(8.0),
-                  //         child: Image.asset(
-                  //           "assets/images/banner_promo.png",
-                  //           height: 200.0,
-                  //           width: double.infinity,
-                  //           fit: BoxFit.cover,
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                          imageList.length, (index) => buildDot(index: index)),
-                    ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(
+                                  bannerProvider.banners.length,
+                                  (index) => buildDot(index: index)),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   SizedBox(
                     height: 30,
@@ -270,7 +276,8 @@ class _HomePagesState extends State<HomePages> {
                               vertical: 5.0, horizontal: 10),
                           height: 150,
                           child: FutureBuilder(
-                            future: categoryProvider.getCategories(),
+                            future: categoryProvider.getCategories(
+                                outletId: userSingleton.outlet.id),
                             builder: (context, snapshot) {
                               return ListView.builder(
                                 scrollDirection: Axis.horizontal,
@@ -337,7 +344,8 @@ class _HomePagesState extends State<HomePages> {
                           constraints:
                               BoxConstraints(maxHeight: double.infinity),
                           child: FutureBuilder(
-                            future: productProvider.getNewProducts(),
+                            future: productProvider.getNewProducts(
+                                outletId: userSingleton.outlet.id),
                             builder: (context, snapshot) {
                               return Container(
                                 child: GridView.count(
@@ -352,7 +360,7 @@ class _HomePagesState extends State<HomePages> {
                                       .map(
                                         (product) => NewItemCard(
                                           product: product,
-                                          userModel: userModel,
+                                          userModel: userSingleton.user,
                                         ),
                                       )
                                       .toList(),

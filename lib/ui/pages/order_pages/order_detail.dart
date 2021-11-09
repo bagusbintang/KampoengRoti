@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:kampoeng_roti/models/outlet_model.dart';
 import 'package:kampoeng_roti/models/user_address_model.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/cart_provider.dart';
 import 'package:kampoeng_roti/providers/order_provider.dart';
 import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
+import 'package:kampoeng_roti/ui/pages/home_pages/outlet_home_page.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/member_page.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/address_info.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/cart_choose_button.dart';
@@ -15,6 +18,8 @@ import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 import 'package:provider/provider.dart';
+
+import '../../../shared_preferences.dart';
 
 class Payment {
   String payment;
@@ -33,6 +38,7 @@ class OrderDetail extends StatefulWidget {
 
 class _OrderDetailState extends State<OrderDetail> {
   Payment selectedPayment;
+  UserSingleton userSingleton = UserSingleton();
   List<Payment> paymentList = [
     Payment("COD"),
     Payment("OVO"),
@@ -50,7 +56,22 @@ class _OrderDetailState extends State<OrderDetail> {
     return items;
   }
 
+  // UserModel userModel;
+  // void getUserModel() async {
+  //   userModel = await MySharedPreferences.instance.getUserModel("user");
+  //   setState(() {});
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getUserModel();
+  // }
+
+  String selectedOutlet = "Pilih Outlet";
+
   UserAddressModel userAddress;
+  OutletModel outletModel;
   bool isDeliveryChoosen = false;
   bool isPickUpChoosen = false;
   DateTime date = DateTime.now();
@@ -63,33 +84,67 @@ class _OrderDetailState extends State<OrderDetail> {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     OrderProvider orderProvider = Provider.of<OrderProvider>(context);
 
+    if (userSingleton.outlet != null) {
+      selectedOutlet = userSingleton.outlet.title +
+          "( ${userSingleton.outlet.distance.round()} KM )";
+    }
+
     handleCheckOut() async {
-      if (await orderProvider.checkOut(
-        userId: userAddress.userId,
-        deliveryMethod: isDeliveryChoosen ? 1 : 2,
-        addressId: userAddress.id,
-        outletId: 1,
-        promoId: 1,
-        shippingCosts: isDeliveryChoosen ? 10000 : 0,
-        promoDisc: 0,
-        memberDisc: 0,
-        deliveryTime: date.toString(),
-        paymenMethod: selectedPayment.payment,
-        note: "",
-        total: cartProvider.totalPrice(),
-        grandTotal: isDeliveryChoosen
-            ? cartProvider.totalPrice() + 10000
-            : cartProvider.totalPrice(),
-      )) {
-        Get.off(OrderDone());
+      if (isDeliveryChoosen) {
+        if (await orderProvider.checkOut(
+          userId: userSingleton.user.id,
+          deliveryMethod: 1,
+          addressId:
+              userAddress != null ? userAddress.id : userSingleton.address.id,
+          outletId: outletModel != null ? userSingleton.user.id : 1,
+          promoId: 1,
+          shippingCosts: 5000 * userSingleton.outlet.distance.roundToDouble(),
+          promoDisc: 0,
+          memberDisc: 0,
+          deliveryTime: date.toString(),
+          paymenMethod: selectedPayment.payment,
+          note: "",
+          total: cartProvider.totalPrice(),
+          grandTotal: cartProvider.totalPrice(),
+        )) {
+          Get.off(OrderDone(), arguments: [date, isDeliveryChoosen]);
+        } else {
+          Get.snackbar(
+            "Gagal CheckOut",
+            "Ada yang salah",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: softOrangeColor,
+            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          );
+        }
       } else {
-        Get.snackbar(
-          "Gagal CheckOut",
-          "Ada yang salah",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: softOrangeColor,
-          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-        );
+        if (await orderProvider.checkOut(
+          userId: userSingleton.user.id,
+          deliveryMethod: 2,
+          outletId: outletModel != null ? userSingleton.user.id : 1,
+          promoId: 1,
+          shippingCosts: 0,
+          promoDisc: 0,
+          memberDisc: 0,
+          deliveryTime: date.toString(),
+          paymenMethod: selectedPayment.payment,
+          note: "",
+          total: cartProvider.totalPrice(),
+          grandTotal: cartProvider.totalPrice(),
+        )) {
+          Get.off(OrderDone(), arguments: [
+            date,
+            isDeliveryChoosen,
+          ]);
+        } else {
+          Get.snackbar(
+            "Gagal CheckOut",
+            "Ada yang salah",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: softOrangeColor,
+            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          );
+        }
       }
     }
 
@@ -284,7 +339,11 @@ class _OrderDetailState extends State<OrderDetail> {
                   ),
                 ),
                 Text(
-                  isDeliveryChoosen ? "Rp 10.000" : "Rp 0",
+                  isDeliveryChoosen
+                      ? userSingleton.outlet != null
+                          ? "Rp ${5000 * userSingleton.outlet.distance.round()}"
+                          : "Rp 0"
+                      : "Rp 0",
                   style: TextStyle(
                     color: softOrangeColor,
                     fontSize: 14,
@@ -447,7 +506,11 @@ class _OrderDetailState extends State<OrderDetail> {
                       ),
                     ),
                     Text(
-                      isDeliveryChoosen ? "Rp 10.000" : "Rp 0",
+                      isDeliveryChoosen
+                          ? userSingleton.outlet != null
+                              ? "Rp ${5000 * userSingleton.outlet.distance.round()}"
+                              : "Rp 0"
+                          : "Rp 0",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -474,7 +537,9 @@ class _OrderDetailState extends State<OrderDetail> {
                     ),
                     Text(
                       isDeliveryChoosen
-                          ? "Rp. ${currencyFormatter.format(cartProvider.totalPrice() + 10000)}"
+                          ? userSingleton.outlet != null
+                              ? "Rp. ${currencyFormatter.format(cartProvider.totalPrice() + 5000 * userSingleton.outlet.distance.round())}"
+                              : "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}"
                           : "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}",
                       style: TextStyle(
                         color: softOrangeColor,
@@ -626,7 +691,11 @@ class _OrderDetailState extends State<OrderDetail> {
                                     ? userAddress.tagAddress.toUpperCase() +
                                         " - " +
                                         userAddress.address
-                                    : 'Pilih Alamat',
+                                    : userSingleton.address != null
+                                        ? userSingleton.address.tagAddress +
+                                            " - " +
+                                            userSingleton.address.address
+                                        : 'Pilih Alamat',
                                 style: TextStyle(
                                   color: Colors.black87,
                                   fontSize: 12,
@@ -662,9 +731,27 @@ class _OrderDetailState extends State<OrderDetail> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
+                    // InkWell(
+                    //   onTap: () async {
+                    //     // _getCurrentLocation();
+                    //     userSingleton.outlet = await Get.to(OutletHomePage(
+                    //         // currentPosition: _currentPosition,
+                    //         userModel: userSingleton.user));
+                    //     setState(() {
+                    //       if (userSingleton.outlet != null) {
+                    //         selectedOutlet = userSingleton.outlet.title +
+                    //             "( ${userSingleton.outlet.distance.round()} KM )";
+                    //       }
+                    //     });
+                    //   },
+                    //   child: AddressInfo(
+                    //     titleName: "Outlet Pengiriman",
+                    //     bodyName: selectedOutlet,
+                    //   ),
+                    // ),
                     AddressInfo(
                       titleName: "Outlet Pengiriman",
-                      bodyName: "Wiyung (15 Km)",
+                      bodyName: selectedOutlet,
                     ),
                     AddressInfo(
                       titleName: "Tanggal Pengiriman",

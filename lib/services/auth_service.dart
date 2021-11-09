@@ -62,4 +62,34 @@ class AuthService {
       throw Exception('Gagal Login');
     }
   }
+
+  Future<UserModel> updateProfile({
+    int userId,
+    String name,
+    String email,
+    String phone,
+  }) async {
+    var body = jsonEncode({
+      'name': name,
+      'email': email,
+      'phone': phone,
+    });
+
+    var response = await http.post(
+      Uri.parse("$getUpdateUserUrl/${userId}"),
+      headers: headers,
+      body: body,
+    );
+
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['data'];
+      UserModel user = UserModel.fromJson(data['respons_res']);
+
+      return user;
+    } else {
+      throw Exception('Gagal Mengubah Profil !!');
+    }
+  }
 }

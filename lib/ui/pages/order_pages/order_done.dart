@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_contact_us.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/order_done_header.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
@@ -9,6 +10,10 @@ class OrderDone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    dynamic data = Get.arguments;
+    bool isDeliv = data[1];
+    DateTime date = data[0];
+    var formatDate = DateFormat('d MMMM yyyy');
     return Scaffold(
       body: Container(
         height: size.height,
@@ -57,7 +62,9 @@ class OrderDone extends StatelessWidget {
                           )),
                       child: Center(
                         child: Text(
-                          "Delivery Order".toUpperCase(),
+                          isDeliv
+                              ? "Delivery Order".toUpperCase()
+                              : "Pick Up".toUpperCase(),
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
@@ -70,7 +77,9 @@ class OrderDone extends StatelessWidget {
                       height: 20,
                     ),
                     Text(
-                      "Terima Kasih, pesanan Anda akan diantar :",
+                      isDeliv
+                          ? "Terima Kasih, pesanan Anda akan diantar :"
+                          : "Terima Kasih, pesanan Anda akan siap :",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -80,7 +89,8 @@ class OrderDone extends StatelessWidget {
                       height: 20,
                     ),
                     Text(
-                      "SELASA. 12 MEI 2021 Pk. 10.00",
+                      // "SELASA. 12 MEI 2021 Pk. 10.00",
+                      "${formatDate.format(date)} Pk. ${DateFormat.Hm().format(date)}",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,

@@ -1,12 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
+import 'package:kampoeng_roti/providers/auth_provider.dart';
+import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
+import 'package:provider/provider.dart';
 
-class EditProfile extends StatelessWidget {
+import '../../../shared_preferences.dart';
+
+class EditProfile extends StatefulWidget {
   const EditProfile({Key key}) : super(key: key);
 
   @override
+  State<EditProfile> createState() => _EditProfileState();
+}
+
+class _EditProfileState extends State<EditProfile> {
+  TextEditingController personNameController;
+  TextEditingController emailController;
+  TextEditingController phoneController;
+
+  UserModel userModel = Get.arguments;
+
+  @override
+  void dispose() {
+    super.dispose();
+    personNameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    personNameController = TextEditingController(text: userModel.name);
+    emailController = TextEditingController(text: userModel.email);
+    phoneController = TextEditingController(
+        text: userModel.phone != null ? userModel.phone.toString() : "0");
+
+    handleUpdateProile() async {
+      if (await authProvider.updateProfile(
+          userId: userModel.id,
+          name: personNameController.text,
+          email: emailController.text,
+          phone: phoneController.text)) {
+        userModel.name = personNameController.text;
+        userModel.email = emailController.text;
+        userModel.phone = phoneController.text;
+
+        MySharedPreferences.instance.setUserModel("user", userModel);
+        Get.back();
+      } else {
+        Get.snackbar(
+          "Gagal Ubah Profil",
+          "",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: softOrangeColor,
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        );
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -37,15 +91,12 @@ class EditProfile extends StatelessWidget {
               ),
               textFieldPersonName(
                 "Nama Pengguna",
-                initValue: "Bima Aprianto Siono",
               ),
               textFieldEmail(
                 "Alamat Email",
-                initValue: "bima.aprianto@gmail.com",
               ),
               textFieldPersonPhone(
                 "Nomor Telpon",
-                initValue: 081805512618,
               ),
               SizedBox(
                 height: 30,
@@ -53,7 +104,8 @@ class EditProfile extends StatelessWidget {
               DefaultButton(
                 text: "SIMPAN",
                 press: () {
-                  Get.back();
+                  handleUpdateProile();
+                  // Get.back();
                 },
               ),
               SizedBox(
@@ -88,7 +140,7 @@ class EditProfile extends StatelessWidget {
               primaryColor: Colors.grey[300],
             ),
             child: TextFormField(
-              initialValue: initValue,
+              controller: personNameController,
               keyboardType: TextInputType.name,
               decoration: InputDecoration(
                   contentPadding: const EdgeInsets.all(25),
@@ -131,7 +183,7 @@ class EditProfile extends StatelessWidget {
               primaryColor: Colors.grey[300],
             ),
             child: TextFormField(
-              initialValue: initValue,
+              controller: emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                   contentPadding: const EdgeInsets.all(25),
@@ -174,7 +226,7 @@ class EditProfile extends StatelessWidget {
               primaryColor: Colors.grey[300],
             ),
             child: TextFormField(
-              initialValue: initValue.toString(),
+              controller: phoneController,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                   contentPadding: const EdgeInsets.all(25),

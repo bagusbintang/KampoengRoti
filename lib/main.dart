@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/auth_provider.dart';
+import 'package:kampoeng_roti/providers/banner_provider.dart';
 import 'package:kampoeng_roti/providers/cart_provider.dart';
 import 'package:kampoeng_roti/providers/category_provider.dart';
 import 'package:kampoeng_roti/providers/city_provider.dart';
@@ -20,7 +22,16 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   bool isLoggedIn = false;
+  UserSingleton userSingleton = UserSingleton();
   isLoggedIn = await MySharedPreferences.instance.getLoginValue("LoggedIn");
+  if (isLoggedIn) {
+    UserModel userModel =
+        await MySharedPreferences.instance.getUserModel("user");
+    userSingleton.user = userModel;
+    userSingleton.address = userModel.defaulAdress;
+    userSingleton.outlet = userModel.defaulAdress.outletModel;
+  }
+
   runApp(
     MainApp(isLoggedIn: isLoggedIn),
   );
@@ -67,6 +78,9 @@ class MainApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => OrderProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => BannerProvider(),
         ),
       ],
       child: GetMaterialApp(

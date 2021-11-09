@@ -6,8 +6,10 @@ import 'package:kampoeng_roti/services/services.dart';
 class OutletService {
   Future<List<OutletModel>> getOutlets({
     int cityId,
+    double latitude,
+    double longitude,
   }) async {
-    final url = Uri.encodeFull("$outletUrl/${cityId}");
+    final url = Uri.encodeFull("$outletUrl/${cityId}/${latitude}/${longitude}");
     // var params = {
     //   "city_id": cityId.toString(),
     // };

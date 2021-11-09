@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/city_models.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/city_provider.dart';
 import 'package:kampoeng_roti/providers/outlet_provider.dart';
 import 'package:kampoeng_roti/ui/pages/home_pages/components/outlet_home_city.dart';
@@ -11,8 +12,10 @@ import 'package:provider/provider.dart';
 class OutletHomePage extends StatefulWidget {
   const OutletHomePage({
     Key key,
+    this.userModel,
     // this.currentPosition,
   }) : super(key: key);
+  final UserModel userModel;
   // final Position currentPosition;
 
   @override
@@ -183,7 +186,10 @@ class _OutletHomePageState extends State<OutletHomePage> {
                   Container(
                     child: FutureBuilder(
                       future: outletProvider.getOutlets(
-                          city_id: selectedCity == null ? 1 : selectedCity.id),
+                        city_id: selectedCity == null ? 1 : selectedCity.id,
+                        latitude: widget.userModel.defaulAdress.latitude,
+                        longitude: widget.userModel.defaulAdress.longitude,
+                      ),
                       builder: (context, snapshot) {
                         return ListView.builder(
                           physics: NeverScrollableScrollPhysics(),

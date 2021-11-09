@@ -64,14 +64,15 @@ class NewItemCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Image.asset(
-                    "assets/images/vec_love.png",
-                    height: 25,
-                    width: 25,
+                if (product.status == 1)
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Image.asset(
+                      "assets/images/vec_love.png",
+                      height: 25,
+                      width: 25,
+                    ),
                   ),
-                ),
               ],
             ),
             SizedBox(

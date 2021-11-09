@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kampoeng_roti/models/outlet_model.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OutletsCity extends StatelessWidget {
   const OutletsCity({
@@ -14,6 +15,14 @@ class OutletsCity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    handleLaunchMap() async {
+      if (await canLaunch(outletModel.url)) {
+        await launch(outletModel.url);
+      } else {
+        throw 'Could not open the map.';
+      }
+    }
+
     return Container(
       width: size.width,
       padding: const EdgeInsets.symmetric(
@@ -70,11 +79,14 @@ class OutletsCity extends StatelessWidget {
               fontWeight: FontWeight.w400,
             ),
           ),
-          Text(
-            "LIHAT PETA --->",
-            style: TextStyle(
-              color: choclateColor,
-              fontWeight: FontWeight.w400,
+          InkWell(
+            onTap: handleLaunchMap,
+            child: Text(
+              "LIHAT PETA --->",
+              style: TextStyle(
+                color: choclateColor,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           )
         ],

@@ -19,20 +19,26 @@ class ProductPages extends StatefulWidget {
 }
 
 class _ProductPagesState extends State<ProductPages> {
+  // int outletId = 0;
   String search;
   TextEditingController searchController = TextEditingController(text: '');
   CategorySingleton categorySingleton = CategorySingleton();
-  UserModel userModel;
-  void getUserModel() async {
-    userModel = await MySharedPreferences.instance.getUserModel("user");
-    setState(() {});
-  }
+  UserSingleton userSingleton = UserSingleton();
+  // UserModel userModel;
+  // void getUserModel() async {
+  //   userModel = await MySharedPreferences.instance.getUserModel("user");
+  //   // outletId = await MySharedPreferences.instance.getIntegerValue("outletId");
+  //   // if (outletId == null) {
+  //   //   outletId = 0;
+  //   // }
+  //   setState(() {});
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    getUserModel();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getUserModel();
+  // }
 
   @override
   void dispose() {
@@ -91,7 +97,8 @@ class _ProductPagesState extends State<ProductPages> {
                         margin: EdgeInsets.symmetric(vertical: 5.0),
                         height: 150.0,
                         child: FutureBuilder(
-                          future: categoryProvider.getCategories(),
+                          future: categoryProvider.getCategories(
+                              outletId: userSingleton.outlet.id),
                           builder: (context, snapshot) {
                             categorySingleton.title =
                                 categoryProvider.categories[0].title;
@@ -111,6 +118,8 @@ class _ProductPagesState extends State<ProductPages> {
                                         .categories[index].title;
                                     categorySingleton.id =
                                         categoryProvider.categories[index].id;
+                                    searchController.clear();
+                                    search = null;
                                   });
                                 },
                               ),
@@ -158,6 +167,7 @@ class _ProductPagesState extends State<ProductPages> {
                   child: FutureBuilder(
                     future: productProvider.getProducts(
                       catId: categorySingleton.id,
+                      outletId: userSingleton.outlet.id,
                       search: search == null
                           ? "all"
                           : search == ''
@@ -165,25 +175,38 @@ class _ProductPagesState extends State<ProductPages> {
                               : search,
                     ),
                     builder: (context, snapshot) {
-                      return Container(
-                        child: GridView.count(
-                          crossAxisCount: 2,
-                          shrinkWrap: true,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          scrollDirection: Axis.vertical,
-                          physics: NeverScrollableScrollPhysics(),
-                          childAspectRatio: .7,
-                          children: productProvider.products
-                              .map(
-                                (product) => ProductCard(
-                                  product: product,
-                                  userModel: userModel,
+                      return productProvider.products.length == 0
+                          ? Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: Center(
+                                child: Text(
+                                  "Tidak menenukan hasil, mohon menggunakan kata kunci lainnya",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400),
                                 ),
-                              )
-                              .toList(),
-                        ),
-                      );
+                              ),
+                            )
+                          : Container(
+                              child: GridView.count(
+                                crossAxisCount: 2,
+                                shrinkWrap: true,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                scrollDirection: Axis.vertical,
+                                physics: NeverScrollableScrollPhysics(),
+                                childAspectRatio: .7,
+                                children: productProvider.products
+                                    .map(
+                                      (product) => ProductCard(
+                                        product: product,
+                                        userModel: userSingleton.user,
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            );
                     },
                   ),
                 ),
@@ -206,6 +229,8 @@ class _ProductPagesState extends State<ProductPages> {
         onChanged: (value) {
           if (value != null && value != '') {
             search = value;
+          } else {
+            search = "all";
           }
           // value != "" ? search = value : search = "all";
         },

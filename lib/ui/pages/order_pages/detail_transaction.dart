@@ -11,12 +11,17 @@ import 'package:provider/provider.dart';
 import '../../../shared_preferences.dart';
 
 class DetailTransaction extends StatefulWidget {
+  const DetailTransaction({
+    Key key,
+    this.userModel,
+    // this.currentPosition,
+  }) : super(key: key);
+  final UserModel userModel;
   @override
   _DetailTransactionState createState() => _DetailTransactionState();
 }
 
 class _DetailTransactionState extends State<DetailTransaction> {
-  UserModel userModel;
   List<String> categoryStatus = [
     "Menunggu Pembayaran",
     "Pesanan Diproses",
@@ -25,17 +30,6 @@ class _DetailTransactionState extends State<DetailTransaction> {
   ];
   int selectedIndex = 0;
   // String selecetedStatus = "Menunggu Pembayaran";
-
-  void getUserModel() async {
-    userModel = await MySharedPreferences.instance.getUserModel("user");
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getUserModel();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +102,12 @@ class _DetailTransactionState extends State<DetailTransaction> {
               //     ),
               //   ),
               // ),
-              userModel != null
+              widget.userModel != null
                   ? Container(
                       child: FutureBuilder(
-                        future: orderProvider.getInvoices(userId: userModel.id),
+                        future: orderProvider.getInvoices(
+                            userId: widget.userModel.id,
+                            status: selectedIndex + 1),
                         builder: (context, snapshot) {
                           return Column(
                             children: orderProvider.invoices

@@ -6,8 +6,8 @@ class OutletModel {
   String phone;
   double latitude;
   double longitude;
-  Uri url;
-  int rangeOutlet;
+  String url;
+  double distance;
 
   OutletModel({
     this.id,
@@ -18,7 +18,7 @@ class OutletModel {
     this.latitude,
     this.longitude,
     this.url,
-    this.rangeOutlet,
+    this.distance,
   });
 
   OutletModel.fromJson(Map<String, dynamic> outletJson) {
@@ -27,8 +27,10 @@ class OutletModel {
     title = outletJson['outlet_title'];
     address = outletJson['outlet_address'];
     phone = outletJson['outlet_phone'];
-    latitude = double.parse(outletJson['outlet_latitude']);
-    longitude = double.parse(outletJson['outlet_longitude']);
+    url = outletJson['outlet_map'].toString();
+    latitude = double.parse(outletJson['outlet_latitude'].toString());
+    longitude = double.parse(outletJson['outlet_longitude'].toString());
+    distance = double.parse(outletJson['distance_in_km'].toString());
   }
 
   Map<String, dynamic> toJson() {
@@ -38,8 +40,10 @@ class OutletModel {
       'outlet_title': title,
       'outlet_address': address,
       'outlet_phone': phone,
+      'outlet_map': url,
       'outlet_latitude': latitude,
       'outlet_longitude': longitude,
+      'distance_in_km': distance,
     };
   }
 }
