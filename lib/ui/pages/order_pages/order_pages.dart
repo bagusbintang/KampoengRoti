@@ -153,7 +153,7 @@ class _OrderPagesState extends State<OrderPages> with WidgetsBindingObserver {
                               width: 20,
                             ),
                             Text(
-                              "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}",
+                              "Rp ${currencyFormatter.format(cartProvider.totalPrice())}",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,

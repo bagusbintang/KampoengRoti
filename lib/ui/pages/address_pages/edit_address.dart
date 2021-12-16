@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kampoeng_roti/models/city_models.dart';
 import 'package:kampoeng_roti/models/province_models.dart';
 import 'package:kampoeng_roti/models/user_address_model.dart';
@@ -11,6 +14,7 @@ import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
 import 'package:kampoeng_roti/ui/pages/address_pages/map_picker.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_webservice/places.dart';
 
 import '../../../shared_preferences.dart';
 
@@ -38,6 +42,9 @@ class _EditAddressState extends State<EditAddress> {
   // String cityName;
   bool _checkBoxValue = false;
 
+  List<Placemark> _placemarks;
+  String _address;
+
   void getUserModel() async {
     userModel = await MySharedPreferences.instance.getUserModel("user");
     // setState(() {});
@@ -47,6 +54,22 @@ class _EditAddressState extends State<EditAddress> {
   void initState() {
     super.initState();
     getUserModel();
+  }
+
+  void _getPlace(LatLng latLng) async {
+    _placemarks =
+        await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+
+    Placemark placemark = _placemarks[0];
+    _address = "${placemark.street}, " + //nama jalan
+        "${placemark.subLocality}, " + //nama sektor
+        "${placemark.locality}, " + //nama kecamatan
+        "${placemark.subAdministrativeArea}, " + //nama kota
+        "${placemark.administrativeArea}, "; // nama provinsi
+    addressController.text = _address;
+    userAddress.address = _address;
+    userAddress.city = placemark.subAdministrativeArea;
+    userAddress.province = placemark.administrativeArea;
   }
 
   @override
@@ -64,11 +87,14 @@ class _EditAddressState extends State<EditAddress> {
 
   @override
   Widget build(BuildContext context) {
+    const kGoogleApiKey = "AIzaSyDFo_3wbFmTfFHuaivN56QOyupSdnkSeis";
+
+    GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
     tagNameController = TextEditingController(text: userAddress.tagAddress);
     personNameController = TextEditingController(text: userAddress.personName);
     phoneController = TextEditingController(text: userAddress.personPhone);
     addressController = TextEditingController(text: userAddress.address);
-    notesController = TextEditingController(text: userAddress.personName);
+    notesController = TextEditingController(text: userAddress.notes);
     addressDetailController =
         TextEditingController(text: userAddress.personPhone);
 
@@ -80,6 +106,7 @@ class _EditAddressState extends State<EditAddress> {
     if (userAddress.defaultAddress == 1) {
       _checkBoxValue = true;
     }
+    UserSingleton userSingleton = UserSingleton();
 
     handleAddAddress() async {
       print(userAddress.latitude.toString());
@@ -87,20 +114,25 @@ class _EditAddressState extends State<EditAddress> {
         addressId: userAddress.id,
         tagAddress: tagNameController.text,
         personName: addressController.text,
-        personPhone: notesController.text,
+        personPhone: phoneController.text,
         address: addressController.text,
         province: userAddress.province,
+        notes: notesController.text,
         city: userAddress.city,
         latitude: userAddress.latitude,
         longitude: userAddress.longitude,
         defaultAddress: userAddress.defaultAddress,
       )) {
         if (_checkBoxValue) {
-          userModel.defaulAdress = userAddress;
+          userSingleton.address = addressProvider.userAddressModel;
+          userSingleton.outlet = addressProvider.userAddressModel.outletModel;
+          userModel.defaulAdress = addressProvider.userAddressModel;
+          userModel.token = "";
+          userModel.profilePictureUrl = "";
           MySharedPreferences.instance.setUserModel("user", userModel);
         }
-        Get.off(DeliveryAddress());
-        // Get.back();
+        // Get.off(DeliveryAddress());
+        Get.back();
       } else {
         // Get.snackbar(
         //   "Gagal Register",
@@ -109,6 +141,26 @@ class _EditAddressState extends State<EditAddress> {
         //   backgroundColor: softOrangeColor,
         //   margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         // );
+      }
+    }
+
+    Future<Null> displayPrediction(Prediction p) async {
+      if (p != null) {
+        PlacesDetailsResponse detail =
+            await _places.getDetailsByPlaceId(p.placeId);
+        var placeId = p.placeId;
+        double lat = detail.result.geometry.location.lat;
+        double lng = detail.result.geometry.location.lng;
+
+        // var address =
+        //     await Geocoder.local.findAddressesFromQuery(p.description);
+
+        userAddress.latitude = lat;
+        userAddress.longitude = lng;
+
+        print(lat);
+        print(lng);
+        _getPlace(LatLng(lat, lng));
       }
     }
 
@@ -144,19 +196,28 @@ class _EditAddressState extends State<EditAddress> {
               ),
               GestureDetector(
                 onTap: () async {
-                  var result =
-                      await Get.to(MapPicker(addressModel: userAddress));
-                  setState(() {
-                    userAddress = result;
-                    addressController =
-                        TextEditingController(text: userAddress.address);
-                  });
+                  // var result =
+                  //     await Get.to(MapPicker(addressModel: userAddress));
+                  // setState(() {
+                  //   userAddress = result;
+                  //   addressController =
+                  //       TextEditingController(text: userAddress.address);
+                  // });
+                  Prediction p = await PlacesAutocomplete.show(
+                    context: context,
+                    apiKey: kGoogleApiKey,
+                    mode: Mode.overlay,
+                  );
+                  displayPrediction(p);
                 },
                 child: textFieldPinLocation("Alamat",
                     initValue: userAddress.address),
               ),
               textFieldAddress(
                 "Detil Alamat",
+              ),
+              textFieldPersonPhone(
+                "Telepon",
               ),
               textFieldNotes(
                 "Catatan",
@@ -297,7 +358,7 @@ class _EditAddressState extends State<EditAddress> {
                   ),
                   filled: true,
                   hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
+                  hintText: "Contoh: Rumah, Kantor",
                   fillColor: Colors.grey[300]),
             ),
           )
@@ -430,7 +491,7 @@ class _EditAddressState extends State<EditAddress> {
                   ),
                   filled: true,
                   hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
+                  hintText: "Nomor Unit, Lantai Gedung",
                   fillColor: Colors.grey[300]),
             ),
           )
@@ -474,7 +535,7 @@ class _EditAddressState extends State<EditAddress> {
                   ),
                   filled: true,
                   hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
+                  hintText: "Pesan untuk Bagian Pengiriman",
                   fillColor: Colors.grey[300]),
             ),
           )

@@ -10,6 +10,7 @@ import 'package:kampoeng_roti/providers/faq_provider.dart';
 import 'package:kampoeng_roti/providers/order_provider.dart';
 import 'package:kampoeng_roti/providers/outlet_provider.dart';
 import 'package:kampoeng_roti/providers/product_provider.dart';
+import 'package:kampoeng_roti/providers/promo_provider.dart';
 import 'package:kampoeng_roti/providers/province_provider.dart';
 import 'package:kampoeng_roti/providers/user_address_provider.dart';
 import 'package:kampoeng_roti/shared_preferences.dart';
@@ -81,6 +82,9 @@ class MainApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => BannerProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => PromoProvider(),
         ),
       ],
       child: GetMaterialApp(

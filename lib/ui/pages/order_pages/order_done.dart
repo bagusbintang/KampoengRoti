@@ -79,7 +79,7 @@ class OrderDone extends StatelessWidget {
                     Text(
                       isDeliv
                           ? "Terima Kasih, pesanan Anda akan diantar :"
-                          : "Terima Kasih, pesanan Anda akan siap :",
+                          : "Terima Kasih, pesanan Anda siap diambil :",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

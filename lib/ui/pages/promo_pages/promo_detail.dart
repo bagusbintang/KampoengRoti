@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:kampoeng_roti/models/promo_model.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 
 class PromoDetail extends StatelessWidget {
   const PromoDetail({
     Key key,
+    this.promo,
+    this.used,
   }) : super(key: key);
+  final PromoModel promo;
+  final bool used;
+
+  String convertDateTimeDisplay(String date) {
+    final DateFormat displayFormater = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+    final DateFormat serverFormater = DateFormat('dd-MM-yyyy');
+    final DateTime displayDate = displayFormater.parse(date);
+    final String formatted = serverFormater.format(displayDate);
+    return formatted;
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(used);
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -32,7 +48,7 @@ class PromoDetail extends StatelessWidget {
       ),
       body: Column(
         children: <Widget>[
-          PromoDetailHeader(size: size),
+          promoHeader(size),
           Container(
             margin: const EdgeInsets.symmetric(
               horizontal: 30,
@@ -57,17 +73,14 @@ class PromoDetail extends StatelessWidget {
               ],
             ),
             child: Padding(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
               child: Row(
                 children: <Widget>[
                   Flexible(
                     flex: 2,
                     child: Container(
                       height: double.maxFinite,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 20,
-                      ),
+                      margin: EdgeInsets.fromLTRB(20, 20, 20, 20),
                       child: Center(
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +102,8 @@ class PromoDetail extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  "12 Jan 2019",
+                                  // "12 Jan 2019",
+                                  convertDateTimeDisplay(promo.end.toString()),
                                   style: TextStyle(
                                     // color: softOrangeColor,
                                     fontSize: 12,
@@ -112,10 +126,7 @@ class PromoDetail extends StatelessWidget {
                     flex: 2,
                     child: Container(
                       height: double.maxFinite,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 20,
-                      ),
+                      margin: EdgeInsets.fromLTRB(10, 20, 0, 20),
                       child: Center(
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +148,9 @@ class PromoDetail extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  "PROMOGET",
+                                  // "PROMOGET",
+                                  promo.title,
+                                  overflow: TextOverflow.clip,
                                   style: TextStyle(
                                     // color: softOrangeColor,
                                     fontSize: 12,
@@ -171,13 +184,14 @@ class PromoDetail extends StatelessWidget {
               padding: EdgeInsets.only(
                 top: 20,
                 left: 20,
-                right: 10,
+                right: 0,
                 bottom: 10,
               ),
               child: Column(
                 children: <Widget>[
                   Text(
-                    "Nikmati diskon 10% untuk pembelian pertama kamu di kampoeng roti",
+                    // "Nikmati diskon 10% untuk pembelian pertama kamu di kampoeng roti",
+                    promo.desc,
                     style: TextStyle(
                       fontSize: 14,
                     ),
@@ -185,76 +199,102 @@ class PromoDetail extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  Text(
-                    "Nikmati diskon 10% untuk pembelian pertama kamu di kampoeng roti",
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
+                  // Text(
+                  //   "Nikmati diskon 10% untuk pembelian pertama kamu di kampoeng roti",
+                  //   style: TextStyle(
+                  //     fontSize: 12,
+                  //   ),
+                  // ),
                 ],
               ),
+            ),
+          ),
+          Spacer(),
+          Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 20,
+            ),
+            child: DefaultButton(
+              press: () {
+                Get.back(result: used ? null : promo);
+              },
+              text: used ? "BATALKAN" : "PAKAI",
             ),
           ),
         ],
       ),
     );
   }
-}
 
-class PromoDetailHeader extends StatelessWidget {
-  const PromoDetailHeader({
-    Key key,
-    @required this.size,
-  }) : super(key: key);
-
-  final Size size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: size.height / 5,
-      width: size.width,
-      decoration: BoxDecoration(
-        color: softOrangeColor,
-      ),
-      child: Stack(
-        children: [
-          Center(
-            child: Image(
-              image: AssetImage(
-                "assets/images/ic_promo.png",
-              ),
-              height: 80,
-              width: 80,
+  Container promoHeader(Size size) {
+    return promo.imageUrl == null
+        ? Container(
+            height: size.height / 5,
+            width: size.width,
+            decoration: BoxDecoration(
+              color: softOrangeColor,
             ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              width: 50,
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-              margin: EdgeInsets.symmetric(vertical: 15),
-              decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(0),
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(0),
-                  )),
-              child: Text(
-                "x1",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+            child: Stack(
+              children: [
+                Center(
+                  child: Image(
+                    image: AssetImage(
+                      "assets/images/ic_promo.png",
+                    ),
+                    height: 80,
+                    width: 80,
+                  ),
+                ),
+                // Positioned(
+                //   bottom: 0,
+                //   right: 0,
+                //   child: Container(
+                //     width: 50,
+                //     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                //     margin: EdgeInsets.symmetric(vertical: 15),
+                //     decoration: BoxDecoration(
+                //         color: Colors.grey[300],
+                //         borderRadius: BorderRadius.only(
+                //           topLeft: Radius.circular(30),
+                //           topRight: Radius.circular(0),
+                //           bottomLeft: Radius.circular(30),
+                //           bottomRight: Radius.circular(0),
+                //         )),
+                //     child: Text(
+                //       "x1",
+                //       style: TextStyle(
+                //         fontSize: 18,
+                //         fontWeight: FontWeight.w600,
+                //         color: Colors.black,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
+          )
+        : Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(0),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(0),
+              ),
+              color: Colors.white,
+            ),
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+                child: Image.network(
+                  promo.imageUrl,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
 }

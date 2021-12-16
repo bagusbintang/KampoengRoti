@@ -4,7 +4,7 @@ import 'package:kampoeng_roti/models/user_address_model.dart';
 import 'package:kampoeng_roti/ui/pages/address_pages/edit_address.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
-class AddressContainer extends StatelessWidget {
+class AddressContainer extends StatefulWidget {
   const AddressContainer({
     Key key,
     this.userAddres,
@@ -14,15 +14,20 @@ class AddressContainer extends StatelessWidget {
   final Function press;
 
   @override
+  State<AddressContainer> createState() => _AddressContainerState();
+}
+
+class _AddressContainerState extends State<AddressContainer> {
+  @override
   Widget build(BuildContext context) {
     bool mainAddress = false;
-    if (userAddres.defaultAddress == 0) {
+    if (widget.userAddres.defaultAddress == 0) {
       mainAddress = false;
     } else {
       mainAddress = true;
     }
     return InkWell(
-      onTap: press,
+      onTap: widget.press,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         child: Column(
@@ -33,7 +38,7 @@ class AddressContainer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    userAddres.tagAddress.toUpperCase(),
+                    widget.userAddres.tagAddress.toUpperCase(),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -68,14 +73,14 @@ class AddressContainer extends StatelessWidget {
               ),
             ),
             Text(
-              userAddres.personName,
+              widget.userAddres.personName,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
             Text(
-              userAddres.address,
+              widget.userAddres.address,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -87,7 +92,7 @@ class AddressContainer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "No. Telpon : ${userAddres.personPhone}",
+                    "No. Telpon : ${widget.userAddres.personPhone}",
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -97,8 +102,8 @@ class AddressContainer extends StatelessWidget {
                     onTap: () {
                       Get.to(
                         EditAddress(),
-                        arguments: userAddres,
-                      );
+                        arguments: widget.userAddres,
+                      ).then((value) => setState(() {}));
                     },
                     child: Container(
                       child: Row(

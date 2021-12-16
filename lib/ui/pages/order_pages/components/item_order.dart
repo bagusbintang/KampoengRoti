@@ -19,8 +19,17 @@ class ItemOrder extends StatefulWidget {
 class _ItemOrderState extends State<ItemOrder> {
   TextEditingController notesController;
   CartProvider cartProvider;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    notesController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    notesController = TextEditingController(text: widget.cart.notes);
     final currencyFormatter = NumberFormat('#,###', 'ID');
     cartProvider = Provider.of<CartProvider>(context);
     notesController = TextEditingController(text: widget.cart.notes);
@@ -58,7 +67,7 @@ class _ItemOrderState extends State<ItemOrder> {
                             ),
                           ),
                           Text(
-                            "Rp. ${currencyFormatter.format(widget.cart.prodPrice * widget.cart.quantity)}",
+                            "Rp ${currencyFormatter.format(widget.cart.prodPrice * widget.cart.quantity)}",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -71,7 +80,7 @@ class _ItemOrderState extends State<ItemOrder> {
                         height: 15,
                       ),
                       Text(
-                        "Rp. ${currencyFormatter.format(widget.cart.prodPrice)} / biji",
+                        "Rp ${currencyFormatter.format(widget.cart.prodPrice)} / biji",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -211,8 +220,8 @@ class _ItemOrderState extends State<ItemOrder> {
                     //   widget.cart.notes = value;
                     // },
                     cursorColor: softOrangeColor,
-                    decoration: new InputDecoration(
-                        labelText: 'Full Name', hintText: 'notes'),
+                    decoration:
+                        new InputDecoration(labelText: '', hintText: 'notes'),
                   ),
                 ),
               )
@@ -227,6 +236,7 @@ class _ItemOrderState extends State<ItemOrder> {
                   ),
                 ),
                 onPressed: () {
+                  notesController.clear();
                   Navigator.pop(context);
                 }),
             new TextButton(

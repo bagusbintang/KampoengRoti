@@ -45,6 +45,9 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     cartProvider = Provider.of<CartProvider>(context);
     UserSingleton userSingleton = UserSingleton();
+    if (userSingleton.address == null) {
+      userSingleton.address = userModel.defaulAdress;
+    }
     return AppBar(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -54,77 +57,78 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
       ),
       backgroundColor: softOrangeColor,
       elevation: 0,
-      title: FutureBuilder(
-          future: getUserModel(),
-          builder: (context, snapshot) {
-            if (userSingleton.address == null) {
-              userSingleton.address = userModel.defaulAdress;
-            }
-            return InkWell(
-              onTap: () async {
-                // Get.to(DeliveryAddress());
-                var result = await Get.to(DeliveryAddress());
-                setState(() {
-                  userSingleton.address = result;
+      title: InkWell(
+        onTap: () async {
+          Get.to(DeliveryAddress()).then((value) => setState(() {
+                if (value != null) {
+                  userSingleton.address = value;
                   userSingleton.outlet = userSingleton.address.outletModel;
-                });
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    color: Colors.white),
-                // padding: EdgeInsets.only(left: 5),
-                padding: const EdgeInsets.only(left: 15),
-                child: Row(
+                }
+              }));
+          // var result = await Get.to(DeliveryAddress());
+
+          // setState(() {
+          //   if (result != null) {
+          //     userSingleton.address = result;
+          //     userSingleton.outlet = userSingleton.address.outletModel;
+          //   }
+          // });
+        },
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              color: Colors.white),
+          // padding: EdgeInsets.only(left: 5),
+          padding: const EdgeInsets.only(left: 15),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            child: Text(
-                              'Lokasi Pengiriman',
-                              style: TextStyle(
-                                  color: Colors.grey[500], fontSize: 10),
-                            ),
-                          ),
-                          Container(
-                            child: Text(
-                              userSingleton.address != null
-                                  ? userSingleton.address.tagAddress
-                                          .toUpperCase() +
-                                      " - " +
-                                      userSingleton.address.address
-                                  : 'Alamat utama belum ditentukan. ',
-                              style: TextStyle(
-                                  color: Colors.black87, fontSize: 14),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                    Container(
+                      child: Text(
+                        'Lokasi Pengiriman',
+                        style: TextStyle(color: Colors.grey[500], fontSize: 10),
                       ),
                     ),
-                    IconButton(
-                      icon: ImageIcon(
-                        AssetImage("assets/images/icon_edit.png"),
-                        color: Colors.grey,
-                        size: 20,
+                    Container(
+                      child: Text(
+                        userSingleton.address != null
+                            ? userSingleton.address.tagAddress.toUpperCase() +
+                                " - " +
+                                userSingleton.address.address
+                            : 'Alamat utama belum ditentukan. ',
+                        style: TextStyle(color: Colors.black87, fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      onPressed: () async {
-                        // Get.to(DeliveryAddress());
-                        var result = await Get.to(DeliveryAddress());
-                        setState(() {
-                          userSingleton.address = result;
-                          userSingleton.outlet =
-                              userSingleton.address.outletModel;
-                        });
-                      },
                     ),
                   ],
                 ),
               ),
-            );
-          }),
+              IconButton(
+                icon: ImageIcon(
+                  AssetImage("assets/images/icon_edit.png"),
+                  color: Colors.grey,
+                  size: 20,
+                ),
+                onPressed: null,
+                // () async {
+                //   // Get.to(DeliveryAddress());
+                //   var result = await Get.to(DeliveryAddress());
+                //   setState(() {
+                //     if (result != null) {
+                //       userSingleton.address = result;
+                //       userSingleton.outlet =
+                //           userSingleton.address.outletModel;
+                //     }
+                //   });
+                // },
+              ),
+            ],
+          ),
+        ),
+      ),
       actions: <Widget>[
         Padding(
           padding: const EdgeInsets.all(2.0),
@@ -160,7 +164,7 @@ class _MainAppBarState extends State<MainAppBar> with WidgetsBindingObserver {
                   width: 27,
                 ),
                 onPressed: () {
-                  Get.to(OrderPages());
+                  Get.to(OrderPages()).then((value) => setState(() {}));
                   // do something
                 },
               ),

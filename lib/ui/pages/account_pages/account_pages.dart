@@ -187,7 +187,9 @@ class _AccountPagesState extends State<AccountPages> {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(MemberPage());
+                Get.to(MemberPage(
+                  user: userSingleton.user,
+                ));
               },
             ),
             AccountInfo(

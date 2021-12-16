@@ -10,13 +10,13 @@ class MySharedPreferences {
 
   setUserModel(String key, UserModel value) async {
     SharedPreferences myPrefs = await SharedPreferences.getInstance();
-    myPrefs.setString(key, jsonEncode(value));
+    myPrefs.setString(key, json.encode(value.toJson()));
   }
 
   Future<UserModel> getUserModel(String key) async {
     SharedPreferences myPrefs = await SharedPreferences.getInstance();
     // Map userMap = jsonDecode(myPrefs.getString(key) ?? "");
-    return UserModel.fromJson(jsonDecode(myPrefs.getString(key) ?? ""));
+    return UserModel.fromJson(json.decode(myPrefs.getString(key)));
   }
 
   setLoginValue(String key, bool value) async {

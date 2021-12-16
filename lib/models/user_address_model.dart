@@ -9,6 +9,7 @@ class UserAddressModel {
   String address;
   String city;
   String province;
+  String notes;
   int defaultAddress;
   double latitude;
   double longitude;
@@ -23,6 +24,7 @@ class UserAddressModel {
     this.address,
     this.city,
     this.province,
+    this.notes,
     this.defaultAddress,
     this.latitude,
     this.longitude,
@@ -38,6 +40,7 @@ class UserAddressModel {
     address = json["caddress_address"];
     city = json["caddress_city"];
     province = json["caddress_province"];
+    notes = json["caddress_catatan"];
     defaultAddress = json["caddress_default"];
     if (json['latitude'] != null && json['longitude'] != null) {
       latitude = double.parse(json['latitude'].toString());
@@ -58,6 +61,7 @@ class UserAddressModel {
       'caddress_address': address,
       'caddress_city': city,
       'caddress_province': province,
+      'caddress_catatan': notes,
       'caddress_default': defaultAddress,
       'latitude': latitude,
       'longitude': longitude,

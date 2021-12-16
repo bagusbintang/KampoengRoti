@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/login_pages.dart';
+import 'package:kampoeng_roti/ui/pages/member_pages/components/unregister_member_body.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 
 class RegisterMember extends StatefulWidget {
-  // const RegisterMember({ Key? key }) : super(key: key);
+  const RegisterMember({
+    Key key,
+    this.user,
+  }) : super(key: key);
+  final UserModel user;
 
   @override
   _RegisterMemberState createState() => _RegisterMemberState();
@@ -14,6 +20,7 @@ class RegisterMember extends StatefulWidget {
 class _RegisterMemberState extends State<RegisterMember> {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: softOrangeColor,
       appBar: PreferredSize(
@@ -104,7 +111,10 @@ class _RegisterMemberState extends State<RegisterMember> {
                 DefaultButton(
                   text: "DAFTAR MEMBER",
                   press: () {
-                    Get.to(LoginPage());
+                    Get.to(UnregisterMemberBody(
+                      size: size,
+                      user: widget.user,
+                    ));
                   },
                 ),
                 SizedBox(

@@ -42,3 +42,5 @@ var getInvoiceUrl = '$baseUrl/getuserinvoicelistbystatus';
 var getBannerUrl = '$baseUrl/banner';
 
 var getUpdateUserUrl = '$baseUrl/updateuserdata';
+
+var getPromoUrl = '$baseUrl/getlistvoucher';

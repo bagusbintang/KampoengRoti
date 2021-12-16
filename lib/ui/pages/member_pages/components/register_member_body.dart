@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -6,8 +7,9 @@ class RegisMemberBody extends StatelessWidget {
   const RegisMemberBody({
     Key key,
     @required this.size,
+    this.user,
   }) : super(key: key);
-
+  final UserModel user;
   final Size size;
 
   @override
@@ -42,7 +44,8 @@ class RegisMemberBody extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Bima Aprianto Siono",
+                    // "Bima Aprianto Siono",
+                    user.name,
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w400,
@@ -158,7 +161,8 @@ class RegisMemberBody extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "000378433",
+                        // "000378433",
+                        user.memberNo,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,

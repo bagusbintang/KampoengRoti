@@ -69,7 +69,7 @@ class _DeliveryAddressState extends State<DeliveryAddress> {
                   Get.to(
                     AddAddress(),
                     arguments: userModel,
-                  );
+                  ).then((value) => setState(() {}));
                 },
               ),
             )

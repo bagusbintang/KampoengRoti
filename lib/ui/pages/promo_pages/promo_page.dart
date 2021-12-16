@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/providers/promo_provider.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/components/promo_container.dart';
+import 'package:provider/provider.dart';
 
 class PromoPage extends StatelessWidget {
   const PromoPage({
@@ -9,6 +11,7 @@ class PromoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PromoProvider promoProvider = Provider.of<PromoProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -31,14 +34,19 @@ class PromoPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            children: List.generate(
-              3,
-              (index) => PromoContainer(),
-            ),
-          ),
-        ),
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: FutureBuilder(
+              future: promoProvider.getPromos(),
+              builder: (context, snapshot) {
+                return Column(
+                  children: promoProvider.promos
+                      .map((promo) => PromoContainer(
+                            promoModel: promo,
+                          ))
+                      .toList(),
+                );
+              },
+            )),
       ),
     );
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:kampoeng_roti/models/outlet_model.dart';
+import 'package:kampoeng_roti/models/promo_model.dart';
 import 'package:kampoeng_roti/models/user_address_model.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/providers/cart_provider.dart';
@@ -14,6 +16,7 @@ import 'package:kampoeng_roti/ui/pages/order_pages/components/cart_choose_button
 // import 'package:kampoeng_roti/ui/pages/order_pages/components/delivery_way.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/item_order_detail.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/order_done.dart';
+import 'package:kampoeng_roti/ui/pages/promo_pages/promo_detail.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
@@ -41,7 +44,6 @@ class _OrderDetailState extends State<OrderDetail> {
   UserSingleton userSingleton = UserSingleton();
   List<Payment> paymentList = [
     Payment("COD"),
-    Payment("OVO"),
   ];
   List<DropdownMenuItem> generateItems(List<Payment> paymentList) {
     List<DropdownMenuItem> items = [];
@@ -69,12 +71,19 @@ class _OrderDetailState extends State<OrderDetail> {
   // }
 
   String selectedOutlet = "Pilih Outlet";
+  String selectedPromo = "Tambah Promo";
+  int delivPayment = 0;
+  double promoDisc = 0;
+  double memberDisc = 0;
+  double totalDisc = 0;
 
   UserAddressModel userAddress;
   OutletModel outletModel;
-  bool isDeliveryChoosen = false;
+  PromoModel promo;
+  bool isDeliveryChoosen = true;
   bool isPickUpChoosen = false;
-  DateTime date = DateTime.now();
+  bool isValueNotGetMinDisc = false;
+  DateTime datenow = DateTime.now();
   var formatDate = DateFormat('d MMMM yyyy');
   // var formatTime = DateFormat.Hm().format(date);
 
@@ -87,6 +96,30 @@ class _OrderDetailState extends State<OrderDetail> {
     if (userSingleton.outlet != null) {
       selectedOutlet = userSingleton.outlet.title +
           "( ${userSingleton.outlet.distance.round()} KM )";
+
+      if (userSingleton.outlet.distance.round() > 5) {
+        int range = userSingleton.outlet.distance.round() - 5;
+        delivPayment = 2000 * range + 5000;
+      } else {
+        delivPayment = 5000;
+      }
+    }
+
+    if (userSingleton.user.memberNo != null) {
+      totalDisc = 0;
+      memberDisc = 0;
+      setState(() {
+        memberDisc = userSingleton.user.discMember;
+        if (memberDisc >= 100) {
+          totalDisc += memberDisc;
+        } else {
+          memberDisc = (memberDisc / 100) * cartProvider.totalPrice();
+          // if (memberDisc > promo.maxDisc) {
+          //   memberDisc = promo.maxDisc;
+          // }
+          totalDisc += promoDisc;
+        }
+      });
     }
 
     handleCheckOut() async {
@@ -96,18 +129,20 @@ class _OrderDetailState extends State<OrderDetail> {
           deliveryMethod: 1,
           addressId:
               userAddress != null ? userAddress.id : userSingleton.address.id,
-          outletId: outletModel != null ? userSingleton.user.id : 1,
-          promoId: 1,
-          shippingCosts: 5000 * userSingleton.outlet.distance.roundToDouble(),
-          promoDisc: 0,
-          memberDisc: 0,
-          deliveryTime: date.toString(),
+          outletId: userSingleton.outlet != null ? userSingleton.outlet.id : 1,
+          promoId: promo != null ? promo.id : 0,
+          shippingCosts: delivPayment.toDouble(),
+          promoDisc: promo != null ? promo.discount : 0,
+          memberDisc: userSingleton.user.memberNo != null
+              ? userSingleton.user.discMember
+              : 0,
+          deliveryTime: datenow.toString(),
           paymenMethod: selectedPayment.payment,
           note: "",
           total: cartProvider.totalPrice(),
           grandTotal: cartProvider.totalPrice(),
         )) {
-          Get.off(OrderDone(), arguments: [date, isDeliveryChoosen]);
+          Get.off(OrderDone(), arguments: [datenow, isDeliveryChoosen]);
         } else {
           Get.snackbar(
             "Gagal CheckOut",
@@ -121,19 +156,21 @@ class _OrderDetailState extends State<OrderDetail> {
         if (await orderProvider.checkOut(
           userId: userSingleton.user.id,
           deliveryMethod: 2,
-          outletId: outletModel != null ? userSingleton.user.id : 1,
-          promoId: 1,
+          outletId: userSingleton.outlet != null ? userSingleton.outlet.id : 1,
+          promoId: promo != null ? promo.id : 0,
           shippingCosts: 0,
-          promoDisc: 0,
-          memberDisc: 0,
-          deliveryTime: date.toString(),
+          promoDisc: promo != null ? promo.discount : 0,
+          memberDisc: userSingleton.user.memberNo != null
+              ? userSingleton.user.discMember
+              : 0,
+          deliveryTime: datenow.toString(),
           paymenMethod: selectedPayment.payment,
           note: "",
           total: cartProvider.totalPrice(),
           grandTotal: cartProvider.totalPrice(),
         )) {
           Get.off(OrderDone(), arguments: [
-            date,
+            datenow,
             isDeliveryChoosen,
           ]);
         } else {
@@ -148,6 +185,7 @@ class _OrderDetailState extends State<OrderDetail> {
       }
     }
 
+    // checkMemberDisc();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -226,7 +264,7 @@ class _OrderDetailState extends State<OrderDetail> {
                     width: 20,
                   ),
                   Text(
-                    "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}",
+                    "Rp ${currencyFormatter.format(cartProvider.totalPrice())}",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -281,6 +319,23 @@ class _OrderDetailState extends State<OrderDetail> {
 
   Widget deliveryMethod(NumberFormat currencyFormatter,
       CartProvider cartProvider, BuildContext context) {
+    checkMemberDisc() {
+      totalDisc = 0;
+      memberDisc = 0;
+      if (userSingleton.user.memberNo != null) {
+        memberDisc = userSingleton.user.discMember;
+        if (memberDisc >= 100) {
+          totalDisc += memberDisc;
+        } else {
+          memberDisc = (memberDisc / 100) * cartProvider.totalPrice();
+          // if (memberDisc > promo.maxDisc) {
+          //   memberDisc = promo.maxDisc;
+          // }
+          totalDisc += promoDisc;
+        }
+      }
+    }
+
     return Container(
       color: Colors.grey[200],
       child: Column(
@@ -341,7 +396,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 Text(
                   isDeliveryChoosen
                       ? userSingleton.outlet != null
-                          ? "Rp ${5000 * userSingleton.outlet.distance.round()}"
+                          ? "Rp ${currencyFormatter.format(delivPayment)}"
                           : "Rp 0"
                       : "Rp 0",
                   style: TextStyle(
@@ -371,22 +426,75 @@ class _OrderDetailState extends State<OrderDetail> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.error_outline_outlined),
-                      onPressed: () {},
+                    Visibility(
+                      visible: isValueNotGetMinDisc,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.error_outline_outlined,
+                          color: Colors.red,
+                        ),
+                        onPressed: () {
+                          Get.snackbar(
+                            null,
+                            "Oops.. kamu belum memenuhi minimal pemesanan..",
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: softOrangeColor,
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 15),
+                          );
+                        },
+                      ),
                     )
                   ],
                 ),
                 InkWell(
                   onTap: () {
-                    Get.to(PromoPage());
+                    promo == null
+                        ? Get.to(PromoPage()).then((value) => setState(() {
+                              // totalDisc = 0;
+                              if (value != null) {
+                                promo = value;
+                                if (cartProvider.totalPrice() >
+                                    promo.minTrans) {
+                                  if (promo.discount >= 100) {
+                                    promoDisc = promo.discount;
+                                    totalDisc += promoDisc;
+                                  } else {
+                                    promoDisc = (promo.discount / 100) *
+                                        cartProvider.totalPrice();
+                                    if (promoDisc > promo.maxDisc) {
+                                      promoDisc = promo.maxDisc;
+                                    }
+                                    totalDisc += promoDisc;
+                                  }
+                                } else {
+                                  isValueNotGetMinDisc = true;
+                                }
+                              }
+                            }))
+                        : Get.to(PromoDetail(
+                            promo: promo,
+                            used: true,
+                          )).then((value) => setState(() {
+                              // totalDisc = 0;
+                              promo = value;
+                              if (promo == null) {
+                                promoDisc = 0;
+                                isValueNotGetMinDisc = false;
+                                checkMemberDisc();
+                                totalDisc += promoDisc;
+                              }
+                            }));
                   },
-                  child: Text(
-                    "Tambah Promo",
-                    style: TextStyle(
-                      color: softOrangeColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      promo == null ? selectedPromo : promo.title,
+                      style: TextStyle(
+                        color: softOrangeColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
@@ -396,43 +504,43 @@ class _OrderDetailState extends State<OrderDetail> {
           SizedBox(
             height: 10,
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-            color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: [
-                    Text(
-                      "Member",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.error_outline_outlined),
-                      onPressed: () {},
-                    )
-                  ],
-                ),
-                InkWell(
-                  onTap: () {
-                    Get.to(MemberPage());
-                  },
-                  child: Text(
-                    "Tambah Member",
-                    style: TextStyle(
-                      color: softOrangeColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+          //   color: Colors.white,
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: <Widget>[
+          //       Row(
+          //         children: [
+          //           Text(
+          //             "Member",
+          //             style: TextStyle(
+          //               fontSize: 12,
+          //               fontWeight: FontWeight.w600,
+          //             ),
+          //           ),
+          //           IconButton(
+          //             icon: Icon(Icons.error_outline_outlined),
+          //             onPressed: () {},
+          //           )
+          //         ],
+          //       ),
+          //       InkWell(
+          //         onTap: () {
+          //           Get.to(MemberPage());
+          //         },
+          //         child: Text(
+          //           "Tambah Member",
+          //           style: TextStyle(
+          //             color: softOrangeColor,
+          //             fontSize: 12,
+          //             fontWeight: FontWeight.w500,
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           SizedBox(
             height: 10,
           ),
@@ -468,7 +576,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       ),
                     ),
                     Text(
-                      "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}",
+                      "Rp ${currencyFormatter.format(cartProvider.totalPrice())}",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -480,14 +588,33 @@ class _OrderDetailState extends State<OrderDetail> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      "Disc / Promo",
+                      "Disc Promo",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     Text(
-                      "Rp 0",
+                      "Rp ${currencyFormatter.format(promoDisc)}",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Disc Member",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      "Rp ${currencyFormatter.format(memberDisc)}",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -508,7 +635,7 @@ class _OrderDetailState extends State<OrderDetail> {
                     Text(
                       isDeliveryChoosen
                           ? userSingleton.outlet != null
-                              ? "Rp ${5000 * userSingleton.outlet.distance.round()}"
+                              ? "Rp ${currencyFormatter.format(delivPayment)}"
                               : "Rp 0"
                           : "Rp 0",
                       style: TextStyle(
@@ -538,9 +665,9 @@ class _OrderDetailState extends State<OrderDetail> {
                     Text(
                       isDeliveryChoosen
                           ? userSingleton.outlet != null
-                              ? "Rp. ${currencyFormatter.format(cartProvider.totalPrice() + 5000 * userSingleton.outlet.distance.round())}"
-                              : "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}"
-                          : "Rp. ${currencyFormatter.format(cartProvider.totalPrice())}",
+                              ? "Rp ${currencyFormatter.format(cartProvider.totalPrice() + delivPayment - memberDisc - promoDisc)}"
+                              : "Rp ${currencyFormatter.format(cartProvider.totalPrice() - memberDisc - promoDisc)}"
+                          : "Rp ${currencyFormatter.format(cartProvider.totalPrice() - memberDisc - promoDisc)}",
                       style: TextStyle(
                         color: softOrangeColor,
                         fontSize: 16,
@@ -631,34 +758,34 @@ class _OrderDetailState extends State<OrderDetail> {
   }
 
   Widget deliveryInfo(bool isChoosen) {
-    return Visibility(
-      visible: isChoosen,
-      child: Container(
-        color: softOrangeColor,
-        margin: const EdgeInsets.only(bottom: 8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8,
-            horizontal: 8,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 10,
-                ),
-                child: Text(
-                  "Delivery".toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
+    return Container(
+      color: softOrangeColor,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 8,
+          horizontal: 8,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 10,
+              ),
+              child: Text(
+                isChoosen ? "Delivery".toUpperCase() : "Pick Up".toUpperCase(),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
-              InkWell(
+            ),
+            Visibility(
+              visible: isChoosen,
+              child: InkWell(
                 onTap: () async {
                   var result = await Get.to(DeliveryAddress());
                   setState(() {
@@ -724,51 +851,91 @@ class _OrderDetailState extends State<OrderDetail> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 10,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  // InkWell(
+                  //   onTap: () async {
+                  //     // _getCurrentLocation();
+                  //     userSingleton.outlet = await Get.to(OutletHomePage(
+                  //         // currentPosition: _currentPosition,
+                  //         userModel: userSingleton.user));
+                  //     setState(() {
+                  //       if (userSingleton.outlet != null) {
+                  //         selectedOutlet = userSingleton.outlet.title +
+                  //             "( ${userSingleton.outlet.distance.round()} KM )";
+                  //       }
+                  //     });
+                  //   },
+                  //   child: AddressInfo(
+                  //     titleName: "Outlet Pengiriman",
+                  //     bodyName: selectedOutlet,
+                  //   ),
+                  // ),
+                  AddressInfo(
+                    titleName:
+                        isChoosen ? "Outlet Pengiriman" : "Outlet Pengambilan",
+                    bodyName: selectedOutlet,
+                    press: null,
+                  ),
+                  AddressInfo(
+                    titleName: isChoosen
+                        ? "Tanggal Pengiriman"
+                        : "Tanggal Pengambilan",
+                    bodyName: formatDate.format(datenow),
+                    press: () {
+                      DatePicker.showDatePicker(context,
+                          showTitleActions: true,
+                          minTime: datenow,
+                          maxTime: DateTime(datenow.year, 12, 31),
+                          theme: DatePickerTheme(
+                              headerColor: softOrangeColor,
+                              backgroundColor: Colors.white,
+                              itemStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18),
+                              doneStyle:
+                                  TextStyle(color: Colors.black, fontSize: 16)),
+                          onChanged: (date) {
+                        print('change $date in time zone ' +
+                            date.timeZoneOffset.inHours.toString());
+                      }, onConfirm: (date) {
+                        print('confirm $date');
+                        setState(() {
+                          datenow = date;
+                        });
+                      }, currentTime: datenow, locale: LocaleType.id);
+                    },
+                  ),
+                  AddressInfo(
+                    titleName: isChoosen ? "Jam Pengiriman" : "Jam Pengambilan",
+                    bodyName: DateFormat.Hm().format(datenow),
+                    press: () {
+                      DatePicker.showTime12hPicker(context,
+                          showTitleActions: true, onChanged: (date) {
+                        print('change $date in time zone ' +
+                            date.timeZoneOffset.inHours.toString());
+                      }, onConfirm: (date) {
+                        print('confirm $date');
+                        setState(() {
+                          datenow = date;
+                        });
+                      }, currentTime: datenow);
+                    },
+                  ),
+                ],
               ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    // InkWell(
-                    //   onTap: () async {
-                    //     // _getCurrentLocation();
-                    //     userSingleton.outlet = await Get.to(OutletHomePage(
-                    //         // currentPosition: _currentPosition,
-                    //         userModel: userSingleton.user));
-                    //     setState(() {
-                    //       if (userSingleton.outlet != null) {
-                    //         selectedOutlet = userSingleton.outlet.title +
-                    //             "( ${userSingleton.outlet.distance.round()} KM )";
-                    //       }
-                    //     });
-                    //   },
-                    //   child: AddressInfo(
-                    //     titleName: "Outlet Pengiriman",
-                    //     bodyName: selectedOutlet,
-                    //   ),
-                    // ),
-                    AddressInfo(
-                      titleName: "Outlet Pengiriman",
-                      bodyName: selectedOutlet,
-                    ),
-                    AddressInfo(
-                      titleName: "Tanggal Pengiriman",
-                      bodyName: formatDate.format(date),
-                    ),
-                    AddressInfo(
-                      titleName: "Jam Pengiriman",
-                      bodyName: DateFormat.Hm().format(date),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-            ],
-          ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+          ],
         ),
       ),
     );

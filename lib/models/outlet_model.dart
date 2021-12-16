@@ -30,7 +30,11 @@ class OutletModel {
     url = outletJson['outlet_map'].toString();
     latitude = double.parse(outletJson['outlet_latitude'].toString());
     longitude = double.parse(outletJson['outlet_longitude'].toString());
-    distance = double.parse(outletJson['distance_in_km'].toString());
+    if (outletJson['distance_in_km'] != null) {
+      distance = double.parse(outletJson['distance_in_km'].toString());
+    } else {
+      distance = 0;
+    }
   }
 
   Map<String, dynamic> toJson() {

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/components/confirm_register_member.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/components/register_member_body.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/components/unregister_member_body.dart';
 
 class MemberPage extends StatelessWidget {
-  // const MemberPage({
-  //   Key key,
-  // }) : super(key: key);
+  const MemberPage({
+    Key key,
+    this.user,
+  }) : super(key: key);
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +46,15 @@ class MemberPage extends StatelessWidget {
               ),
             ),
           ),
-          // UnregisterMemberBody(size: size),
-          RegisMemberBody(size: size),
+          user.memberNo == null
+              ? UnregisterMemberBody(
+                  size: size,
+                  user: user,
+                )
+              : RegisMemberBody(
+                  size: size,
+                  user: user,
+                ),
           // ConfirmRegisterMember(),
         ],
       ),

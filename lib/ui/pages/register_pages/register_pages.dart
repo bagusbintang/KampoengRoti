@@ -50,7 +50,9 @@ class _RegisterPagesState extends State<RegisterPages> {
         password: passwordController.text,
       )) {
         // Get.to(() => RegisterMember());
-        Get.to(RegisterMember());
+        Get.to(RegisterMember(
+          user: authProvider.user,
+        ));
       } else {
         Get.snackbar(
           "Gagal Register",

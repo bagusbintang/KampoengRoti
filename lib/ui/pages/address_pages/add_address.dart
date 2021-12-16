@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kampoeng_roti/models/city_models.dart';
 import 'package:kampoeng_roti/models/province_models.dart';
 import 'package:kampoeng_roti/models/user_address_model.dart';
@@ -37,9 +39,12 @@ class _AddAddressState extends State<AddAddress> {
 
   UserModel userModel = Get.arguments;
   UserAddressModel userAddressModel = UserAddressModel();
+  UserSingleton userSingleton = UserSingleton();
   ProvinceModel selectedProvince;
   CityModel selectedCity;
   bool _checkBoxValue = false;
+  List<Placemark> _placemarks;
+  String _address;
 
   @override
   void dispose() {
@@ -50,6 +55,23 @@ class _AddAddressState extends State<AddAddress> {
     phoneController.dispose();
     addressController.dispose();
     notesController.dispose();
+  }
+
+  void _getPlace(LatLng latLng) async {
+    _placemarks =
+        await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+
+    Placemark placemark = _placemarks[0];
+    _address = "${placemark.street}, " + //nama jalan
+        "${placemark.subLocality}, " + //nama sektor
+        "${placemark.locality}, " + //nama kecamatan
+        "${placemark.subAdministrativeArea}, " + //nama kota
+        "${placemark.administrativeArea}, "; // nama provinsi
+
+    addressController.text = _address;
+    userAddressModel.address = _address;
+    userAddressModel.city = placemark.subAdministrativeArea;
+    userAddressModel.province = placemark.administrativeArea;
   }
 
   void _checkBoxOnChange() {}
@@ -68,7 +90,8 @@ class _AddAddressState extends State<AddAddress> {
         userId: userModel.id,
         tagAddress: tagNameController.text,
         personName: addressDetailController.text,
-        personPhone: notesController.text,
+        personPhone: phoneController.text,
+        notes: notesController.text,
         address: addressController.text,
         province: userAddressModel.province,
         city: userAddressModel.city,
@@ -77,11 +100,13 @@ class _AddAddressState extends State<AddAddress> {
         defaultAddress: userAddressModel.defaultAddress,
       )) {
         if (_checkBoxValue) {
-          userModel.defaulAdress = userAddressModel;
+          userSingleton.address = addressProvider.userAddressModel;
+          userSingleton.outlet = addressProvider.userAddressModel.outletModel;
+          userModel.defaulAdress = addressProvider.userAddressModel;
           MySharedPreferences.instance.setUserModel("user", userModel);
         }
-        Get.off(DeliveryAddress());
-        // Get.back();
+        // Get.off(DeliveryAddress());
+        Get.back();
       } else {
         // Get.snackbar(
         //   "Gagal Register",
@@ -101,11 +126,15 @@ class _AddAddressState extends State<AddAddress> {
         double lat = detail.result.geometry.location.lat;
         double lng = detail.result.geometry.location.lng;
 
-        var address =
-            await Geocoder.local.findAddressesFromQuery(p.description);
+        // var address =
+        //     await Geocoder.local.findAddressesFromQuery(p.description);
+
+        userAddressModel.latitude = lat;
+        userAddressModel.longitude = lng;
 
         print(lat);
         print(lng);
+        _getPlace(LatLng(lat, lng));
       }
     }
 
@@ -143,20 +172,20 @@ class _AddAddressState extends State<AddAddress> {
               ),
               GestureDetector(
                 onTap: () async {
-                  var result =
-                      await Get.to(MapPicker(addressModel: userAddressModel));
-                  setState(() {
-                    userAddressModel = result;
-                    addressController =
-                        TextEditingController(text: userAddressModel.address);
-                  });
+                  // var result =
+                  //     await Get.to(MapPicker(addressModel: userAddressModel));
+                  // setState(() {
+                  //   userAddressModel = result;
+                  //   addressController =
+                  //       TextEditingController(text: userAddressModel.address);
+                  // });
 
-                  // Prediction p = await PlacesAutocomplete.show(
-                  //   context: context,
-                  //   apiKey: kGoogleApiKey,
-                  //   mode: Mode.overlay,
-                  // );
-                  // displayPrediction(p);
+                  Prediction p = await PlacesAutocomplete.show(
+                    context: context,
+                    apiKey: kGoogleApiKey,
+                    mode: Mode.overlay,
+                  );
+                  displayPrediction(p);
                 },
                 child: textFieldPinLocation(
                   "Alamat",
@@ -164,6 +193,9 @@ class _AddAddressState extends State<AddAddress> {
               ),
               textFieldAddress(
                 "Detil Alamat",
+              ),
+              textFieldPersonPhone(
+                "Telepon",
               ),
               textFieldNotes(
                 "Catatan",
@@ -308,7 +340,7 @@ class _AddAddressState extends State<AddAddress> {
                   ),
                   filled: true,
                   hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
+                  hintText: "Contoh: Rumah, Kantor",
                   fillColor: Colors.grey[300]),
             ),
           )
@@ -441,7 +473,7 @@ class _AddAddressState extends State<AddAddress> {
                   ),
                   filled: true,
                   hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
+                  hintText: "Contoh: Nomor Unit, Lantai Gedung",
                   fillColor: Colors.grey[300]),
             ),
           )
@@ -485,7 +517,7 @@ class _AddAddressState extends State<AddAddress> {
                   ),
                   filled: true,
                   hintStyle: new TextStyle(color: Colors.grey[800]),
-                  hintText: title,
+                  hintText: "Pesan untuk Bagian Pengiriman",
                   fillColor: Colors.grey[300]),
             ),
           )

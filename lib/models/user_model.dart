@@ -11,6 +11,8 @@ class UserModel {
   String email;
   String profilePictureUrl;
   String token;
+  String memberNo;
+  double discMember;
   int active;
   int verified;
   UserAddressModel defaulAdress;
@@ -23,6 +25,8 @@ class UserModel {
     this.email,
     this.profilePictureUrl,
     this.token,
+    this.memberNo,
+    this.discMember,
     this.active,
     this.verified,
     this.defaulAdress,
@@ -43,6 +47,12 @@ class UserModel {
     if (jsonUser['default_address'] != null) {
       defaulAdress = UserAddressModel.fromJson(jsonUser['default_address']);
     }
+    if (jsonUser['customer_memberno'] != null) {
+      memberNo = jsonUser['customer_memberno'];
+    }
+    if (jsonUser['settings_disc_member'] != null) {
+      discMember = double.parse(jsonUser['settings_disc_member'].toString());
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -54,6 +64,8 @@ class UserModel {
       'customer_email': email,
       // '': profilePictureUrl,
       // '': token,
+      'customer_memberno': memberNo,
+      'settings_disc_member': discMember,
       'customer_active': active,
       'customer_emailverified': verified,
       'default_address': defaulAdress.toJson(),

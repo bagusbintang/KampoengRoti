@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/confirm_payment_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
 class MemberRegister extends StatelessWidget {
   const MemberRegister({
     Key key,
+    this.user,
   }) : super(key: key);
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {

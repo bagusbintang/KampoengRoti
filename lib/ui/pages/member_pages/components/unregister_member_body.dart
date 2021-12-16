@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/member_register_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
@@ -7,8 +8,9 @@ class UnregisterMemberBody extends StatelessWidget {
   const UnregisterMemberBody({
     Key key,
     @required this.size,
+    this.user,
   }) : super(key: key);
-
+  final UserModel user;
   final Size size;
 
   @override
@@ -190,7 +192,7 @@ class UnregisterMemberBody extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: choclateColor,
         onPressed: () {
-          Get.to(MemberRegister());
+          Get.to(MemberRegister()).then((_) => Get.back());
         },
         child: Text(
           "DAFTAR SEKARANG",

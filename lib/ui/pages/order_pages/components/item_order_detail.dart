@@ -47,7 +47,7 @@ class ItemOrderDetail extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "Rp. ${currencyFormatter.format(cart.prodPrice * cart.quantity)}",
+                            "Rp ${currencyFormatter.format(cart.prodPrice * cart.quantity)}",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -60,7 +60,7 @@ class ItemOrderDetail extends StatelessWidget {
                         height: 15,
                       ),
                       Text(
-                        "Rp. ${currencyFormatter.format(cart.prodPrice)} / biji",
+                        "Rp ${currencyFormatter.format(cart.prodPrice)} / biji",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
