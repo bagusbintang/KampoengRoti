@@ -18,6 +18,14 @@ class DetailOrder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currencyFormatter = NumberFormat('#,###', 'ID');
+    bool visibleButton;
+    if (invoiceModel.iStatus == '1') {
+      visibleButton = true;
+    } else {
+      visibleButton = false;
+    }
+    print("status : " + invoiceModel.iStatus);
+    print("deliv : " + invoiceModel.iDelivery);
     // _statusInvoice = data;
     // if (_statusInvoice == 1) {
     //   _name = "Bima Aprianto Siono";
@@ -266,18 +274,42 @@ class DetailOrder extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        "Disc / Promo",
+                        "Disc Promo",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
+                          color: Colors.red,
                         ),
                       ),
                       Text(
                         // "Rp 25.000",
-                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderPromoDisc + invoiceModel.iHeaderMemberDisc)}",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderPromoDisc)}",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        "Disc Member",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
+                      ),
+                      Text(
+                        // "Rp 25.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderMemberDisc)}",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
                         ),
                       ),
                     ],
@@ -318,7 +350,12 @@ class DetailOrder extends StatelessWidget {
                       ),
                       Text(
                         // "Rp 150.000",
-                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderGrandTotal)}",
+                        "Rp. ${currencyFormatter.format(
+                          invoiceModel.iHeaderTotal +
+                              invoiceModel.iHeaderOngkir -
+                              invoiceModel.iHeaderPromoDisc -
+                              invoiceModel.iHeaderMemberDisc,
+                        )}",
                         style: TextStyle(
                           color: choclateColor,
                           fontSize: 16,
@@ -426,20 +463,42 @@ class DetailOrder extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        "Disc / Promo",
+                        "Disc Promo",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          color: Colors.red,
                         ),
                       ),
                       Text(
                         // "Rp. 25.000",
-                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderPromoDisc + invoiceModel.iHeaderMemberDisc)}",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderPromoDisc)}",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        "Disc Member",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.red,
+                        ),
+                      ),
+                      Text(
+                        // "Rp. 25.000",
+                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderMemberDisc)}",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.red,
                         ),
                       ),
                     ],
@@ -475,7 +534,12 @@ class DetailOrder extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         // "Rp. 75.000",
-                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderGrandTotal)}",
+                        "Rp. ${currencyFormatter.format(
+                          invoiceModel.iHeaderTotal +
+                              invoiceModel.iHeaderOngkir -
+                              invoiceModel.iHeaderPromoDisc -
+                              invoiceModel.iHeaderMemberDisc,
+                        )}",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -487,17 +551,21 @@ class DetailOrder extends StatelessWidget {
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
-              child: Column(
-                children: <Widget>[
-                  DefaultButton(
-                    text: "KONFIRMASI PEMBAYARAN",
-                    press: () {
-                      Get.to(ConfirmOrder());
-                    },
-                  ),
-                ],
+            Visibility(
+              visible: visibleButton,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                child: Column(
+                  children: <Widget>[
+                    DefaultButton(
+                      text: "KONFIRMASI PEMBAYARAN",
+                      press: () {
+                        Get.to(ConfirmOrder());
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
             Container(

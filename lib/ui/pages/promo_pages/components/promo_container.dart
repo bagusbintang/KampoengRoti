@@ -10,9 +10,11 @@ class PromoContainer extends StatelessWidget {
     Key key,
     this.promoModel,
     this.press,
+    this.fromPaymentPage,
   }) : super(key: key);
   final PromoModel promoModel;
   final Function press;
+  final bool fromPaymentPage;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class PromoContainer extends StatelessWidget {
         Get.to(PromoDetail(
           promo: promoModel,
           used: false,
+          fromPaymentPage: fromPaymentPage,
         )).then((value) => Get.back(result: value));
       },
       child: Container(
@@ -218,30 +221,33 @@ class PromoContainer extends StatelessWidget {
                 width: 50,
               ),
               Spacer(),
-              InkWell(
-                onTap: () {
-                  Get.back(result: promoModel);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(5),
-                      topRight: Radius.circular(5),
-                      bottomLeft: Radius.circular(5),
-                      bottomRight: Radius.circular(5),
+              Visibility(
+                visible: fromPaymentPage,
+                child: InkWell(
+                  onTap: () {
+                    Get.back(result: promoModel);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(5),
+                        topRight: Radius.circular(5),
+                        bottomLeft: Radius.circular(5),
+                        bottomRight: Radius.circular(5),
+                      ),
+                      color: softOrangeColor,
                     ),
-                    color: softOrangeColor,
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 5,
-                  ),
-                  child: Text(
-                    "Pakai",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                    padding: EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 5,
+                    ),
+                    child: Text(
+                      "Pakai",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),

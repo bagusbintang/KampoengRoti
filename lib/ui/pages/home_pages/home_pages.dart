@@ -376,7 +376,9 @@ class _HomePagesState extends State<HomePages> {
                                 "assets/images/ic_promo.png",
                               ),
                               onPressed: () {
-                                Get.to(PromoPage());
+                                Get.to(PromoPage(
+                                  fromPayment: false,
+                                ));
                               },
                             ),
                             Text(

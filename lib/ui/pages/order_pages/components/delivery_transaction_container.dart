@@ -200,7 +200,12 @@ class DeliveryTransactionContainer extends StatelessWidget {
                             height: 5,
                           ),
                           Text(
-                            "Rp. ${currencyFormatter.format(invoiceModel.iHeaderGrandTotal)}",
+                            "Rp. ${currencyFormatter.format(
+                              invoiceModel.iHeaderTotal +
+                                  invoiceModel.iHeaderOngkir -
+                                  invoiceModel.iHeaderPromoDisc -
+                                  invoiceModel.iHeaderMemberDisc,
+                            )}",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,

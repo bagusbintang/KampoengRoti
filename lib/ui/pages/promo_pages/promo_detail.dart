@@ -10,9 +10,11 @@ class PromoDetail extends StatelessWidget {
     Key key,
     this.promo,
     this.used,
+    this.fromPaymentPage,
   }) : super(key: key);
   final PromoModel promo;
   final bool used;
+  final bool fromPaymentPage;
 
   String convertDateTimeDisplay(String date) {
     final DateFormat displayFormater = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
@@ -210,16 +212,19 @@ class PromoDetail extends StatelessWidget {
             ),
           ),
           Spacer(),
-          Container(
-            margin: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 20,
-            ),
-            child: DefaultButton(
-              press: () {
-                Get.back(result: used ? null : promo);
-              },
-              text: used ? "BATALKAN" : "PAKAI",
+          Visibility(
+            visible: fromPaymentPage,
+            child: Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 20,
+              ),
+              child: DefaultButton(
+                press: () {
+                  Get.back(result: used ? null : promo);
+                },
+                text: used ? "BATALKAN" : "PAKAI",
+              ),
             ),
           ),
         ],

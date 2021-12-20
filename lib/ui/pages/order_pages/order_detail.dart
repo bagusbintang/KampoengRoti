@@ -450,7 +450,9 @@ class _OrderDetailState extends State<OrderDetail> {
                 InkWell(
                   onTap: () {
                     promo == null
-                        ? Get.to(PromoPage()).then((value) => setState(() {
+                        ? Get.to(PromoPage(
+                            fromPayment: true,
+                          )).then((value) => setState(() {
                               // totalDisc = 0;
                               if (value != null) {
                                 promo = value;
@@ -475,6 +477,7 @@ class _OrderDetailState extends State<OrderDetail> {
                         : Get.to(PromoDetail(
                             promo: promo,
                             used: true,
+                            fromPaymentPage: true,
                           )).then((value) => setState(() {
                               // totalDisc = 0;
                               promo = value;
@@ -592,6 +595,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
+                        color: Colors.red,
                       ),
                     ),
                     Text(
@@ -599,6 +603,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
+                        color: Colors.red,
                       ),
                     ),
                   ],
@@ -611,6 +616,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
+                        color: Colors.red,
                       ),
                     ),
                     Text(
@@ -618,6 +624,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
+                        color: Colors.red,
                       ),
                     ),
                   ],

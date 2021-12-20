@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 class PromoPage extends StatelessWidget {
   const PromoPage({
     Key key,
+    this.fromPayment,
   }) : super(key: key);
+  final bool fromPayment;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,7 @@ class PromoPage extends StatelessWidget {
                   children: promoProvider.promos
                       .map((promo) => PromoContainer(
                             promoModel: promo,
+                            fromPaymentPage: fromPayment,
                           ))
                       .toList(),
                 );
