@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:get/get.dart';
@@ -86,6 +88,15 @@ class _OrderDetailState extends State<OrderDetail> {
   DateTime datenow = DateTime.now();
   var formatDate = DateFormat('d MMMM yyyy');
   // var formatTime = DateFormat.Hm().format(date);
+
+  double calculateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -324,7 +335,7 @@ class _OrderDetailState extends State<OrderDetail> {
       memberDisc = 0;
       if (userSingleton.user.memberNo != null) {
         memberDisc = userSingleton.user.discMember;
-        if (memberDisc >= 100) {
+        if (memberDisc > 100) {
           totalDisc += memberDisc;
         } else {
           memberDisc = (memberDisc / 100) * cartProvider.totalPrice();
@@ -458,16 +469,32 @@ class _OrderDetailState extends State<OrderDetail> {
                                 promo = value;
                                 if (cartProvider.totalPrice() >
                                     promo.minTrans) {
-                                  if (promo.discount >= 100) {
-                                    promoDisc = promo.discount;
-                                    totalDisc += promoDisc;
-                                  } else {
-                                    promoDisc = (promo.discount / 100) *
-                                        cartProvider.totalPrice();
-                                    if (promoDisc > promo.maxDisc) {
-                                      promoDisc = promo.maxDisc;
+                                  print(promo.promoType);
+                                  if (promo.promoType == 1) {
+                                    if (promo.discount > 100) {
+                                      promoDisc = promo.discount;
+                                      totalDisc += promoDisc;
+                                    } else {
+                                      promoDisc = (promo.discount / 100) *
+                                          cartProvider.totalPrice();
+
+                                      if (promoDisc > promo.maxDisc) {
+                                        promoDisc = promo.maxDisc;
+                                      }
+                                      totalDisc += promoDisc;
                                     }
-                                    totalDisc += promoDisc;
+                                  } else if (promo.promoType == 2) {
+                                    if (promo.discount > 100) {
+                                      promoDisc = promo.discount;
+                                      totalDisc += promoDisc;
+                                    } else {
+                                      promoDisc =
+                                          (promo.discount / 100) * delivPayment;
+                                      if (promoDisc > promo.maxDisc) {
+                                        promoDisc = promo.maxDisc;
+                                      }
+                                      totalDisc += promoDisc;
+                                    }
                                   }
                                 } else {
                                   isValueNotGetMinDisc = true;
@@ -587,47 +614,53 @@ class _OrderDetailState extends State<OrderDetail> {
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Disc Promo",
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.red,
+                Visibility(
+                  visible: promoDisc > 0 ? true : false,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        "Disc Promo",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.red,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Rp ${currencyFormatter.format(promoDisc)}",
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.red,
+                      Text(
+                        "Rp ${currencyFormatter.format(promoDisc)}",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.red,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Disc Member",
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.red,
+                Visibility(
+                  visible: memberDisc > 0 ? true : false,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        "Disc Member",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.red,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Rp ${currencyFormatter.format(memberDisc)}",
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.red,
+                      Text(
+                        "Rp ${currencyFormatter.format(memberDisc)}",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.red,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -797,6 +830,20 @@ class _OrderDetailState extends State<OrderDetail> {
                   var result = await Get.to(DeliveryAddress());
                   setState(() {
                     userAddress = result;
+                    userSingleton.outlet.distance = calculateDistance(
+                        userAddress.latitude,
+                        userAddress.longitude,
+                        userSingleton.outlet.latitude,
+                        userSingleton.outlet.longitude);
+                    selectedOutlet = userSingleton.outlet.title +
+                        "( ${userSingleton.outlet.distance.round()} KM )";
+
+                    if (userSingleton.outlet.distance.round() > 5) {
+                      int range = userSingleton.outlet.distance.round() - 5;
+                      delivPayment = 2000 * range + 5000;
+                    } else {
+                      delivPayment = 5000;
+                    }
                   });
                 },
                 child: Container(

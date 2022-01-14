@@ -29,21 +29,21 @@ class _ProductPagesState extends State<ProductPages> {
   CategorySingleton categorySingleton = CategorySingleton();
   UserSingleton userSingleton = UserSingleton();
 
-  UserModel userModel;
-  void getUserModel() async {
-    userModel = await MySharedPreferences.instance.getUserModel("user");
-    // outletId = await MySharedPreferences.instance.getIntegerValue("outletId");
-    // if (outletId == null) {
-    //   outletId = 0;
-    // }
-    // setState(() {});
-  }
+  // UserModel userModel;
+  // void getUserModel() async {
+  //   userModel = await MySharedPreferences.instance.getUserModel("user");
+  //   // outletId = await MySharedPreferences.instance.getIntegerValue("outletId");
+  //   // if (outletId == null) {
+  //   //   outletId = 0;
+  //   // }
+  //   // setState(() {});
+  // }
 
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
-    getUserModel();
+    // getUserModel();
   }
 
   @override
@@ -269,7 +269,9 @@ class _ProductPagesState extends State<ProductPages> {
                         height: 150.0,
                         child: FutureBuilder(
                           future: categoryProvider.getCategories(
-                              outletId: userSingleton.outlet.id),
+                              outletId: userSingleton.outlet == null
+                                  ? 0
+                                  : userSingleton.outlet.id),
                           builder: (context, snapshot) {
                             if (categoryProvider.categories.length > 0) {
                               categorySingleton.title =
@@ -341,7 +343,9 @@ class _ProductPagesState extends State<ProductPages> {
                   child: FutureBuilder(
                     future: productProvider.getProducts(
                       catId: categorySingleton.id,
-                      outletId: userSingleton.outlet.id,
+                      outletId: userSingleton.outlet == null
+                          ? 0
+                          : userSingleton.outlet.id,
                       search: search == null
                           ? "all"
                           : search == ''

@@ -1,15 +1,81 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/confirm_payment_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:image_picker/image_picker.dart';
 
-class MemberRegister extends StatelessWidget {
+class MemberRegister extends StatefulWidget {
   const MemberRegister({
     Key key,
     this.user,
   }) : super(key: key);
   final UserModel user;
+
+  @override
+  State<MemberRegister> createState() => _MemberRegisterState();
+}
+
+class _MemberRegisterState extends State<MemberRegister> {
+  TextEditingController nameController = TextEditingController(text: '');
+  TextEditingController addressController = TextEditingController(text: '');
+  TextEditingController numberController = TextEditingController(text: '');
+  TextEditingController dateController = TextEditingController(text: '');
+  DateTime datenow = DateTime.now();
+  var formatDate = DateFormat('d MMMM yyyy');
+  File _image;
+
+  _imgFromCamera() async {
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  _imgFromGallery() async {
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,8 +187,11 @@ class MemberRegister extends StatelessWidget {
                     height: 15,
                   ),
                   textFieldBirthDate(
-                    "Tanggal Lahir",
+                    datenow == null
+                        ? "Tanggal Lahir"
+                        : formatDate.format(datenow),
                     Icon(Icons.calendar_today),
+                    context,
                   ),
                   SizedBox(
                     height: 15,
@@ -134,7 +203,17 @@ class MemberRegister extends StatelessWidget {
                   SizedBox(
                     height: 15,
                   ),
-                  uploadPhotoButton(),
+                  _image != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.file(
+                            _image,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.fitHeight,
+                          ),
+                        )
+                      : uploadPhotoButton(context),
                   Spacer(),
                   regisButton(),
                   Spacer(),
@@ -154,7 +233,7 @@ class MemberRegister extends StatelessWidget {
       ),
       child: TextFormField(
         keyboardType: TextInputType.name,
-        // controller: usernameController,
+        controller: nameController,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(25),
             border: new OutlineInputBorder(
@@ -179,7 +258,7 @@ class MemberRegister extends StatelessWidget {
       ),
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
-        // controller: emailController,
+        controller: addressController,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(25),
             border: new OutlineInputBorder(
@@ -197,27 +276,51 @@ class MemberRegister extends StatelessWidget {
     );
   }
 
-  Theme textFieldBirthDate(String text, Icon icon) {
+  Theme textFieldBirthDate(String text, Icon icon, BuildContext context) {
     return Theme(
       data: ThemeData(
         primaryColor: Colors.white,
       ),
-      child: TextFormField(
-        keyboardType: TextInputType.datetime,
-        // controller: phoneController,
-        decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(25),
-            border: new OutlineInputBorder(
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(20.0),
+      child: InkWell(
+        onTap: () {
+          DatePicker.showDatePicker(context,
+              showTitleActions: true,
+              minTime: DateTime(1970, 12, 31),
+              maxTime: DateTime(2005, 12, 31),
+              theme: DatePickerTheme(
+                  headerColor: softOrangeColor,
+                  backgroundColor: Colors.white,
+                  itemStyle: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                  doneStyle: TextStyle(color: Colors.black, fontSize: 16)),
+              onChanged: (date) {
+            print('change $date in time zone ' +
+                date.timeZoneOffset.inHours.toString());
+          }, onConfirm: (date) {
+            print('confirm $date');
+            setState(() {
+              datenow = date;
+            });
+          }, currentTime: datenow, locale: LocaleType.id);
+        },
+        child: TextFormField(
+          enabled: false, // controller: phoneController,
+          decoration: InputDecoration(
+              contentPadding: EdgeInsets.all(25),
+              border: new OutlineInputBorder(
+                borderRadius: const BorderRadius.all(
+                  const Radius.circular(20.0),
+                ),
+                borderSide: BorderSide.none,
               ),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            hintStyle: new TextStyle(color: Colors.grey[800]),
-            hintText: text,
-            prefixIcon: icon,
-            fillColor: Colors.white),
+              filled: true,
+              hintStyle: new TextStyle(color: Colors.grey[800]),
+              hintText: text,
+              prefixIcon: icon,
+              fillColor: Colors.white),
+        ),
       ),
     );
   }
@@ -229,7 +332,7 @@ class MemberRegister extends StatelessWidget {
       ),
       child: TextFormField(
         keyboardType: TextInputType.number,
-        // controller: phoneController,
+        controller: numberController,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(25),
             border: new OutlineInputBorder(
@@ -247,14 +350,16 @@ class MemberRegister extends StatelessWidget {
     );
   }
 
-  Container uploadPhotoButton() {
+  Container uploadPhotoButton(BuildContext context) {
     return Container(
       width: double.infinity,
       height: 70,
       child: FlatButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: Colors.grey,
-        onPressed: () {},
+        onPressed: () {
+          _showPicker(context);
+        },
         child: Text(
           "+UPLOAD IDENTITAS (KTP/SIM)",
           style: TextStyle(
@@ -272,7 +377,7 @@ class MemberRegister extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: choclateColor,
         onPressed: () {
-          Get.to(ConfirmPayment());
+          Get.off(ConfirmPayment());
         },
         child: Text(
           "DAFTAR SEKARANG",

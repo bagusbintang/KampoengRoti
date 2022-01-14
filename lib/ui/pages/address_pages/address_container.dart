@@ -72,13 +72,13 @@ class _AddressContainerState extends State<AddressContainer> {
                 ],
               ),
             ),
-            Text(
-              widget.userAddres.personName,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            // Text(
+            //   widget.userAddres.personName,
+            //   style: TextStyle(
+            //     fontSize: 14,
+            //     fontWeight: FontWeight.w700,
+            //   ),
+            // ),
             Text(
               widget.userAddres.address,
               style: TextStyle(

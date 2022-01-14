@@ -30,6 +30,21 @@ class DeliveryTransactionContainer extends StatelessWidget {
     Color _colorStatus;
     String _invoiceStatus = invoiceModel.iHeaderDelivMethod;
     String _orderStatus = invoiceModel.iHeaderStatus;
+    double promoDisc;
+    double memberDisc;
+    if (invoiceModel.iHeaderPromoDisc >= 100) {
+      promoDisc = invoiceModel.iHeaderPromoDisc;
+    } else {
+      promoDisc =
+          (invoiceModel.iHeaderPromoDisc / 100) * invoiceModel.iHeaderTotal;
+    }
+
+    if (invoiceModel.iHeaderMemberDisc >= 100) {
+      memberDisc = invoiceModel.iHeaderMemberDisc;
+    } else {
+      memberDisc =
+          (invoiceModel.iHeaderMemberDisc / 100) * invoiceModel.iHeaderTotal;
+    }
 
     if (invoiceModel.iStatus == '1' && invoiceModel.iDelivery == '2') {
       _colorStatus = Colors.amber;
@@ -203,8 +218,8 @@ class DeliveryTransactionContainer extends StatelessWidget {
                             "Rp. ${currencyFormatter.format(
                               invoiceModel.iHeaderTotal +
                                   invoiceModel.iHeaderOngkir -
-                                  invoiceModel.iHeaderPromoDisc -
-                                  invoiceModel.iHeaderMemberDisc,
+                                  promoDisc -
+                                  memberDisc,
                             )}",
                             style: TextStyle(
                               fontSize: 12,

@@ -46,12 +46,12 @@ class MemberPage extends StatelessWidget {
               ),
             ),
           ),
-          user.memberNo == null
-              ? UnregisterMemberBody(
+          user.memberNo != null
+              ? RegisMemberBody(
                   size: size,
                   user: user,
                 )
-              : RegisMemberBody(
+              : UnregisterMemberBody(
                   size: size,
                   user: user,
                 ),

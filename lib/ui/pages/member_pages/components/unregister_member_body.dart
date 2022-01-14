@@ -192,7 +192,7 @@ class UnregisterMemberBody extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: choclateColor,
         onPressed: () {
-          Get.to(MemberRegister()).then((_) => Get.back());
+          Get.off(MemberRegister()).then((_) => Get.back());
         },
         child: Text(
           "DAFTAR SEKARANG",

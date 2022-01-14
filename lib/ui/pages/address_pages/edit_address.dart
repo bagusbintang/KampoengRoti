@@ -113,7 +113,7 @@ class _EditAddressState extends State<EditAddress> {
       if (await addressProvider.editUserAddress(
         addressId: userAddress.id,
         tagAddress: tagNameController.text,
-        personName: addressController.text,
+        personName: addressDetailController.text,
         personPhone: phoneController.text,
         address: addressController.text,
         province: userAddress.province,
@@ -478,7 +478,7 @@ class _EditAddressState extends State<EditAddress> {
             ),
             child: TextFormField(
               // initialValue: initValue,
-              controller: addressController,
+              controller: addressDetailController,
               keyboardType: TextInputType.name,
               maxLines: 3,
               decoration: InputDecoration(

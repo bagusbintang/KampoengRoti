@@ -162,7 +162,7 @@ class RegisMemberBody extends StatelessWidget {
                       ),
                       Text(
                         // "000378433",
-                        user.memberNo,
+                        user.memberNo != null ? user.memberNo : "",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,

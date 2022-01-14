@@ -26,6 +26,7 @@ class ProductProvider with ChangeNotifier {
     String search,
   }) async {
     try {
+      _products.clear();
       List<ProductModel> products = await ProductService()
           .getProduct(catId: catId, search: search, outletId: outletId);
       _products = products;
@@ -36,6 +37,7 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> getNewProducts({int outletId}) async {
     try {
+      _newProducts.clear();
       List<ProductModel> products =
           await ProductService().getNewProduct(outletId: outletId);
       _newProducts = products;

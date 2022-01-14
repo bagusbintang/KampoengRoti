@@ -111,8 +111,7 @@ class _RegisterMemberState extends State<RegisterMember> {
                 DefaultButton(
                   text: "DAFTAR MEMBER",
                   press: () {
-                    Get.to(UnregisterMemberBody(
-                      size: size,
+                    Get.off(RegisterMember(
                       user: widget.user,
                     ));
                   },

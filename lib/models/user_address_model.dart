@@ -46,7 +46,7 @@ class UserAddressModel {
       latitude = double.parse(json['latitude'].toString());
       longitude = double.parse(json['longitude'].toString());
     }
-    if (json['outlet_data'] != null) {
+    if (json['outlet_data'] != null && json['outlet_data'] != '') {
       outletModel = OutletModel.fromJson(json['outlet_data']);
     }
   }
@@ -65,7 +65,7 @@ class UserAddressModel {
       'caddress_default': defaultAddress,
       'latitude': latitude,
       'longitude': longitude,
-      'outlet_data': outletModel.toJson(),
+      outletModel == null ? 'outlet_data' : outletModel.toJson(): '',
     };
   }
 }

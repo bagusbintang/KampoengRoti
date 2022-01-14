@@ -165,7 +165,9 @@ class _AccountPagesState extends State<AccountPages> {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(PromoPage());
+                Get.to(PromoPage(
+                  fromPayment: false,
+                ));
               },
             ),
             AccountInfo(

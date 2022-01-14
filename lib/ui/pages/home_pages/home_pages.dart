@@ -74,7 +74,9 @@ class _HomePagesState extends State<HomePages> {
     categoryProvider = Provider.of<CategoryProvider>(context);
     bannerProvider = Provider.of<BannerProvider>(context);
     cartProvider = Provider.of<CartProvider>(context);
-    selectedOutlet = "Outlet " + userSingleton.outlet.title;
+    if (userSingleton.outlet != null) {
+      selectedOutlet = "Outlet " + userSingleton.outlet.title;
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -451,7 +453,9 @@ class _HomePagesState extends State<HomePages> {
                           height: 150,
                           child: FutureBuilder(
                             future: categoryProvider.getCategories(
-                                outletId: userSingleton.outlet.id),
+                                outletId: userSingleton.outlet == null
+                                    ? 0
+                                    : userSingleton.outlet.id),
                             builder: (context, snapshot) {
                               return ListView.builder(
                                 scrollDirection: Axis.horizontal,
@@ -519,7 +523,9 @@ class _HomePagesState extends State<HomePages> {
                               BoxConstraints(maxHeight: double.infinity),
                           child: FutureBuilder(
                             future: productProvider.getNewProducts(
-                                outletId: userSingleton.outlet.id),
+                                outletId: userSingleton.outlet == null
+                                    ? 0
+                                    : userSingleton.outlet.id),
                             builder: (context, snapshot) {
                               return Container(
                                 child: GridView.count(

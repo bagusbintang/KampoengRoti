@@ -19,13 +19,27 @@ class DetailOrder extends StatelessWidget {
   Widget build(BuildContext context) {
     final currencyFormatter = NumberFormat('#,###', 'ID');
     bool visibleButton;
+
+    double promoDisc;
+    double memberDisc;
+    if (invoiceModel.iHeaderPromoDisc >= 100) {
+      promoDisc = invoiceModel.iHeaderPromoDisc;
+    } else {
+      promoDisc =
+          (invoiceModel.iHeaderPromoDisc / 100) * invoiceModel.iHeaderTotal;
+    }
+
+    if (invoiceModel.iHeaderMemberDisc >= 100) {
+      memberDisc = invoiceModel.iHeaderMemberDisc;
+    } else {
+      memberDisc =
+          (invoiceModel.iHeaderMemberDisc / 100) * invoiceModel.iHeaderTotal;
+    }
     if (invoiceModel.iStatus == '1') {
       visibleButton = true;
     } else {
       visibleButton = false;
     }
-    print("status : " + invoiceModel.iStatus);
-    print("deliv : " + invoiceModel.iDelivery);
     // _statusInvoice = data;
     // if (_statusInvoice == 1) {
     //   _name = "Bima Aprianto Siono";
@@ -270,49 +284,55 @@ class DetailOrder extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Disc Promo",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
+                  Visibility(
+                    visible: promoDisc > 0 ? true : false,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Disc Promo",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                      Text(
-                        // "Rp 25.000",
-                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderPromoDisc)}",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
+                        Text(
+                          // "Rp. 25.000",
+                          "Rp. ${currencyFormatter.format(promoDisc)}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Disc Member",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
+                  Visibility(
+                    visible: memberDisc > 0 ? true : false,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Disc Member",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                      Text(
-                        // "Rp 25.000",
-                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderMemberDisc)}",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
+                        Text(
+                          // "Rp. 25.000",
+                          "Rp. ${currencyFormatter.format(memberDisc)}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -353,8 +373,8 @@ class DetailOrder extends StatelessWidget {
                         "Rp. ${currencyFormatter.format(
                           invoiceModel.iHeaderTotal +
                               invoiceModel.iHeaderOngkir -
-                              invoiceModel.iHeaderPromoDisc -
-                              invoiceModel.iHeaderMemberDisc,
+                              promoDisc -
+                              memberDisc,
                         )}",
                         style: TextStyle(
                           color: choclateColor,
@@ -459,49 +479,55 @@ class DetailOrder extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Disc Promo",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.red,
+                  Visibility(
+                    visible: promoDisc > 0 ? true : false,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Disc Promo",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                      Text(
-                        // "Rp. 25.000",
-                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderPromoDisc)}",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.red,
+                        Text(
+                          // "Rp. 25.000",
+                          "Rp. ${currencyFormatter.format(promoDisc)}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Disc Member",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.red,
+                  Visibility(
+                    visible: memberDisc > 0 ? true : false,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Disc Member",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                      Text(
-                        // "Rp. 25.000",
-                        "Rp. ${currencyFormatter.format(invoiceModel.iHeaderMemberDisc)}",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.red,
+                        Text(
+                          // "Rp. 25.000",
+                          "Rp. ${currencyFormatter.format(memberDisc)}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -537,8 +563,8 @@ class DetailOrder extends StatelessWidget {
                         "Rp. ${currencyFormatter.format(
                           invoiceModel.iHeaderTotal +
                               invoiceModel.iHeaderOngkir -
-                              invoiceModel.iHeaderPromoDisc -
-                              invoiceModel.iHeaderMemberDisc,
+                              promoDisc -
+                              memberDisc,
                         )}",
                         style: TextStyle(
                           fontSize: 14,
