@@ -5,9 +5,12 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
+import 'package:kampoeng_roti/providers/auth_provider.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/confirm_payment_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:provider/provider.dart';
 
 class MemberRegister extends StatefulWidget {
   const MemberRegister({
@@ -28,6 +31,7 @@ class _MemberRegisterState extends State<MemberRegister> {
   DateTime datenow = DateTime.now();
   var formatDate = DateFormat('d MMMM yyyy');
   File _image;
+  ProgressDialog pr;
 
   _imgFromCamera() async {
     File image = await ImagePicker.pickImage(
@@ -79,6 +83,56 @@ class _MemberRegisterState extends State<MemberRegister> {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+
+    //Optional
+    pr.style(
+      message: 'Please wait...',
+      borderRadius: 10.0,
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progressTextStyle: TextStyle(
+          color: softOrangeColor, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
+    handleRegistMember() async {
+      formatDate = DateFormat('yyyy-MM-dd');
+      pr.show();
+      if (await authProvider.registMember(
+        userId: widget.user.id,
+        address: addressController.text,
+        birthdate: formatDate.format(datenow),
+        noKtp: numberController.text,
+        imageFile: _image,
+      )) {
+        // Get.to(() => RegisterMember());
+        // Get.to(RegisterMember(
+        //   user: authProvider.user,
+        // ));
+        pr.hide();
+        Get.off(ConfirmPayment()).then((_) => Get.snackbar(
+              "Register Member Berhasil!!",
+              "",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: softOrangeColor,
+              margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            ));
+      } else {
+        pr.hide();
+        Get.snackbar(
+          "Gagal Register Member",
+          "",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: softOrangeColor,
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        );
+      }
+    }
+
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -180,7 +234,9 @@ class _MemberRegisterState extends State<MemberRegister> {
                     height: 15,
                   ),
                   textFieldAddress(
-                    "Alamat",
+                    widget.user.defaulAdress != null
+                        ? widget.user.defaulAdress.address
+                        : "",
                     Icon(Icons.mail),
                   ),
                   SizedBox(
@@ -215,7 +271,23 @@ class _MemberRegisterState extends State<MemberRegister> {
                         )
                       : uploadPhotoButton(context),
                   Spacer(),
-                  regisButton(),
+                  Container(
+                    width: double.infinity,
+                    height: 70,
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      color: choclateColor,
+                      onPressed: handleRegistMember,
+                      child: Text(
+                        "DAFTAR SEKARANG",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                  ),
                   Spacer(),
                 ],
               ),
@@ -369,22 +441,20 @@ class _MemberRegisterState extends State<MemberRegister> {
     );
   }
 
-  Container regisButton() {
-    return Container(
-      width: double.infinity,
-      height: 70,
-      child: FlatButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        color: choclateColor,
-        onPressed: () {
-          Get.off(ConfirmPayment());
-        },
-        child: Text(
-          "DAFTAR SEKARANG",
-          style: TextStyle(
-              fontSize: 14, color: Colors.white, fontWeight: FontWeight.w900),
-        ),
-      ),
-    );
-  }
+  // Container regisButton() {
+  //   return Container(
+  //     width: double.infinity,
+  //     height: 70,
+  //     child: FlatButton(
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+  //       color: choclateColor,
+  //       onPressed: (){},
+  //       child: Text(
+  //         "DAFTAR SEKARANG",
+  //         style: TextStyle(
+  //             fontSize: 14, color: Colors.white, fontWeight: FontWeight.w900),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

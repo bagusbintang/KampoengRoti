@@ -32,7 +32,6 @@ class _ItemOrderState extends State<ItemOrder> {
     notesController = TextEditingController(text: widget.cart.notes);
     final currencyFormatter = NumberFormat('#,###', 'ID');
     cartProvider = Provider.of<CartProvider>(context);
-    notesController = TextEditingController(text: widget.cart.notes);
     return Column(
       children: <Widget>[
         Container(
@@ -248,6 +247,7 @@ class _ItemOrderState extends State<ItemOrder> {
                 ),
                 onPressed: () {
                   cartProvider.addNotes(widget.cart.id, notesController.text);
+                  notesController.text = cartProvider.note;
                   Navigator.pop(context);
                 })
           ],

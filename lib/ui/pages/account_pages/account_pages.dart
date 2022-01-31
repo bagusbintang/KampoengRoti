@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
+import 'package:kampoeng_roti/providers/auth_provider.dart';
 import 'package:kampoeng_roti/shared_preferences.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_contact_us.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/account_edit_profile.dart';
@@ -9,10 +10,12 @@ import 'package:kampoeng_roti/ui/pages/account_pages/account_share_app.dart';
 import 'package:kampoeng_roti/ui/pages/account_pages/components/account_info.dart';
 import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/login_pages.dart';
+import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/member_page.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/detail_transaction.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 class AccountPages extends StatefulWidget {
   @override
@@ -22,21 +25,31 @@ class AccountPages extends StatefulWidget {
 class _AccountPagesState extends State<AccountPages> {
   UserModel userModel;
   UserSingleton userSingleton = UserSingleton();
-  void getUserModel() async {
-    userModel = await MySharedPreferences.instance.getUserModel("user");
-    setState(() {});
-  }
+  // void getUserModel() async {
+  //   userModel = await MySharedPreferences.instance.getUserModel("user");
+  //   setState(() {});
+  // }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUserModel();
+    if (mounted) {
+      Future.delayed(Duration.zero, () async {
+        AuthProvider authProvider =
+            Provider.of<AuthProvider>(context, listen: false);
+        userSingleton.user =
+            await authProvider.refreshUser(userId: userSingleton.user.id);
+      });
+    }
+    // getUserModel();
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final MainPageController mainPageController =
+        Get.put(MainPageController(), permanent: true);
     return Scaffold(
       // backgroundColor: Colors.grey[300],
       body: SingleChildScrollView(
@@ -72,7 +85,7 @@ class _AccountPagesState extends State<AccountPages> {
                         children: <Widget>[
                           Text(
                             // "Bima Aprianto Siono",
-                            userModel.name,
+                            userSingleton.user.name,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -81,7 +94,7 @@ class _AccountPagesState extends State<AccountPages> {
                           ),
                           Text(
                             // "bima.aprianto@gmail.com",
-                            userModel.email,
+                            userSingleton.user.email,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -90,8 +103,8 @@ class _AccountPagesState extends State<AccountPages> {
                           ),
                           Text(
                             // "+6281804643014",
-                            userModel.phone != null
-                                ? userModel.phone.toString()
+                            userSingleton.user.phone != null
+                                ? userSingleton.user.phone.toString()
                                 : " - ",
                             style: TextStyle(
                               color: Colors.white,
@@ -111,7 +124,8 @@ class _AccountPagesState extends State<AccountPages> {
                       children: <Widget>[
                         IconButton(
                           onPressed: () {
-                            Get.to(EditProfile(), arguments: userModel);
+                            Get.to(EditProfile(),
+                                arguments: userSingleton.user);
                           },
                           icon: Icon(
                             Icons.settings,
@@ -225,6 +239,8 @@ class _AccountPagesState extends State<AccountPages> {
               ),
               pressed: () async {
                 MySharedPreferences.instance.removeAll();
+                userSingleton = null;
+                mainPageController.changeTabIndex(0);
                 Get.offAll(LoginPage());
               },
             ),

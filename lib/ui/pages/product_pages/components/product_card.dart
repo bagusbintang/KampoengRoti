@@ -87,7 +87,7 @@ class ProductCard extends StatelessWidget {
             ),
             Text(
               // "Rp. ${product.price}",
-              "Rp. ${currencyFormatter.format(product.price)}",
+              "Rp ${currencyFormatter.format(product.price)}",
               style: TextStyle(
                 color: choclateColor,
                 fontSize: 12,

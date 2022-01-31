@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/login_pages.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/components/unregister_member_body.dart';
+import 'package:kampoeng_roti/ui/pages/member_pages/member_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 
@@ -18,6 +19,7 @@ class RegisterMember extends StatefulWidget {
 }
 
 class _RegisterMemberState extends State<RegisterMember> {
+  TextEditingController numberController = TextEditingController(text: '');
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -83,7 +85,19 @@ class _RegisterMemberState extends State<RegisterMember> {
                         borderRadius: BorderRadius.circular(10)),
                     color: choclateColor,
                     onPressed: () {
-                      Get.to(LoginPage());
+                      if (numberController.text.isEmpty ||
+                          numberController.text == '') {
+                        Get.snackbar(
+                          "Nomor member tidak boleh kosong",
+                          "",
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: softOrangeColor,
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 15),
+                        );
+                      } else {
+                        Get.to(LoginPage());
+                      }
                     },
                     child: Text(
                       "SUBMIT",
@@ -111,9 +125,9 @@ class _RegisterMemberState extends State<RegisterMember> {
                 DefaultButton(
                   text: "DAFTAR MEMBER",
                   press: () {
-                    Get.off(RegisterMember(
+                    Get.to(MemberPage(
                       user: widget.user,
-                    ));
+                    )).then((_) => Get.off(LoginPage()));
                   },
                 ),
                 SizedBox(
@@ -142,7 +156,7 @@ class _RegisterMemberState extends State<RegisterMember> {
       child: TextFormField(
         textAlign: TextAlign.center,
         keyboardType: TextInputType.name,
-        // controller: emailController,
+        controller: numberController,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(25),
             border: new OutlineInputBorder(

@@ -7,6 +7,7 @@ class UserAddressModel {
   String personName;
   String personPhone;
   String address;
+  String addressDetail;
   String city;
   String province;
   String notes;
@@ -22,6 +23,7 @@ class UserAddressModel {
     this.personName,
     this.personPhone,
     this.address,
+    this.addressDetail,
     this.city,
     this.province,
     this.notes,
@@ -33,11 +35,12 @@ class UserAddressModel {
 
   UserAddressModel.fromJson(Map<String, dynamic> json) {
     id = json["caddress_id"];
-    userId = json["caddress_customerid"];
+    userId = int.parse(json["caddress_customerid"].toString());
     tagAddress = json["caddress_tag"];
     personName = json["caddress_name"];
     personPhone = json["caddress_phone"];
     address = json["caddress_address"];
+    addressDetail = json["caddress_detail"];
     city = json["caddress_city"];
     province = json["caddress_province"];
     notes = json["caddress_catatan"];
@@ -59,13 +62,15 @@ class UserAddressModel {
       'caddress_name': personName,
       'caddress_phone': personPhone,
       'caddress_address': address,
+      'caddress_detail': addressDetail,
       'caddress_city': city,
       'caddress_province': province,
       'caddress_catatan': notes,
       'caddress_default': defaultAddress,
       'latitude': latitude,
       'longitude': longitude,
-      outletModel == null ? 'outlet_data' : outletModel.toJson(): '',
+      //outletModel != null ? 'outlet_data' : outletModel.toJson(): null,
+      'outlet_data': outletModel != null ? outletModel.toJson() : null,
     };
   }
 }

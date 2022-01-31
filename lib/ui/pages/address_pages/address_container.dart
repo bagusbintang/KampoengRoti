@@ -9,9 +9,11 @@ class AddressContainer extends StatefulWidget {
     Key key,
     this.userAddres,
     this.press,
+    this.pressEdit,
   }) : super(key: key);
   final UserAddressModel userAddres;
   final Function press;
+  final Function pressEdit;
 
   @override
   State<AddressContainer> createState() => _AddressContainerState();
@@ -99,12 +101,7 @@ class _AddressContainerState extends State<AddressContainer> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {
-                      Get.to(
-                        EditAddress(),
-                        arguments: widget.userAddres,
-                      ).then((value) => setState(() {}));
-                    },
+                    onTap: widget.pressEdit,
                     child: Container(
                       child: Row(
                         children: [

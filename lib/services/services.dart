@@ -44,3 +44,7 @@ var getBannerUrl = '$baseUrl/banner';
 var getUpdateUserUrl = '$baseUrl/updateuserdata';
 
 var getPromoUrl = '$baseUrl/getlistvoucher';
+
+var registerMemberUrl = '$baseUrl/requestmember';
+
+var getUserById = '$baseUrl/getuserbyid';

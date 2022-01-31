@@ -361,7 +361,19 @@ class _HomePagesState extends State<HomePages> {
                               icon: Image.asset(
                                 "assets/images/ic_nearme.png",
                               ),
-                              onPressed: () {},
+                              onPressed: () async {
+                                OutletModel result =
+                                    await Get.to(OutletHomePage(
+                                  // currentPosition: _currentPosition,
+                                  userModel: userModel,
+                                ));
+                                setState(() {
+                                  if (result != null) {
+                                    selectedOutlet = "Outlet " + result.title;
+                                    userSingleton.outlet = result;
+                                  }
+                                });
+                              },
                             ),
                             Text(
                               "Near Me",
@@ -410,7 +422,7 @@ class _HomePagesState extends State<HomePages> {
                               },
                             ),
                             Text(
-                              "Paket",
+                              "Favorit",
                               style: TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w500),
                             )

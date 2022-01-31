@@ -96,7 +96,7 @@ class _EditAddressState extends State<EditAddress> {
     addressController = TextEditingController(text: userAddress.address);
     notesController = TextEditingController(text: userAddress.notes);
     addressDetailController =
-        TextEditingController(text: userAddress.personPhone);
+        TextEditingController(text: userAddress.addressDetail);
 
     // provinceName = userAddress.province;
     // cityName = userAddress.city;

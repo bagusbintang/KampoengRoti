@@ -12,6 +12,7 @@ import 'package:kampoeng_roti/ui/pages/main_pages/components/main_app_bar.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/order_pages.dart';
 import 'package:kampoeng_roti/ui/pages/product_pages/components/product_card.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 
 import '../../../shared_preferences.dart';
@@ -28,16 +29,7 @@ class _ProductPagesState extends State<ProductPages> {
   TextEditingController searchController = TextEditingController(text: '');
   CategorySingleton categorySingleton = CategorySingleton();
   UserSingleton userSingleton = UserSingleton();
-
-  // UserModel userModel;
-  // void getUserModel() async {
-  //   userModel = await MySharedPreferences.instance.getUserModel("user");
-  //   // outletId = await MySharedPreferences.instance.getIntegerValue("outletId");
-  //   // if (outletId == null) {
-  //   //   outletId = 0;
-  //   // }
-  //   // setState(() {});
-  // }
+  ProgressDialog pr;
 
   @override
   void initState() {
@@ -57,6 +49,23 @@ class _ProductPagesState extends State<ProductPages> {
     CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
     ProductProvider productProvider = Provider.of<ProductProvider>(context);
     CartProvider cartProvider = Provider.of<CartProvider>(context);
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+
+    //Optional
+    pr.style(
+      message: 'Please wait...',
+      borderRadius: 10.0,
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(
+        color: softOrangeColor,
+      ),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progressTextStyle: TextStyle(
+          color: softOrangeColor, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
     // categoryProvider.getCategories();
     // productProvider.getProducts();
     return Scaffold(
@@ -353,38 +362,41 @@ class _ProductPagesState extends State<ProductPages> {
                               : search,
                     ),
                     builder: (context, snapshot) {
-                      return productProvider.products.length == 0
-                          ? Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: Center(
-                                child: Text(
-                                  "Tidak menenukan hasil, mohon menggunakan kata kunci lainnya",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ),
-                            )
-                          : Container(
-                              child: GridView.count(
-                                crossAxisCount: 2,
-                                shrinkWrap: true,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                scrollDirection: Axis.vertical,
-                                physics: NeverScrollableScrollPhysics(),
-                                childAspectRatio: .7,
-                                children: productProvider.products
-                                    .map(
-                                      (product) => ProductCard(
-                                        product: product,
-                                        userModel: userSingleton.user,
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            );
+                      // setState(() {});
+                      if (productProvider.products.length == 0) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Center(
+                            child: Text(
+                              "Tidak menemukan hasil, mohon menggunakan kata kunci lainnya",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            scrollDirection: Axis.vertical,
+                            physics: NeverScrollableScrollPhysics(),
+                            childAspectRatio: .7,
+                            children: productProvider.products
+                                .map(
+                                  (product) => ProductCard(
+                                    product: product,
+                                    userModel: userSingleton.user,
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ),

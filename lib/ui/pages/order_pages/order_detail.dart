@@ -18,6 +18,7 @@ import 'package:kampoeng_roti/ui/pages/order_pages/components/cart_choose_button
 // import 'package:kampoeng_roti/ui/pages/order_pages/components/delivery_way.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/components/item_order_detail.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/order_done.dart';
+import 'package:kampoeng_roti/ui/pages/order_pages/order_pages.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_detail.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
@@ -209,7 +210,7 @@ class _OrderDetailState extends State<OrderDetail> {
         ),
         leading: BackButton(
           color: Colors.black,
-          onPressed: () => Get.back(),
+          onPressed: () => Get.off(OrderPages()),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -237,7 +238,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       ),
                     ),
                     onPressed: () {
-                      Get.back();
+                      Get.off(OrderPages());
                     },
                   ),
                 ],

@@ -21,6 +21,7 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController phoneController;
 
   UserModel userModel = Get.arguments;
+  UserSingleton userSingleton = UserSingleton();
 
   @override
   void dispose() {
@@ -49,6 +50,7 @@ class _EditProfileState extends State<EditProfile> {
         userModel.phone = phoneController.text;
 
         MySharedPreferences.instance.setUserModel("user", userModel);
+        userSingleton.user = userModel;
         Get.back();
       } else {
         Get.snackbar(

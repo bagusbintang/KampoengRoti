@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kampoeng_roti/providers/auth_provider.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/login_pages.dart';
 import 'package:kampoeng_roti/ui/pages/register_pages/register_member_pages.dart';
@@ -9,6 +11,11 @@ import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 import 'package:provider/provider.dart';
 
 class RegisterPages extends StatefulWidget {
+  const RegisterPages({
+    Key key,
+    this.position,
+  }) : super(key: key);
+  final Position position;
   @override
   _RegisterPagesState createState() => _RegisterPagesState();
 }
@@ -20,7 +27,7 @@ class _RegisterPagesState extends State<RegisterPages> {
   TextEditingController passwordController = TextEditingController(text: '');
 
   bool _obscureText = true;
-  bool _checkBoxValue = false;
+  bool _checkBoxValue = true;
 
   Icon _iconPwd = Icon(Icons.remove_red_eye_outlined);
   String _password;
@@ -38,16 +45,39 @@ class _RegisterPagesState extends State<RegisterPages> {
 
   void _checkBoxOnChange() {}
 
+  LatLng currentPostion;
+
+  void _getUserLocation() async {
+    var position = await GeolocatorPlatform.instance
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      currentPostion = LatLng(position.latitude, position.longitude);
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    if (mounted) {
+      _getUserLocation();
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
     handleSignUp() async {
+      // _getCurrentLocation();
       if (await authProvider.register(
         username: usernameController.text,
         email: emailController.text,
         phone: phoneController.text,
         password: passwordController.text,
+        lat: currentPostion.latitude,
+        long: currentPostion.longitude,
       )) {
         // Get.to(() => RegisterMember());
         Get.to(RegisterMember(
@@ -154,11 +184,12 @@ class _RegisterPagesState extends State<RegisterPages> {
                           Checkbox(
                             value: _checkBoxValue,
                             activeColor: choclateColor,
-                            onChanged: (bool newValue) {
-                              setState(() {
-                                _checkBoxValue = newValue;
-                              });
-                            },
+                            onChanged: null,
+                            // (bool newValue) {
+                            //   setState(() {
+                            //     _checkBoxValue = newValue;
+                            //   });
+                            // },
                           ),
                           RichText(
                             text: TextSpan(
@@ -170,7 +201,7 @@ class _RegisterPagesState extends State<RegisterPages> {
                               ),
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: 'Syarat &\nKetentuan',
+                                  text: ' Syarat &\nKetentuan',
                                   style: TextStyle(
                                     decoration: TextDecoration.underline,
                                     fontWeight: FontWeight.w600,

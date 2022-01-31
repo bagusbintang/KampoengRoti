@@ -104,6 +104,7 @@ class _OrderPagesState extends State<OrderPages> with WidgetsBindingObserver {
                               ),
                               onPressed: () {
                                 Get.back();
+                                mainPageController.changeTabIndex(1);
                               },
                             ),
                           ],
@@ -128,15 +129,6 @@ class _OrderPagesState extends State<OrderPages> with WidgetsBindingObserver {
                           );
                         },
                       ),
-                      // Container(
-                      //   child: Column(
-                      //     children: cartProvider.carts
-                      //         .map((cart) => ItemOrder(
-                      //               cart: cart,
-                      //             ))
-                      //         .toList(),
-                      //   ),
-                      // ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Row(

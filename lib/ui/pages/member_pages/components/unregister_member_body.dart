@@ -192,7 +192,19 @@ class UnregisterMemberBody extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: choclateColor,
         onPressed: () {
-          Get.off(MemberRegister()).then((_) => Get.back());
+          if (user.isRequestMember != null && user.isRequestMember == 1) {
+            Get.snackbar(
+              "Anda sudah mendaftar sebagai member, silahkan hubungi admin",
+              "",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: softOrangeColor,
+              margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            );
+          } else {
+            Get.off(MemberRegister(
+              user: user,
+            )).then((_) => Get.back());
+          }
         },
         child: Text(
           "DAFTAR SEKARANG",

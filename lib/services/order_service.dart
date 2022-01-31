@@ -40,14 +40,14 @@ class OrderService {
       body: body,
     );
 
-    // print(response.body);
+    print(response.body);
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body)['data'];
 
       print(data);
     } else {
-      throw Exception('Gagal Menambah Cart');
+      throw Exception('Gagal Menembak data Invoice');
     }
   }
 
@@ -61,7 +61,7 @@ class OrderService {
       headers: headers,
     );
 
-    // print(response.body);
+    print(response.body);
 
     if (response.statusCode == 200) {
       List data = jsonDecode(response.body)['data']['respons_res'];

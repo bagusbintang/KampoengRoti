@@ -123,11 +123,20 @@ class OrderDone extends StatelessWidget {
                       height: 30,
                     ),
                     DefaultButton(
+                      text: "KEMBALI KE HALAMAN UTAMA",
+                      press: () {
+                        Get.back();
+                      },
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    DefaultButton(
                       text: "HUBUNGI ADMIN",
                       press: () {
                         Get.to(AccountContactUs());
                       },
-                    )
+                    ),
                   ],
                 ),
               ),

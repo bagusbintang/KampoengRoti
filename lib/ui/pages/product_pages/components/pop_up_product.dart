@@ -77,7 +77,7 @@ class PopUpProduct extends StatelessWidget {
                 ),
                 Text(
                   // "Rp. ${product.price}",
-                  "Rp. ${currencyFormatter.format(product.price)}",
+                  "Rp ${currencyFormatter.format(product.price)}",
                   style: TextStyle(
                     color: softOrangeColor,
                     fontSize: 12,

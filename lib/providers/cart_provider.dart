@@ -3,6 +3,7 @@ import 'package:kampoeng_roti/models/cart_model.dart';
 import 'package:kampoeng_roti/services/cart_service.dart';
 
 class CartProvider with ChangeNotifier {
+  String note;
   List<CartModel> _carts = [];
 
   List<CartModel> get carts => _carts;
@@ -119,6 +120,7 @@ class CartProvider with ChangeNotifier {
       // quantity: _carts[index].quantity,
       notes: notes,
     );
+    note = notes;
     notifyListeners();
   }
 

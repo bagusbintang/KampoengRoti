@@ -16,6 +16,7 @@ class UserModel {
   int active;
   int verified;
   UserAddressModel defaulAdress;
+  int isRequestMember;
 
   UserModel({
     this.id,
@@ -30,6 +31,7 @@ class UserModel {
     this.active,
     this.verified,
     this.defaulAdress,
+    this.isRequestMember,
   });
 
   UserModel.fromJson(Map<String, dynamic> jsonUser) {
@@ -53,6 +55,9 @@ class UserModel {
     if (jsonUser['settings_disc_member'] != null) {
       discMember = double.parse(jsonUser['settings_disc_member'].toString());
     }
+    if (jsonUser['is_request_member'] != null) {
+      isRequestMember = jsonUser['is_request_member'];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -69,6 +74,7 @@ class UserModel {
       'customer_active': active,
       'customer_emailverified': verified,
       'default_address': defaulAdress.toJson(),
+      'is_request_member': isRequestMember,
     };
   }
 }

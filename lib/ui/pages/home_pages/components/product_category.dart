@@ -19,7 +19,7 @@ class ListKategori extends StatelessWidget {
       onTap: tap,
       child: Container(
         // padding: EdgeInsets.all(5),
-        height: 100,
+        height: 200,
         width: 100,
         child: Column(
           children: [
@@ -44,7 +44,7 @@ class ListKategori extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: Image.network(
           categoryModel.imageUrl,
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
         ),
       ),
     );

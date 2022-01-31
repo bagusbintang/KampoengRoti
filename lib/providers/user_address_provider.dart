@@ -24,6 +24,7 @@ class UserAddressProvider with ChangeNotifier {
     int userId,
   }) async {
     try {
+      _userAddress.clear();
       List<UserAddressModel> address =
           await UserAddressService().getAddress(userId: userId);
       _userAddress = address;
