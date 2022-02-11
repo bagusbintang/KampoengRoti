@@ -411,18 +411,19 @@ class _HomePagesState extends State<HomePages> {
                                 fit: BoxFit.cover,
                               ),
                               onPressed: () {
-                                Get.snackbar(
-                                  "Paket belum ada",
-                                  "Oops.. paket baru sedang kami persiapkan nih, ditunggu ya..",
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: softOrangeColor,
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                );
+                                mainPageController.changeTabIndex(1);
+                                // Get.snackbar(
+                                //   "Paket belum ada",
+                                //   "Oops.. paket baru sedang kami persiapkan nih, ditunggu ya..",
+                                //   snackPosition: SnackPosition.BOTTOM,
+                                //   backgroundColor: softOrangeColor,
+                                //   margin: EdgeInsets.symmetric(
+                                //       horizontal: 15, vertical: 15),
+                                // );
                               },
                             ),
                             Text(
-                              "Favorit",
+                              "Product",
                               style: TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w500),
                             )

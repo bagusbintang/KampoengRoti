@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 
 class ConfirmPayment extends StatelessWidget {
@@ -23,7 +24,7 @@ class ConfirmPayment extends StatelessWidget {
         leading: BackButton(
           color: Colors.black,
           onPressed: () {
-            Get.back();
+            Get.off(MainPages());
           },
         ),
         centerTitle: true,

@@ -11,6 +11,7 @@ import 'package:kampoeng_roti/ui/pages/account_pages/components/account_info.dar
 import 'package:kampoeng_roti/ui/pages/address_pages/delivery_address.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/login_pages.dart';
 import 'package:kampoeng_roti/ui/pages/main_pages/main_pages.dart';
+import 'package:kampoeng_roti/ui/pages/member_pages/confirm_payment_page.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/member_page.dart';
 import 'package:kampoeng_roti/ui/pages/order_pages/detail_transaction.dart';
 import 'package:kampoeng_roti/ui/pages/promo_pages/promo_page.dart';
@@ -203,9 +204,19 @@ class _AccountPagesState extends State<AccountPages> {
                 color: softOrangeColor,
               ),
               pressed: () {
-                Get.to(MemberPage(
-                  user: userSingleton.user,
-                ));
+                if (userSingleton.user != null) {
+                  if (userSingleton.user.isRequestMember == 1) {
+                    Get.to(ConfirmPayment());
+                  } else {
+                    Get.to(MemberPage(
+                      user: userSingleton.user,
+                    ));
+                  }
+                } else {
+                  Get.to(MemberPage(
+                    user: userSingleton.user,
+                  ));
+                }
               },
             ),
             AccountInfo(

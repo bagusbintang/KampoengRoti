@@ -4,6 +4,7 @@ import 'package:kampoeng_roti/models/user_model.dart';
 import 'package:kampoeng_roti/ui/pages/login_pages/login_pages.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/components/unregister_member_body.dart';
 import 'package:kampoeng_roti/ui/pages/member_pages/member_page.dart';
+import 'package:kampoeng_roti/ui/pages/member_pages/member_register_page.dart';
 import 'package:kampoeng_roti/ui/theme/theme.dart';
 import 'package:kampoeng_roti/ui/widgets/default_button.dart';
 
@@ -125,9 +126,9 @@ class _RegisterMemberState extends State<RegisterMember> {
                 DefaultButton(
                   text: "DAFTAR MEMBER",
                   press: () {
-                    Get.to(MemberPage(
+                    Get.off(MemberRegister(
                       user: widget.user,
-                    )).then((_) => Get.off(LoginPage()));
+                    ));
                   },
                 ),
                 SizedBox(

@@ -114,13 +114,14 @@ class _MemberRegisterState extends State<MemberRegister> {
         //   user: authProvider.user,
         // ));
         pr.hide();
-        Get.off(ConfirmPayment()).then((_) => Get.snackbar(
-              "Register Member Berhasil!!",
-              "",
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: softOrangeColor,
-              margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            ));
+        Get.snackbar(
+          "Register Member Berhasil!!",
+          "",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: softOrangeColor,
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        );
+        Get.off(ConfirmPayment());
       } else {
         pr.hide();
         Get.snackbar(
